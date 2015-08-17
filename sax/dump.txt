@@ -3,10 +3,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -19,10 +15,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -35,10 +27,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -51,10 +39,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -67,10 +51,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -83,10 +63,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -99,10 +75,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -115,10 +87,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -131,10 +99,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -147,10 +111,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -163,10 +123,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -179,10 +135,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -195,10 +147,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -211,10 +159,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -227,10 +171,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -243,10 +183,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -259,10 +195,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -275,10 +207,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -291,10 +219,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -307,10 +231,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -323,10 +243,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -339,10 +255,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -355,10 +267,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -371,10 +279,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -387,10 +291,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -403,10 +303,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -419,10 +315,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -435,10 +327,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -451,10 +339,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -467,10 +351,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -483,10 +363,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -499,10 +375,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -515,10 +387,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -531,10 +399,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -547,10 +411,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -563,10 +423,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -579,10 +435,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -595,10 +447,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -611,10 +459,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -627,10 +471,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -643,10 +483,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -659,10 +495,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -675,10 +507,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -691,10 +519,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -707,10 +531,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -723,10 +543,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -739,10 +555,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -755,10 +567,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -771,10 +579,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -787,10 +591,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -803,10 +603,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -819,10 +615,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -835,10 +627,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -851,10 +639,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -867,10 +651,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -883,10 +663,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -899,10 +675,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -915,10 +687,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -931,10 +699,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -947,10 +711,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -963,10 +723,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -979,10 +735,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -995,10 +747,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1011,10 +759,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1027,10 +771,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1043,10 +783,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1059,10 +795,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1075,10 +807,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1091,10 +819,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1107,10 +831,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1123,10 +843,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1139,10 +855,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1155,10 +867,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1171,10 +879,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1187,10 +891,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1203,10 +903,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1219,10 +915,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1235,10 +927,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1251,10 +939,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1267,10 +951,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1283,10 +963,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1299,10 +975,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1315,10 +987,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1331,10 +999,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1347,10 +1011,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1363,10 +1023,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1379,10 +1035,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1395,10 +1047,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1411,10 +1059,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1427,10 +1071,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1443,10 +1083,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1459,10 +1095,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1475,10 +1107,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1491,10 +1119,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1507,10 +1131,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &
@@ -1523,10 +1143,6 @@
   <FirstElement>
     Some Text
   </FirstElement>
-  <!--this is a comment-->
-  <!---- but this isnt part of the comment-->
-  <!--this is a comment == and this is a part of the comment-->
-  <!--this is a comment > and this is also part of the thing-->
   <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   <SecondElement param2="something">
     Pre-Text &

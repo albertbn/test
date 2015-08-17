@@ -1,6 +1,9 @@
 
 var xmlfile = './test.xml';
 var strict = true;
+var path_dump_obj = 'dump_obj.txt';
+var ROOT = 'RootElement';
+var ARR = 'SecondElement';
 
 var sax = require("sax")
 , printer = sax.createStream(strict, {lowercasetags:true, trim:true})
@@ -21,9 +24,22 @@ printer.indent = function () {
   }
 }
 
+//===========
+// start events...
+//===========
+var obj = {};
+obj[ARR] = [];
+var elem = null;
 printer.on("opentag", function (tag) {
 
-  // console.log ( 'open tag' );
+  //open/create first element
+  if ( tag.name===ARR ){
+    elem = {};
+
+    for (var i in tag.attributes) {
+      elem[i] = tag.attributes[i];
+    }
+  }
 
   this.indent();
   this.level ++;
@@ -39,12 +55,29 @@ printer.on("text", ontext);
 function ontext (text) {
   this.indent();
   print(text);
+
+  if(!elem) return;
+  if(!elem['text']) elem['text'] = '';
+  elem['text']+=text;
 }
 
 printer.on("closetag", function (tag) {
+
   this.level --;
   this.indent();
   print("</"+tag+">");
+
+  if(tag===ARR){
+    obj[ARR].push(elem);
+    elem = null;
+  }
+  else if( tag===ROOT ){
+
+    fs.appendFile( path_dump_obj, JSON.stringify(obj,null,2), function (err) {
+
+      if (err) console.error(err);
+    });
+  }
 });
 
 printer.on("cdata", function (data) {
@@ -78,8 +111,6 @@ process.stdout.on("drain", function () {
   fstr.resume();
 });
 
-//console.log('piping....');
+fs.existsSync( path_dump_obj ) && fs.unlinkSync(path_dump_obj);
 
 fstr.pipe(printer);
-
-//setTimeout( function(){}, 10000  );
