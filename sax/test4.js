@@ -1,13 +1,19 @@
 
-var xmlfile = './test.xml';
+//var xmlfile = './test.xml';
+var xmlfile = './xml0.xml';
 var strict = true;
 var path_dump_obj = 'dump_obj.txt';
-var ROOT = 'RootElement';
-var ARR = 'SecondElement';
+var ROOT = 'rows';
+var ARR = 'row';
 
 var sax = require("sax")
-, printer = sax.createStream(strict, {lowercasetags:true, trim:true})
-, fs = require("fs");
+, printer = sax.createStream(strict, {lowercasetags:true, trim:true })
+, fs = require("fs")
+,xml2js = require("xml2js")
+;
+
+//this is used to parse each row/array element... into JSON
+var xml2js_parser = new xml2js.Parser( { strict:false, normalizeTags: true } );
 
 function entity (str) {
   return str.replace('"', '&quot;');
@@ -16,68 +22,103 @@ function entity (str) {
 printer.tabstop = 2;
 printer.level = 0;
 printer.indent = function () {
-  print("\n");
+  print("\n", 'is_indent' );
   for (var i = this.level; i > 0; i --) {
     for (var j = this.tabstop; j > 0; j --) {
-      print(" ");
+      print(" ", 'is_indent' );
     }
   }
-}
+};
 
 //===========
 // start events...
 //===========
-var obj = {};
-obj[ARR] = [];
-var elem = null;
+var elem = null; /*elem.content = [] will hold all text + nodes*/
 printer.on("opentag", function (tag) {
 
+  var i;
   //open/create first element
   if ( tag.name===ARR ){
+
     elem = {};
 
-    for (var i in tag.attributes) {
+    for ( i in tag.attributes ) {
       elem[i] = tag.attributes[i];
     }
+
+    elem['content'] = [''];
   }
+  else if(tag.name!==ROOT){
+    elem['content'].push('');
+  };
 
   this.indent();
   this.level ++;
-  print("<"+tag.name);
-  for (var i in tag.attributes) {
-    print(" "+i+"=\""+entity(tag.attributes[i])+"\"");
+  print("<"+tag.name,  tag.name===ARR );
+  for ( i in tag.attributes ) {
+    print(" "+i+"=\""+entity(tag.attributes[i])+"\"",  tag.name===ARR );
   }
-  print(">");
-})
+  print(">",  tag.name===ARR );
+});
 
 printer.on("text", ontext);
 //printer.on("doctype", ontext);
 function ontext (text) {
+
   this.indent();
   print(text);
-
-  if(!elem) return;
-  if(!elem['text']) elem['text'] = '';
-  elem['text']+=text;
 }
 
-printer.on("closetag", function (tag) {
+printer.on ( "closetag", function (tag) {
 
   this.level --;
-  this.indent();
-  print("</"+tag+">");
 
-  if(tag===ARR){
-    obj[ARR].push(elem);
-    elem = null;
-  }
-  else if( tag===ROOT ){
+  if( tag===ARR ){
+    var is_text = false;
+    if( elem['content'].length>1 || elem['content'][0].length ){
 
-    fs.appendFile( path_dump_obj, JSON.stringify(obj,null,2), function (err) {
+      for(var i=0; i<elem['content'].length; ++i){
+
+        if ( elem['content'][i][0]!=='<' || elem['content'][i][ elem['content'][i].length-1  ]!=='>'  ){
+          is_text = true;
+          break;
+        }
+      }
+
+      if(is_text){
+        elem['text'] = elem['content'].join(' ');
+        elem['text'] = elem['text'].replace(/<br><\/br>/gi,'<br/>');
+        elem['text'] = elem['text'].replace(/<\/br>/gi,'');
+      }
+      else{
+
+        //TODO - go on from here...
+        //parse the elem string gathered...
+        xml2js_parser.parseString(elem['content'], function ( err, res ) {
+          if (err) console.error(err.message);
+          // obj[ARR].push(res[ARR.toLowerCase()]);
+
+          for(var key in res ){
+            elem[key] = res[key];
+          }
+
+        });
+      }
+    }
+
+    delete elem['content'];
+
+    fs.appendFile( path_dump_obj, JSON.stringify(elem) + '\n', function (err) {
 
       if (err) console.error(err);
     });
+
+    elem = null;
   }
+
+  this.indent();
+  print("</"+tag+">");
+
 });
 
 printer.on("cdata", function (data) {
@@ -100,9 +141,15 @@ printer.on("error", function (error) {
 
 var fstr = fs.createReadStream(xmlfile, { encoding: "utf8" });
 
-function print (c) {
+function print ( c, is_ignore_in_output ) {
 
-  if (!process.stdout.write(c)) {
+  var len;
+  if ( !is_ignore_in_output && elem!=null && elem['content'] && (len = elem['content'].length) ){
+
+    elem['content'][len-1]+=c;
+  }
+
+  if ( !process.stdout.write(c) ) {
     fstr.pause();
   }
 }

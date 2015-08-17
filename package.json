@@ -1,0 +1,29 @@
+{
+  "name": "node_emacs_tests",
+  "version": "1.0.0",
+  "description": "play around with emacs, node, sax, make a streaming for umri but myself",
+  "main": "js_test.js",
+  "scripts": {
+    "test": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertbn/test.git"
+  },
+  "keywords": [
+    "emacs",
+    "node",
+    "sax",
+    "stream"
+  ],
+  "author": "Albert Benatov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albertbn/test/issues"
+  },
+  "homepage": "https://github.com/albertbn/test#readme",
+  "dependencies": {
+    "sax": "^1.1.1",
+    "xml2js": "^0.4.10"
+  }
+}

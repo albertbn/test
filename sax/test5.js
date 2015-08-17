@@ -27,7 +27,7 @@ printer.indent = function () {
       print(" ");
     }
   }
-}
+};
 
 //===========
 // start events...
@@ -69,9 +69,9 @@ printer.on("closetag", function (tag) {
 
     console.error('about to parse %s', elem);
 
-    //parse the e;em string gathered...
+    //parse the elem string gathered...
     xml2js_parser.parseString(elem, function (err, res) {
-      if (err) console.error(err.message)
+      if (err) console.error(err.message);
       obj[ARR].push(res[ARR.toLowerCase()]);
     });
 

@@ -1,0 +1,23 @@
+<rows>
+  <row id='1' name='albert' music='jimi' />
+  <row id='2' name='janis' music='joplin' />
+  <row id='3' name='paul' music='mccartney' />
+  <row id='4' name='ringo' music='star' />
+  <row id='5' name='steve' music='ray vaugn'>
+    and some awsome <i>text</i> on this thing...
+    <br/>
+    <br>
+    lets see what happens here...
+    <b>a</b>
+
+  </row>
+  <row id='6' name='jimarata' music='all around the watch tower'>
+    <id2>666</id2>
+    <fock>fock something</fock>
+    <tits>tits baby</tits>
+    <images>
+      <img src='http://img.net' />
+      <img src='http://img.sex' />
+    </images>
+  </row>
+</rows>
