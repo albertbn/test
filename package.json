@@ -24,6 +24,7 @@
   "homepage": "https://github.com/albertbn/test#readme",
   "dependencies": {
     "event-stream": "^3.3.1",
+    "fs-ext": "^0.4.6",
     "sax": "^1.1.1",
     "xml2js": "^0.4.10"
   }
