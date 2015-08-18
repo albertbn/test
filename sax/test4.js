@@ -12,8 +12,13 @@ var sax = require("sax")
 ,xml2js = require("xml2js")
 ;
 
+var fn_attrNameProcessor = function(name){
+
+  return name.toLowerCase();
+};
+
 //this is used to parse each row/array element... into JSON
-var xml2js_parser = new xml2js.Parser( { strict:false, normalizeTags: true } );
+var xml2js_parser = new xml2js.Parser( { strict:false, normalizeTags:true, explicitArray:false, mergeAttrs:true, attrNameProcessors:[fn_attrNameProcessor] } );
 
 function entity (str) {
   return str.replace('"', '&quot;');
@@ -74,33 +79,49 @@ printer.on ( "closetag", function (tag) {
   this.level --;
 
   if( tag===ARR ){
-    var is_text = false;
+    var is_text = false, txt;
     if( elem['content'].length>1 || elem['content'][0].length ){
+
+      //debugger;
 
       for(var i=0; i<elem['content'].length; ++i){
 
-        if ( elem['content'][i][0]!=='<' || elem['content'][i][ elem['content'][i].length-1  ]!=='>'  ){
+        if(!elem['content'][i].length) continue;
+
+        txt =  elem['content'][i].trim();
+        if ( txt[0]!=='<' || txt[ txt.length-1  ]!=='>'  ){
           is_text = true;
           break;
         }
       }
 
-      if(is_text){
-        elem['text'] = elem['content'].join(' ');
-        elem['text'] = elem['text'].replace(/<br><\/br>/gi,'<br/>');
-        elem['text'] = elem['text'].replace(/<\/br>/gi,'');
+      elem['text'] = elem['content'].join(' ');
+      elem['text'] = elem['text'].replace(/<br><\/br>/gi,'<br/>');
+      elem['text'] = elem['text'].replace(/<\/br>/gi,'');
+
+      if(0>1 && is_text){
+        //perl
       }
       else{
 
+        //wrap this chap in some root stuff..., so that xml2js can handle it swell
+        elem['text'] = '<'+ARR+'>' + elem['text'] +  '</'+ARR+'>';
+
+        fstr.pause();
         //TODO - go on from here...
         //parse the elem string gathered...
-        xml2js_parser.parseString(elem['content'], function ( err, res ) {
+        xml2js_parser.parseString(elem['text'], function ( err, res ) {
+
           if (err) console.error(err.message);
           // obj[ARR].push(res[ARR.toLowerCase()]);
 
-          for(var key in res ){
-            elem[key] = res[key];
+          for(var key in res[ARR] ){
+            elem[key] = res[ARR][key];
           }
+
+          delete elem['text'];
+
+          fstr.resume();
 
         });
       }
@@ -108,6 +129,7 @@ printer.on ( "closetag", function (tag) {
 
     delete elem['content'];
 
+    //fs.appendFile( path_dump_obj, JSON.stringify(elem, null, 2) + '\n', function (err) {
     fs.appendFile( path_dump_obj, JSON.stringify(elem) + '\n', function (err) {
 
       if (err) console.error(err);

@@ -50,7 +50,7 @@ printer.on("opentag", function (tag) {
     print(" "+i+"=\""+entity(tag.attributes[i])+"\"");
   }
   print(">");
-})
+});
 
 printer.on("text", ontext);
 //printer.on("doctype", ontext);
