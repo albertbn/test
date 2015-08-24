@@ -23,8 +23,10 @@
   },
   "homepage": "https://github.com/albertbn/test#readme",
   "dependencies": {
+    "async": "^1.4.2",
     "event-stream": "^3.3.1",
     "fs-ext": "^0.4.6",
+    "request": "^2.61.0",
     "sax": "^1.1.1",
     "xml2js": "^0.4.10"
   }
