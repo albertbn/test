@@ -206,7 +206,7 @@ var is_bulk_writing = false;
 var drain_jar = [];
 function bulk_add_to_mongoose ( row ) {
 
-  if( !is_bulk_writing ){
+  if ( !is_bulk_writing ) {
 
     //empty drain jar
     drain_jar.forEach(function(r){
@@ -215,10 +215,11 @@ function bulk_add_to_mongoose ( row ) {
     drain_jar = [];
 
     bulk.insert( row );  // Bulk is okay if you don't need schema
-    //row = null;
+    row = null;
   }
-  else{
+  else {
     drain_jar.push(row);
+    row = null;
   }
   ++counter;
 
@@ -236,6 +237,7 @@ function bulk_add_to_mongoose ( row ) {
       else
         console.log('ok, inserted bulk to mong... sucker');
       // possibly do something with result
+      bulk = null;
       bulk = Entry.collection.initializeOrderedBulkOp();
       is_bulk_writing = false;
       fstr.resume();
@@ -264,13 +266,16 @@ db.once ( 'open', function (callback) {
 });
 
 fstr.on("end",function() {
-
+  
+  debugger;
+  
   if ( counter % BULK_SIZE )
   {
     bulk.execute(function(err,result) {
 
       if (err) throw err;   // or something
       // maybe look at result
+      bulk = null;
       do_final();
     });
   }
