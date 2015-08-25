@@ -99,7 +99,7 @@ printer.on ( "closetag", function (tag) {
       elem['text'] = elem['text'].replace(/<br><\/br>/gi,'<br/>');
       elem['text'] = elem['text'].replace(/<\/br>/gi,'');
 
-      if(0>1 && is_text){
+      if( is_text ){
         //perl
       }
       else{

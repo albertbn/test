@@ -1,6 +1,0 @@
-{"id":"1","name":"albert","music":"jimi"}
-{"id":"2","name":"janis","music":"joplin"}
-{"id":"3","name":"paul","music":"mccartney"}
-{"id":"4","name":"ringo","music":"star"}
-{"id":"5","name":"steve","music":"ray vaugn","_":"and some awsome on this thing...  ","i":"text","br":["",{"_":"lets see what happens here... ","b":"a"}]}
-{"id":"6","name":"jimarata","music":"all around the watch tower","id2":"666","fock":"fock somethin","tits":"tits baby","images":{"img":[{"src":"http://img.net"},{"src":"http://img.sex"}]}}
