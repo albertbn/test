@@ -4,7 +4,7 @@
 //strict
 var strict = true
 ,BULK_SIZE = 1000
-var counter = 0 /*counter for the bulk inset*/
+,counter = 0 /*counter for the bulk inset*/
 ;
 
 //requires
@@ -30,7 +30,7 @@ var xmlfile = './cotd.xml',
 
 //set streaming stuff
 //var entrySchema = new Schema({ id:Number, name:String, music:String },{ strict: false });
-var entrySchema = new Schema({ _id:{ type:Schema.Types.ObjectId, unique:true } },{ strict: false });
+var entrySchema = new Schema({ },{ strict: false });
 var Entry = mongoose.model( "row", entrySchema );
 
 //xml2ja
@@ -202,55 +202,50 @@ function print ( c, is_ignore_in_output ) {
 //   fstr.resume();
 // });
 
+var is_bulk_writing = false;
+var drain_jar = [];
 function bulk_add_to_mongoose ( row ) {
 
-  async.series (
-    [
-      function ( callback ) {
+  if( !is_bulk_writing ){
 
-        bulk.insert( row );  // Bulk is okay if you don't need schema
-        //row = null;
+    //empty drain jar
+    drain_jar.forEach(function(r){
+      bulk.insert(r);
+    });
+    drain_jar = [];
 
-        ++counter;
+    bulk.insert( row );  // Bulk is okay if you don't need schema
+    //row = null;
+  }
+  else{
+    drain_jar.push(row);
+  }
+  ++counter;
 
-        if ( !( counter % BULK_SIZE) ) {
+  if ( !( counter % BULK_SIZE) ) {
 
-          fstr.pause(); //lets stop reading from file until we finish writing
+    //debugger;
+    fstr.pause(); //lets stop reading from file until we finish writing
+    is_bulk_writing = true;
+    console.log('writing %d records to mongooooose...', counter);
 
-          console.log('writing %d records to mongooooose...', counter);
+    bulk.execute ( function(err,result) {
 
-          bulk.execute(function(err,result) {
+      if (err)
+        throw err;   // or do something
+      else
+        console.log('ok, inserted bulk to mong... sucker');
+      // possibly do something with result
+      bulk = Entry.collection.initializeOrderedBulkOp();
+      is_bulk_writing = false;
+      fstr.resume();
 
-            console.log ( 'result from bulk.exec is: %l', result  );
-
-            if (err) throw err;   // or do something
-            // possibly do something with result
-            bulk = Entry.collection.initializeOrderedBulkOp();
-            fstr.resume();
-            callback();
-          });
-        } else {
-          //if(counter<1000)fstr.resume();
-          fstr.resume();
-          callback();
-        }
-      }
-      //log also to file if needed to test
-      // ,function ( callback ) {
-
-      //   //console.log('async first shet... write to file');
-      //   fs.appendFile( path_dump_obj, JSON.stringify(row) + '\n', function (err) {
-      //     row = null;
-      //     if (err) console.error(err);
-      //   });
-      //   callback();
-      // }
-    ],
-    function (err) {
-      // each iteration is done
-      //console.log('results are: ', results);
-    }
-  );
+    });
+  } else {
+    if( !is_bulk_writing )
+      fstr.resume();
+    //fstr.resume();
+  }
 }
 
 //the readable filestream
@@ -272,12 +267,12 @@ fstr.on("end",function() {
 
   if ( counter % BULK_SIZE )
   {
-    // bulk.execute(function(err,result) {
-    //   if (err) throw err;   // or something
-    //   // maybe look at result
-    //   do_final();
-    // });
-    do_final();
+    bulk.execute(function(err,result) {
+
+      if (err) throw err;   // or something
+      // maybe look at result
+      do_final();
+    });
   }
   else{
     do_final();
@@ -286,8 +281,8 @@ fstr.on("end",function() {
 
 function do_final ( ) {
 
-  // db.close( function(err){
-  //   console.log ( 'written %d lines to db...', counter );
-  //   process.exit(0);
-  // });
+  db.close( function(err){
+    console.log ( 'written %d lines to db...', counter );
+    process.exit(0);
+  });
 }
