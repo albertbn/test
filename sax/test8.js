@@ -14,7 +14,7 @@ var printer = sax.createStream(strict, {lowercasetags:true, trim:true });
 var fs = require("fs");
 var xml2js = require("xml2js");
 //var async = require("async");
-var mongoose = require("mongoose");
+//var mongoose = require("mongoose");
 var bulk = null /*used for bulk inserts...*/;
 
 //var xmlfile = './xml0.xml',
@@ -25,12 +25,12 @@ var xmlfile = './cotd.xml',
     ARR = 'row'
     //TO HERE
 ;
-var Schema = mongoose.Schema;
+//var Schema = mongoose.Schema;
 
 //set streaming stuff
 //var entrySchema = new Schema({ id:Number, name:String, music:String },{ strict: false });
-var entrySchema = new Schema({ },{ strict: false });
-var Entry = mongoose.model( "row", entrySchema );
+// var entrySchema = new Schema({ },{ strict: false });
+// var Entry = mongoose.model( "row", entrySchema );
 
 //xml2ja
 var fn_attrNameProcessor = function(name){
@@ -131,7 +131,7 @@ function xml2js_parserString_cb ( err, res ) {
   for ( var key in res[ARR] ) {
     elem[key] = res[ARR][key];
   }
-  bulk_add_to_mongoose(elem);
+  bulk_write(elem);
 }
 
 printer.on ( "closetag", closetag);
@@ -155,7 +155,7 @@ function closetag ( tag ) {
       xml2js_parser.parseString ( elem['text'], xml2js_parserString_cb );
     }
     else{
-      bulk_add_to_mongoose(elem);
+      bulk_write(elem);
     }
 
     //TODO - here write with decent stream to mongo via mongoose
@@ -201,92 +201,87 @@ function print ( c, is_ignore_in_output ) {
 //   fstr.resume();
 // });
 
-var is_bulk_writing = false;
-var drain_jar = [];
-function bulk_add_to_mongoose ( row ) {
+function bulk_write ( row ) {
 
-  if ( !is_bulk_writing ) {
+  //console.info(row);
+  // fstr.pause();
+  // fs.appendFile( path_dump_obj, JSON.stringify(row) + '\n', function (err) {
 
-    //empty drain jar
-    drain_jar.forEach(function(r){
-      bulk.insert(r);
-    });
-    drain_jar = [];
+  //   if (err) console.error(err);
+  //   fstr.resume();
+  // });
+  console.log("count is: %d", counter++);
+  row = null;
 
-    bulk.insert( row );  // Bulk is okay if you don't need schema
-    row = null;
-  }
-  else {
-    drain_jar.push(row);
-    row = null;
-  }
-  ++counter;
-
-  if ( !( counter % BULK_SIZE) ) {
-
-    //debugger;
-    fstr.pause(); //lets stop reading from file until we finish writing
-    is_bulk_writing = true;
-    console.log('writing %d records to mongooooose...', counter);
-
-    bulk.execute ( function(err,result) {
-
-      if (err)
-        throw err;   // or do something
-      else
-        console.log('ok, inserted bulk to mong... sucker');
-      // possibly do something with result
-      bulk = null;
-      bulk = Entry.collection.initializeOrderedBulkOp();
-      is_bulk_writing = false;
-      fstr.resume();
-
-    });
-  } else {
-    if( !is_bulk_writing )
-      fstr.resume();
-    //fstr.resume();
-  }
+  fstr.resume();
 }
 
 //the readable filestream
-var fstr = fs.createReadStream( xmlfile, { encoding: "utf8" } );
-mongoose.connect('mongodb://adcore:adcore@ds057862.mongolab.com:57862/adcoretest');
+var fstr = fs.createReadStream( xmlfile, { encoding: "utf8", highWaterMark:65535 } );
 
-var db = mongoose.connection;
-db.on ('error', console.error.bind(console, 'connection error:') );
-db.once ( 'open', function (callback) {
+debugger;
 
-  // lower level method, needs connection!!! - use after connection created
-  bulk = Entry.collection.initializeOrderedBulkOp();
-
-  fs.existsSync( path_dump_obj ) && fs.unlinkSync(path_dump_obj);
-  fstr.pipe(printer);  // yay! starts the piping/streaming...
+fstr.once('error', function(err){
+  console.log ( 'error in read str: ', err );
 });
 
-fstr.on("end",function() {
+fstr.once('open', function(fd){
 
-  //debugger;
+  console.log('started reading big xml... with fd: ',fd);
 
-  if ( counter % BULK_SIZE )
-  {
-    bulk.execute(function(err,result) {
+  fs.existsSync( path_dump_obj ) && fs.unlinkSync(path_dump_obj);
+  //fstr.pipe(printer);  // yay! starts the piping/streaming..
+  //fstr.pipe(process.stdout);  // yay! starts the piping/streaming..
+});
 
-      if (err) throw err;   // or something
-      // maybe look at result
-      bulk = null;
-      do_final();
-    });
-  }
-  else{
-    do_final();
-  }
+
+fstr.on('data',ondata);
+
+function ondata(data){
+
+  //cleanup();
+
+  fstr.pause();
+
+  //console.log('on data of fstr');
+
+  setTimeout( function() {
+
+    //fstr.once('data',ondata);
+    bulk_write(data);
+    data = null;
+
+    // if ( !process.stdout.write(data) ) {
+    // }
+
+    // if ( !printer.write(data) ) {
+    // }
+  },
+  100  );
+
+  // fstr.once('data',ondata);
+  // bulk_write(data);
+  // data = null;
+
+};
+
+function cleanup() {
+  // remove all event listeners created in this promise
+  fstr.removeListener('data', ondata)
+}
+
+// process.stdout.on("drain", function () {
+//   fstr.resume();
+// });
+
+fstr.once("end",function() {
+
+  console.log('end of fstr read...');
+  debugger;
+  //do_final();
 });
 
 function do_final ( ) {
 
-  db.close( function(err){
-    console.log ( 'written %d lines to db...', counter );
-    process.exit(0);
-  });
+  process.exit(0);
 }
