@@ -263,9 +263,9 @@ db.once ( 'open', function (callback) {
   fstr.pipe(printer);  // yay! starts the piping/streaming...
 });
 
-fstr.on("end",function() {
+fstr.once('end', fstr_end);
 
-  //debugger;
+function fstr_end() {
 
   if ( counter % BULK_SIZE )
   {
@@ -280,12 +280,34 @@ fstr.on("end",function() {
   else{
     do_final();
   }
-});
+};
 
 function do_final ( ) {
 
-  db.close( function(err){
-    console.log ( 'written %d lines to db...', counter );
-    process.exit(0);
-  });
+  console.log ( 'written %d lines to db...', counter );
+  // db.close( function(err){
+  //   console.log ( 'written %d lines to db...', counter );
+  //   process.exit(0);
+  // });
+  fstr.unpipe(printer);
+  fstr.destroy();
+  counter = 0;
 }
+
+var stdin = process.openStdin();
+
+stdin.on ( 'data', function(d){
+
+  console.log ( 'you typed: %s, now doing all again... ', d );
+
+  // lower level method, needs connection!!! - use after connection created
+  bulk = Entry.collection.initializeOrderedBulkOp();
+
+  fs.existsSync( path_dump_obj ) && fs.unlinkSync(path_dump_obj);
+
+  fstr = fs.createReadStream( xmlfile, { encoding: "utf8" } );
+  fstr.once('end', fstr_end);
+
+  fstr.pipe(printer);  // yay! starts the piping/streaming...
+});
+
