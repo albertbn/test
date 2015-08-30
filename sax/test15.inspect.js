@@ -93,11 +93,14 @@ printer.on("error", function (error) {
   this._parser.resume();
 });
 
-
-//the readable filestream
-var fstr = fs.createReadStream( xmlfile, { encoding: "utf8" } );
-
+var fstr;
 var do_init = function(){
+
+  stats = { root:"" };
+  elem = null; /*see if that will be used*/
+
+  //the readable filestream
+  fstr = fs.createReadStream( xmlfile, { encoding: "utf8" } );
 
   fs.existsSync( path_dump_obj ) && fs.unlinkSync(path_dump_obj);
   fstr.pipe(printer);  // yay! starts the piping/streaming..
