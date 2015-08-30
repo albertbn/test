@@ -37,7 +37,7 @@ printer.level = 0;
 //row2:{count:50,attr:[id,name2,music]} },
 //level3:{row_text:100,row_id2:200}  }
 var stats = { root:"" };
-var elem = null; /*see if that will be used*/
+var elem_open = []; /*see if that will be used*/
 printer.on ( "opentag", opentag);
 function opentag (tag) {
 
@@ -48,7 +48,7 @@ function opentag (tag) {
     stats['root'] = tag.name;
   }
   //inner elements - level2,3, etc...
-  else if( this.level>1 ){
+  else if( this.level > 1 ){
 
     var levelX = stats['level'+this.level];
     !levelX && (levelX = stats['level'+this.level] = {} );
@@ -62,8 +62,12 @@ function opentag (tag) {
       levelX[tag.name]['attr'].indexOf(i)<0 && levelX[tag.name]['attr'].push(i);
     }
 
+    levelX[tag.name]['parent']=elem_open[elem_open.length-1];
+
     //end else if
   }
+
+  (elem_open.indexOf(tag.name)<0) && elem_open.push(tag.name);
 }
 
 printer.on("text", ontext);
@@ -78,6 +82,7 @@ function closetag ( tag ) {
 
   //console.log('closing tag ',tag);
   this.level --;
+  elem_open.pop();
 }
 
 printer.on("cdata", function (data) {
@@ -97,7 +102,7 @@ var fstr;
 var do_init = function(){
 
   stats = { root:"" };
-  elem = null; /*see if that will be used*/
+  elem_open = [];
 
   //the readable filestream
   fstr = fs.createReadStream( xmlfile, { encoding: "utf8" } );
@@ -124,12 +129,12 @@ function do_final ( ) {
 }
 
 //this final shit here is as readline... not to end the process, as in console debug
-var stdin = process.openStdin();
-stdin.on ( 'data', function(d){
+// var stdin = process.openStdin();
+// stdin.on ( 'data', function(d){
 
-  console.log ( 'you typed: %s, now doing all again... ', d );
-  do_init();
-});
+//   console.log ( 'you typed: %s, now doing all again... ', d );
+//   do_init();
+// });
 
 do_init();
 
