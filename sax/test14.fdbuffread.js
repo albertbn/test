@@ -324,7 +324,11 @@ function do_final ( ) {
   // });
   fstr.unpipe(printer);
   fstr.destroy();
+  fstr = null;
+  bulk = null;
   counter = 0;
+
+  global && global.gc &&  global.gc();
 }
 
 //this final shit here is as readline... not to end the process, as in console debug

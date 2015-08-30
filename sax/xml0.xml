@@ -21,4 +21,10 @@
       <img src='http://img.sex' />
     </images>
   </row>
+
+  <row2>
+    <img2 src='http://someimg.edu' />
+    <someid3>some inner cont of someid3...</someid3>
+  </row2>
+
 </rows>
