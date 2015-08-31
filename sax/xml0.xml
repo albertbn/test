@@ -22,6 +22,10 @@
     </images>
   </row>
 
+  <row>
+    <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
+  </row>
+
   <row2>
     <img2 src='http://someimg.edu' />
     <someid3>some inner cont of someid3... & fock u </someid3>

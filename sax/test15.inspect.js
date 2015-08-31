@@ -9,14 +9,14 @@
 //example structure of the return struct obj:
 //{ root:'rows', level2:[row:{count:100,attr:[id,name,music],cdata:100 /*max_len*/ }, row2:{count:50,attr:[id,name2,music]}], level3:[row_text:100,row_id2:200]  }
 
-//strict
+// strict
 var strict = false;
 
-//requires
+// requires
 var fs = require("fs"),
     sax = require("sax");
 
-//the writable sax memory stream
+// the writable sax memory stream 
 var printer = sax.createStream(strict,
                                {
                                  lowercasetags:true,
@@ -36,6 +36,7 @@ printer.level = 0;
 //{ root:'rows', level2:{row:{count:100,attr:[id,name,music],cdata:100 /*max_len*/ },
 //row2:{count:50,attr:[id,name2,music]} },
 //level3:{row_text:100,row_id2:200}  }
+//actual structure is pasted at the end of file...
 var stats = { root:"" };
 var elem_open = []; /*see if that will be used*/
 printer.on ( "opentag", opentag);
@@ -74,11 +75,13 @@ function opentag (tag) {
 //@@returns levelX - levelX is also init-ed if needed
 function increment ( key, tag ) {
 
-  var levelX =stats['level'+printer.level];
+  var levelX = stats['level'+printer.level];
   !levelX && (levelX = stats['level'+printer.level] = {} );
 
   !tag && (tag = elem_open[elem_open.length-1]);
-  !levelX[tag] && (levelX[tag]={}) && (levelX[tag][key]=0); /*init @key*/
+  
+  !levelX[tag] && (levelX[tag]={});
+  !levelX[tag][key] && (levelX[tag][key]=0); /*init @key*/
   ++levelX[tag][key]; /*then increment it...*/
 
   return levelX;
@@ -146,3 +149,85 @@ function do_final ( ) {
 
 do_init();
 
+// ============================
+
+/*
+{
+  "root": "rows",
+  "level2": {
+    "row": {
+      "count": 7,
+      "attr": [
+        "id",
+        "name",
+        "music"
+      ],
+      "parent": "rows",
+      "text": 2,
+      "cdata": 1
+    },
+    "row2": {
+      "count": 1,
+      "parent": "rows"
+    }
+  },
+  "level3": {
+    "i": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "br": {
+      "count": 2,
+      "parent": "row",
+      "text": 1
+    },
+    "id2": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "fock": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "tits": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "images": {
+      "count": 1,
+      "parent": "row"
+    },
+    "img2": {
+      "count": 1,
+      "attr": [
+        "src"
+      ],
+      "parent": "row2"
+    },
+    "someid3": {
+      "count": 1,
+      "parent": "row2",
+      "text": 1
+    }
+  },
+  "level4": {
+    "b": {
+      "count": 1,
+      "parent": "br",
+      "text": 1
+    },
+    "img": {
+      "count": 2,
+      "attr": [
+        "src"
+      ],
+      "parent": "images"
+    }
+  }
+}
+
+*/
