@@ -6,8 +6,7 @@
 //showing root, level2, count of repeating elements, etc...
 //it should get input params, as how many 'elements' to process... 100, 1000, all
 //so that the stats could be useful
-//example structure of the return struct obj:
-//{ root:'rows', level2:[row:{count:100,attr:[id,name,music],cdata:100 /*max_len*/ }, row2:{count:50,attr:[id,name2,music]}], level3:[row_text:100,row_id2:200]  }
+//example structure of the return struct obj: see bottom of script
 
 // strict
 var strict = false;
@@ -16,7 +15,7 @@ var strict = false;
 var fs = require("fs"),
     sax = require("sax");
 
-// the writable sax memory stream 
+// the writable sax memory stream
 var printer = sax.createStream(strict,
                                {
                                  lowercasetags:true,
@@ -132,11 +131,45 @@ var do_init = function(){
 
 function do_final ( ) {
 
-  // console.log ( "OK, let see what we've got... %j", stats );
-  console.log ("OK, let see what we've got... %s", JSON.stringify(stats,null,2) );
+  console.log ( "OK, let see what we've got... %j", stats );
+  // console.log ( "OK, let see what we've got... %s", JSON.stringify(stats,null,2) );
+  console.log ( "and root_n_arr is: %j", guess_root_n_array() );
   fstr.unpipe(printer);
-  // fstr.desroy();
+  fstr.destroy();
   fstr = null;
+}
+
+// currently the first algo is - root==root
+// arr - the lowest possible level after root having the greatest count
+//also for now level2 and level3
+function guess_root_n_array ( ) {
+
+  var ret = { root:null, arr:null };
+
+  stats && ( ret['root']=stats['root'] );
+
+  // returns true in case the level was found and level check found a count > 1
+  // even if level check  is 1, the ret[''arr] will still be set
+  var check_level = function(level){
+
+    var count, arr_count = 0;
+    if ( stats[level] ) {
+
+      for ( var key in stats[level] ) {
+
+        ((count=stats[level][key]['count']) > 0) && (arr_count<count) && (arr_count=count) && (ret['arr']=key);
+      }
+    }
+
+    return arr_count;
+  };
+
+  // MAYBE there could be duplicate names across levels - that's why maybe use level, which will help when parsing the actual file
+  var l = 2, c=0;
+  while ( (c=check_level('level'+ l++))>0 && c<2  ) ;
+  ret['level'] = l-1;
+
+  return ret;
 }
 
 // this final shit here is as readline... not to end the process, as in console debug

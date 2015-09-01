@@ -1,4 +1,19 @@
+
 <rows>
+
+  <row2>
+    <img2 src='http://someimg.edu' />
+    <someid3>some inner cont of someid3... & fock u </someid3>
+  </row2>
+  <row2>
+    <img2 src='http://someimg.edu' />
+    <someid3>some inner cont of someid3... & fock u </someid3>
+  </row2>
+  <row2>
+    <img2 src='http://someimg.edu' />
+    <someid3>some inner cont of someid3... & fock u </someid3>
+  </row2>
+
   <row id='1' name='albert' music='jimi' />
   <row id='2' name='janis' music='joplin' />
   <row id='3' name='paul' music='mccartney' />
@@ -25,10 +40,5 @@
   <row>
     <![CDATA[ this is random stuff. & and < and > are ok in here. ]]>
   </row>
-
-  <row2>
-    <img2 src='http://someimg.edu' />
-    <someid3>some inner cont of someid3... & fock u </someid3>
-  </row2>
 
 </rows>
