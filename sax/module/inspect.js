@@ -5,7 +5,7 @@ module.exports = inspect;
 
 // @xmlfile - string path to file
 // @callback(err,obj)
-   // example obj is { root:"rows", arr:"row", level:2 }
+//   example obj is { root:"rows", arr:"row", level:2 }
 // @options - additional options
 function inspect ( xmlfile, callback, options ) {
 
