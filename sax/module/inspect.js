@@ -2,10 +2,10 @@
 module.exports = inspect;
 
 // test
-inspect('./xml0.xml', function(err, obj){
+// inspect('./xml0.xml', function(err, obj){
 
-  console.log('this is the answer from inspect I got... %j',obj);
-});
+//   console.log('this is the answer from inspect I got... %j',obj);
+// });
 // =========
 
 function process_options ( options ){

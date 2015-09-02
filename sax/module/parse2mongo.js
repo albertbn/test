@@ -1,6 +1,17 @@
 
+// TODO - deal with field names collision
+// TODO - add cdata as well
 var xmlfile =  './xml0.xml';
 var path_dump_obj = 'dump_obj.txt';
+var mongo_collection = 'test_parse2mongo';
+
+// require and call the inspect
+var inspect = require('./inspect.js');
+inspect(xmlfile, function(err, inspect_result){
+
+  // console.log('inspect_result is %j', inspect_result);
+  parse(inspect_result);
+});
 
 function parse ( inspect_result ){
 
@@ -18,9 +29,7 @@ function parse ( inspect_result ){
   //========
   var bytes_read = 0;
   //========
-  var readBuffer = new Buffer( Math.pow(2,16) ),
-      bufferOffset = 0
-  ;
+  var readBuffer = new Buffer( Math.pow(2,16) ), bufferOffset = 0;
 
   var r_clean = new RegExp('</?'+ROOT+'[^>]*>\\n?');
 
@@ -44,8 +53,8 @@ function parse ( inspect_result ){
 
   var Schema = mongoose.Schema;
 
-  //set streaming stuff
-  var entrySchema = new Schema({ },{ strict: strict });
+  //set streaming stuff - mongoose...
+  var entrySchema = new Schema({ },{ collection: mongo_collection, strict: strict });
   var Entry = mongoose.model( ROOT, entrySchema );
 
   //xml2ja
@@ -59,6 +68,10 @@ function parse ( inspect_result ){
     attrNameProcessors:[fn_attrNameProcessor]
   });
   //end xml2ja
+
+  function entity (str) {
+    return str.replace('"', '&quot;');
+  }
 
   //this cold naybe used further..., we'll see
   printer.level = 0;
@@ -85,11 +98,14 @@ function parse ( inspect_result ){
 
       elem['content'] = [''];
     }
-    else if(tag.name!==ROOT){
+    else if(tag.name!==ROOT && elem && elem['content']){
       elem['content'].push('');
     };
 
     this.level ++;
+
+    if ( !(elem && elem['content']) ) return;
+
     print( "<"+tag.name,  tag.name===ARR );
     for ( i in tag.attributes ) {
       print(" "+i+"=\""+entity(tag.attributes[i])+"\"",  tag.name===ARR );
@@ -125,6 +141,7 @@ function parse ( inspect_result ){
       fstr.pause();
 
       var is_text = check_text_from_content().is_text;
+      console.log ( 'is_text in closetag: ', is_text );
 
       if ( !is_text ){
 
@@ -149,7 +166,9 @@ function parse ( inspect_result ){
   function check_text_from_content ( ) {
 
     // currently use the info from the inspect stuff
-    var ret = { is_text: inspect_result['stats']['has_naked_text'] };
+    var ret = {
+      is_text: (inspect_result && inspect_result['has_naked_text'])
+    };
 
     //for real text - read it originally from buffer
     if ( ret['is_text'] ) {
@@ -164,7 +183,7 @@ function parse ( inspect_result ){
       elem['text'] = readBuffer.slice(0,bytes_read).toString().replace(r_clean,'');
 
     }
-    else{
+    else {
       elem['text'] = elem['content'].join(' ');
     }
 
@@ -290,7 +309,7 @@ function parse ( inspect_result ){
     bulk = null;
     counter = 0;
 
-    printer.destroy();
+    // printer.destroy(); - no such animal
     printer = null;
 
     global && global.gc &&  global.gc();
@@ -312,5 +331,4 @@ function parse ( inspect_result ){
 
     fstr.pipe(printer);  // yay! starts the piping/streaming...
   });
-
 }
