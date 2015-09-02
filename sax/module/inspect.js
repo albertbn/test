@@ -1,13 +1,30 @@
 
 module.exports = inspect;
 
+// test
+inspect('./xml0.xml', function(err, obj){
+
+  console.log('this is the answer from inspect I got... %j',obj);
+});
 // =========
+
+function process_options ( options ){
+
+  !options && (options = {});
+
+  !options['max_elements'] && (options['max_elements']=100); /*default elements to check struct: 100*/
+  // TODO - add here more stuff as needed
+
+  return options;
+}
 
 // @xmlfile - string path to file
 // @callback(err,obj)
-//   example obj is { root:"rows", arr:"row", level:2 }
+//   example obj is { root:"rows", arr:"row", level:2, has_naked_text:1/0, stats:{stats random structure object of the xml} }
 // @options - additional options
 function inspect ( xmlfile, callback, options ) {
+
+  options = process_options(options);
 
   // strict
   var strict = false;
@@ -19,12 +36,14 @@ function inspect ( xmlfile, callback, options ) {
   // the writable sax memory stream
   var printer = sax.createStream(strict,
                                  {
+                                   lowercasetags:true,
                                    trim:true,
                                    position:false /*no need to record pos for stats */
                                  }
                                 );
   // USED - this cold naybe used further..., we'll see, yep! use now
   printer.level = 0;
+  printer.element_count = 0;
 
   //===========
   // start events...
@@ -36,6 +55,10 @@ function inspect ( xmlfile, callback, options ) {
   function opentag (tag) {
 
     this.level ++;
+    if( ++this.element_count>=options['max_elements'] ){
+      do_final();
+      return;
+    }
 
     //count
     if(this.level===1){
@@ -124,12 +147,22 @@ function inspect ( xmlfile, callback, options ) {
 
   function do_final ( ) {
 
-    console.log ( "OK, let see what we've got... %j", stats );
+    // console.log ( "OK, let see what we've got... %j", stats );
     // console.log ( "OK, let see what we've got... %s", JSON.stringify(stats,null,2) );
-    console.log ( "and root_n_arr is: %j", guess_root_n_array() );
+    var guess = guess_root_n_array();
+    guess['stats'] = stats;
+    // console.log ( "and root_n_arr is: %j", guess_root_n_array() );
     fstr.unpipe(printer);
     fstr.destroy();
     fstr = null;
+
+    // printer.destroy(); - no such animal
+    printer = null;
+
+    global && global.gc && global.gc();
+
+    // call the callback function supplied from outside...
+    callback(null/*err*/,guess);
   }
 
   // currently the first algo is - root==root
@@ -162,8 +195,93 @@ function inspect ( xmlfile, callback, options ) {
     while ( (c=check_level('level'+ l++))>0 && c<2  ) ;
     ret['level'] = l-1;
 
+    var arr = stats['level'+(l-1)]; /*!*/
+    arr && ret && ret['arr'] && (arr=arr[ret['arr']]) &&
+      (ret['has_naked_text'] = (arr['text'] && arr['text']>1));
+
     return ret;
   }
 
   do_init();
 }
+
+/*
+{
+  "root": "rows",
+  "level2": {
+    "row": {
+      "count": 7,
+      "attr": [
+        "id",
+        "name",
+        "music"
+      ],
+      "parent": "rows",
+      "text": 2,
+      "cdata": 1
+    },
+    "row2": {
+      "count": 1,
+      "parent": "rows"
+    }
+  },
+  "level3": {
+    "i": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "br": {
+      "count": 2,
+      "parent": "row",
+      "text": 1
+    },
+    "id2": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "fock": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "tits": {
+      "count": 1,
+      "parent": "row",
+      "text": 1
+    },
+    "images": {
+      "count": 1,
+      "parent": "row"
+    },
+    "img2": {
+      "count": 1,
+      "attr": [
+        "src"
+      ],
+      "parent": "row2"
+    },
+    "someid3": {
+      "count": 1,
+      "parent": "row2",
+      "text": 1
+    }
+  },
+  "level4": {
+    "b": {
+      "count": 1,
+      "parent": "br",
+      "text": 1
+    },
+    "img": {
+      "count": 2,
+      "attr": [
+        "src"
+      ],
+      "parent": "images"
+    }
+  }
+}
+
+*/
