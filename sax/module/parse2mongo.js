@@ -1,8 +1,8 @@
 
 // TODO - deal with field names collision
 // TODO - add cdata as well
-// var xmlfile =  './xml0.xml';
-var xmlfile =  './cotd.xml';
+var xmlfile =  './xml0.xml';
+// var xmlfile =  './cotd.xml';
 var path_dump_obj = 'dump_obj.txt';
 var mongo_collection = 'test_parse2mongo';
 
@@ -20,7 +20,7 @@ function parse ( inspect_result ){
 
   //strict
   var strict = false
-  ,BULK_SIZE = 1000
+  ,BULK_SIZE = 1000 /*this here could be larger - for example 10,000. mongo sub-divides it internally to smaller batches, say 1000...*/
   ,counter = 0 /*counter for the bulk inset*/
   ;
 
