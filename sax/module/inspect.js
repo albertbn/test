@@ -145,8 +145,11 @@ function inspect ( xmlfile, callback, options ) {
     fstr.once('end', do_final );
   };
 
+  var DONE = false;
   function do_final ( ) {
 
+    if(DONE) return;
+    DONE = true;
     // console.log ( "OK, let see what we've got... %j", stats );
     // console.log ( "OK, let see what we've got... %s", JSON.stringify(stats,null,2) );
     var guess = guess_root_n_array();

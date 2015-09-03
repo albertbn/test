@@ -1,7 +1,8 @@
 
 // TODO - deal with field names collision
 // TODO - add cdata as well
-var xmlfile =  './xml0.xml';
+// var xmlfile =  './xml0.xml';
+var xmlfile =  './cotd.xml';
 var path_dump_obj = 'dump_obj.txt';
 var mongo_collection = 'test_parse2mongo';
 
@@ -9,9 +10,11 @@ var mongo_collection = 'test_parse2mongo';
 var inspect = require('./inspect.js');
 inspect(xmlfile, function(err, inspect_result){
 
-  // console.log('inspect_result is %j', inspect_result);
+  console.log('got result from inspect... writing now to mongoose with transform...');
   parse(inspect_result);
 });
+
+// parse( {root:'rows',arr:'row2' } );
 
 function parse ( inspect_result ){
 
@@ -31,7 +34,7 @@ function parse ( inspect_result ){
   //========
   var readBuffer = new Buffer( Math.pow(2,16) ), bufferOffset = 0;
 
-  var r_clean = new RegExp('</?'+ROOT+'[^>]*>\\n?');
+  var r_clean = new RegExp('\\n?</?'+ARR+'[^>]*>\\n?','gi'); /*!*/
 
   var fd = fs.openSync( xmlfile, 'r' );
 
@@ -141,7 +144,7 @@ function parse ( inspect_result ){
       fstr.pause();
 
       var is_text = check_text_from_content().is_text;
-      console.log ( 'is_text in closetag: ', is_text );
+      // console.log ( 'is_text in closetag: ', is_text );
 
       if ( !is_text ){
 
@@ -180,8 +183,8 @@ function parse ( inspect_result ){
         start_tag_pos
       );
 
-      elem['text'] = readBuffer.slice(0,bytes_read).toString().replace(r_clean,'');
-
+      elem['text'] = readBuffer.slice(0,bytes_read).toString().replace(r_clean,'').trim();
+      // !elem['text'].length && (delete elem['text']);
     }
     else {
       elem['text'] = elem['content'].join(' ');
