@@ -1,8 +1,11 @@
 
 // this folk is in c++, yep!
 
-#include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
+#include "tesseract/strngs.h"
+#include "tesseract/genericvector.h"
+#include "tesseract/genericvector.h"
 
 int main()
 {
@@ -17,8 +20,38 @@ int main()
 
   PIX *image = pixRead(inputfile);
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+  printf("Using tesseract c++ API: %s\n", api->Version());
 
-  api->Init( NULL, "eng" );
+  // turn of dictionaries -> only possible during init
+  GenericVector<STRING> vars_vec;
+  vars_vec.push_back("load_system_dawg");
+  // vars_vec.push_back("load_freq_dawg");
+  // vars_vec.push_back("load_punc_dawg");
+  // vars_vec.push_back("load_number_dawg");
+  // vars_vec.push_back("load_unambig_dawg");
+  // vars_vec.push_back("load_bigram_dawg");
+  // vars_vec.push_back("load_fixed_length_dawgs");
+  //vars_vec.push_back("user_patterns_suffix");
+
+  GenericVector<STRING> vars_values;
+  vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  //vars_values.push_back("pharma-words");
+
+  // api->Init( NULL, "eng" );
+  // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
+  api->Init(NULL, "eng", tesseract::OEM_DEFAULT,
+            NULL, 0, &vars_vec, &vars_values, false);
+  // api->SetVariable("tessedit_char_whitelist",
+  //                  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  //                  "0123456789,®");
+  // api->SetVariable("language_model_penalty_non_dict_word", "0");
+
   api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
   api->SetImage(image);
   api->Recognize(0);
@@ -37,6 +70,18 @@ int main()
 
     api->SetImage(image);
   }
+
+  if( deskew_angle !=0  ){
+    int redsearch = 2;
+    printf( "making pixDeskew... %d\n", redsearch );
+    image = pixDeskew(image,2);
+    api->SetImage(image);
+  }
+
+  // Check if change of init parameters was successful
+  STRING var_value;
+  api->GetVariableAsString("load_system_dawg", &var_value);
+  printf("Variable 'load_system_dawg' is set to '%s'\n", var_value.string());
 
   outText = api->GetUTF8Text();
   printf("OCR output:\n%s", outText);
