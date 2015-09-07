@@ -9,7 +9,6 @@
 
 int main()
 {
-
   const char* inputfile = "./pics/tj.jpg";
   char *outText = NULL;
   // const char* inputfile = "./pics/tj2.jpg";
@@ -45,7 +44,8 @@ int main()
 
   // api->Init( NULL, "eng" );
   // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
-  api->Init(NULL, "eng", tesseract::OEM_DEFAULT,
+  // for documentation see: http://tesseract-ocr.github.io/a01278.html#a04550a0ed1279562027bf2fc92c421ae
+  api->Init(NULL, "eng", tesseract::OEM_DEFAULT ,
             NULL, 0, &vars_vec, &vars_values, false);
   // api->SetVariable("tessedit_char_whitelist",
   //                  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -77,6 +77,9 @@ int main()
     image = pixDeskew(image,2);
     api->SetImage(image);
   }
+
+  api->SetPageSegMode(tesseract::PSM_AUTO);
+
 
   // Check if change of init parameters was successful
   STRING var_value;
