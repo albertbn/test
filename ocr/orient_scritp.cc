@@ -1,6 +1,10 @@
 
 // this folk is in c++, yep!
 
+// Fred Weinhaus image ready
+// http://www.fmwconcepts.com/imagemagick/textcleaner/index.php
+// ./textcleaner -g -e none -f 100 -o 3 pics/tj2.jpg ./img_pre/tj2.jpg
+
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
 #include "tesseract/strngs.h"
@@ -9,7 +13,8 @@
 
 int main()
 {
-  const char* inputfile = "./pics/tj.jpg";
+  // const char* inputfile = "./pics/tj.jpg";
+  const char* inputfile = "./img_pre/tj2.jpg";
   char *outText = NULL;
   // const char* inputfile = "./pics/tj2.jpg";
   tesseract::Orientation orientation;
