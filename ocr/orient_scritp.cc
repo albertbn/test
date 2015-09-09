@@ -132,3 +132,17 @@ int main()
 
 //     return 0;
 // }
+
+// GCC has been built with multilib support. Notably, OpenMP may not work:
+//   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60670
+// If you need OpenMP support you may want to
+//   brew reinstall gcc --without-multilib
+// ==> Summary
+// 🍺  /usr/local/Cellar/gcc/5.2.0: 1353 fil
+
+// Python modules have been installed and Homebrew's site-packages is not
+// in your Python sys.path, so you will not be able to import the modules
+// this formula installed. If you plan to develop with these modules,
+// please run:
+//   mkdir -p /Users/albert/Library/Python/2.7/lib/python/site-packages
+//   echo 'import site; site.addsitedir("/usr/local/lib/python2.7/site-packages")' >> /Users/albert/Library/Python/2.7/lib/python/site-packages/homebrew.pth

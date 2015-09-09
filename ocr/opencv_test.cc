@@ -1,6 +1,8 @@
 
 // ok, yep! go on from finding the coords for boxes and printing...
 
+// g++ $(pkg-config --cflags --libs opencv) opencv_test.cc -o opencv_test && ./opencv_test
+
 #include "opencv2/opencv.hpp"
 
 std::vector<cv::Rect> detectLetters(cv::Mat img)
@@ -29,7 +31,7 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 int main ( int argc,char** argv )
 {
     //Read
-  cv::Mat img1=cv::imread("./pics/tj2.jpg");
+    cv::Mat img1=cv::imread("./pics/tj2.jpg");
     // cv::Mat img2=cv::imread("side_2.jpg");
 
     //Detect
@@ -39,13 +41,26 @@ int main ( int argc,char** argv )
 
     //Display
 
-    for(int i=0; i< letterBBoxes1.size(); i++)
-        cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+    for( int i=0; i< letterBBoxes1.size(); i++ ){
+
+      printf(
+             "rect x: %d, y: %d, w: %d, h: %d\n",
+              letterBBoxes1[i].x, letterBBoxes1[i].y,
+              letterBBoxes1[i].width, letterBBoxes1[i].height
+      );
+
+      cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+    }
+
     cv::imwrite( "imgOut1.jpg", img1);
+    // cv::namedWindow("Display Image", cv::WINDOW_NORMAL );
+    // cv::imshow("Display Image", img1);
 
     // for(int i=0; i< letterBBoxes2.size(); i++)
     //     cv::rectangle(img2,letterBBoxes2[i],cv::Scalar(0,255,0),3,8,0);
     // cv::imwrite( "imgOut2.jpg", img2);
+
+    cv::waitKey(0);
 
     return 0;
 }

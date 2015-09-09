@@ -5,6 +5,9 @@ logs
 # Info
 *.info
 
+# cmake cache = g++, c++ compiler/project stuff
+CMakeCache.txt
+
 # Runtime data
 pids
 *.pid
