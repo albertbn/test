@@ -4,7 +4,7 @@
 // g++ $(pkg-config --cflags --libs opencv) opencv_test.cc -o opencv_test && ./opencv_test
 
 #include "opencv2/opencv.hpp"
-
+// credits: http://stackoverflow.com/questions/23506105/extracting-text-opencv
 std::vector<cv::Rect> detectLetters(cv::Mat img)
 {
     std::vector<cv::Rect> boundRect;
