@@ -1,0 +1,1 @@
+/Users/abentov/test/ocr/CMakeFiles/opencv_test.dir

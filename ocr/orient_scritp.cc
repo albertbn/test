@@ -1,4 +1,7 @@
 
+// compile
+// g++ -o orient_scritp orient_scritp.cc -llept -ltesseract && ./orient_scritp
+
 // this folk is in c++, yep!
 
 // Fred Weinhaus image ready
