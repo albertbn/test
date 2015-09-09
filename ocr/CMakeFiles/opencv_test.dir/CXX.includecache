@@ -7,10 +7,8 @@
 #IncludeRegexTransform: 
 
 /Users/abentov/test/ocr/opencv_test.cc
-stdio.h
--
 opencv2/opencv.hpp
--
+/Users/abentov/test/ocr/opencv2/opencv.hpp
 
 /usr/local/include/opencv2/calib3d/calib3d.hpp
 opencv2/core/core.hpp
