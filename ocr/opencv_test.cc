@@ -1,5 +1,5 @@
 
-// ok, yep! go on from finding the coords for boxes and printing...
+// DONE :: ok, yep! go on from finding the coords for boxes and printing...
 
 // g++ $(pkg-config --cflags --libs opencv) opencv_test.cc -o opencv_test && ./opencv_test
 
@@ -44,7 +44,7 @@ int main ( int argc,char** argv )
     int tl[2]={-1,-1}, br[2]={-1,-1};
     // tr[2]={-1,-1}, bl[2]={-1,-1}, ;
 
-    for( int i=0; i< letterBBoxes1.size(); i++ ){
+    for ( int i=0; i< letterBBoxes1.size(); i++ ) {
 
       // top left x - smallest
       if(tl[0]<0 || tl[0]>letterBBoxes1[i].x) tl[0]=letterBBoxes1[i].x;
@@ -72,15 +72,23 @@ int main ( int argc,char** argv )
               letterBBoxes1[i].width, letterBBoxes1[i].height
       );
 
-      cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+      // cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
-    printf("ok man, should have got the rect coords for whole receipt, lets see: \ntl: %d, %d\nbr: %d, %d\n",
+    cv::Point p_tl(tl[0],tl[1]);
+    cv::Point p_br(br[0],br[1]);
+
+    cv::Rect rect_out(p_tl, p_br);
+    // cv::rectangle ( img1, rect_out, cv::Scalar(0,255,0) ,3, 8, 0 );
+
+    printf("ok man, should have got (and drawn?) the rect coords for whole receipt, lets see: \ntl: %d, %d\nbr: %d, %d\n",
            tl[0],tl[1],
            // tr[0],tr[1],
            // bl[0],bl[1],
            br[0],br[1]
     );
+
+    img1 = img1(rect_out);
 
     cv::imwrite( "imgOut1.jpg", img1);
     // cv::namedWindow("Display Image", cv::WINDOW_NORMAL );
