@@ -52,14 +52,14 @@ int main ( int argc,char** argv )
       if(tl[1]<0 || tl[1]>letterBBoxes1[i].y) tl[1]=letterBBoxes1[i].y;
 
       // top righ x - largest
-      if(tr[0]<0 || tr[0]<(letterBBoxes1[i].x+letterBBoxes1[i].width)) tr[0]=(letterBBoxes1[i].x+letterBBoxes1[i].width);
+      // if(tr[0]<0 || tr[0]<(letterBBoxes1[i].x+letterBBoxes1[i].width)) tr[0]=(letterBBoxes1[i].x+letterBBoxes1[i].width);
       // top right y - smallest
-      if(tr[1]<0 || tr[1]>letterBBoxes1[i].y) tr[1]=letterBBoxes1[i].y;
+      // if(tr[1]<0 || tr[1]>letterBBoxes1[i].y) tr[1]=letterBBoxes1[i].y;
 
       // bottom left x - smallest
-      if(bl[0]<0 || bl[0]>letterBBoxes1[i].x) bl[0]=letterBBoxes1[i].x;
+      // if(bl[0]<0 || bl[0]>letterBBoxes1[i].x) bl[0]=letterBBoxes1[i].x;
       // bottom left y - largest
-      if(bl[1]<0 || bl[1]<(letterBBoxes1[i].y+letterBBoxes1[i].height)) bl[1]=(letterBBoxes1[i].y+letterBBoxes1[i].height);
+      // if(bl[1]<0 || bl[1]<(letterBBoxes1[i].y+letterBBoxes1[i].height)) bl[1]=(letterBBoxes1[i].y+letterBBoxes1[i].height);
 
       // bottom righ x - largest
       if(br[0]<0 || br[0]<(letterBBoxes1[i].x+letterBBoxes1[i].width)) br[0]=(letterBBoxes1[i].x+letterBBoxes1[i].width);
@@ -75,10 +75,10 @@ int main ( int argc,char** argv )
       cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
-    printf("ok man, should have got the rect coords for whole receipt, lets see: \ntl: %d, %d\n  \ntr: %d, %d\n \nbl: %d, %d\n \nbr: %d, %d\n",
+    printf("ok man, should have got the rect coords for whole receipt, lets see: \ntl: %d, %d\nbr: %d, %d\n",
            tl[0],tl[1],
-           tr[0],tr[1],
-           bl[0],bl[1],
+           // tr[0],tr[1],
+           // bl[0],bl[1],
            br[0],br[1]
     );
 
