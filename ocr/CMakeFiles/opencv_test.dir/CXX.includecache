@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/Users/albert/test/ocr/opencv_test.cc
+/Users/abentov/test/ocr/opencv_test.cc
 opencv2/opencv.hpp
-/Users/albert/test/ocr/opencv2/opencv.hpp
+/Users/abentov/test/ocr/opencv2/opencv.hpp
 
 /usr/local/include/opencv2/calib3d/calib3d.hpp
 opencv2/core/core.hpp

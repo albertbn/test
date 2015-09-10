@@ -48,10 +48,10 @@ RM = /usr/local/Cellar/cmake/3.3.1/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/albert/test/ocr
+CMAKE_SOURCE_DIR = /Users/abentov/test/ocr
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/albert/test/ocr
+CMAKE_BINARY_DIR = /Users/abentov/test/ocr
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/albert/test/ocr/CMakeFiles /Users/albert/test/ocr/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/abentov/test/ocr/CMakeFiles /Users/abentov/test/ocr/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/albert/test/ocr/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/abentov/test/ocr/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

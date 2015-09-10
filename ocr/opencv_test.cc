@@ -41,7 +41,8 @@ int main ( int argc,char** argv )
 
     //Display
 
-    int tl[2]={-1,-1}, tr[2]={-1,-1}, bl[2]={-1,-1}, br[2]={-1,-1};
+    int tl[2]={-1,-1}, br[2]={-1,-1};
+    // tr[2]={-1,-1}, bl[2]={-1,-1}, ;
 
     for( int i=0; i< letterBBoxes1.size(); i++ ){
 
