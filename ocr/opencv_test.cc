@@ -41,7 +41,29 @@ int main ( int argc,char** argv )
 
     //Display
 
+    int tl[2]={-1,-1}, tr[2]={-1,-1}, bl[2]={-1,-1}, br[2]={-1,-1};
+
     for( int i=0; i< letterBBoxes1.size(); i++ ){
+
+      // top left x - smallest
+      if(tl[0]<0 || tl[0]>letterBBoxes1[i].x) tl[0]=letterBBoxes1[i].x;
+      // top left y - smallest
+      if(tl[1]<0 || tl[1]>letterBBoxes1[i].y) tl[1]=letterBBoxes1[i].y;
+
+      // top righ x - largest
+      if(tr[0]<0 || tr[0]<(letterBBoxes1[i].x+letterBBoxes1[i].width)) tr[0]=(letterBBoxes1[i].x+letterBBoxes1[i].width);
+      // top right y - smallest
+      if(tr[1]<0 || tr[1]>letterBBoxes1[i].y) tr[1]=letterBBoxes1[i].y;
+
+      // bottom left x - smallest
+      if(bl[0]<0 || bl[0]>letterBBoxes1[i].x) bl[0]=letterBBoxes1[i].x;
+      // bottom left y - largest
+      if(bl[1]<0 || bl[1]<(letterBBoxes1[i].y+letterBBoxes1[i].height)) bl[1]=(letterBBoxes1[i].y+letterBBoxes1[i].height);
+
+      // bottom righ x - largest
+      if(br[0]<0 || br[0]<(letterBBoxes1[i].x+letterBBoxes1[i].width)) br[0]=(letterBBoxes1[i].x+letterBBoxes1[i].width);
+      // bottom right y - largest
+      if(br[1]<0 || br[1]<(letterBBoxes1[i].y+letterBBoxes1[i].height)) br[1]=(letterBBoxes1[i].y+letterBBoxes1[i].height);
 
       printf(
              "rect x: %d, y: %d, w: %d, h: %d\n",
@@ -52,6 +74,13 @@ int main ( int argc,char** argv )
       cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
+    printf("ok man, should have got the rect coords for whole receipt, lets see: \ntl: %d, %d\n  \ntr: %d, %d\n \nbl: %d, %d\n \nbr: %d, %d\n",
+           tl[0],tl[1],
+           tr[0],tr[1],
+           bl[0],bl[1],
+           br[0],br[1]
+    );
+
     cv::imwrite( "imgOut1.jpg", img1);
     // cv::namedWindow("Display Image", cv::WINDOW_NORMAL );
     // cv::imshow("Display Image", img1);
@@ -60,7 +89,7 @@ int main ( int argc,char** argv )
     //     cv::rectangle(img2,letterBBoxes2[i],cv::Scalar(0,255,0),3,8,0);
     // cv::imwrite( "imgOut2.jpg", img2);
 
-    cv::waitKey(0);
+    // cv::waitKey(0);
 
     return 0;
 }
