@@ -6,7 +6,7 @@
 
 // Fred Weinhaus image ready
 // http://www.fmwconcepts.com/imagemagick/textcleaner/index.php
-// ./textcleaner -g -e none -f 100 -o 3 pics/tj2.jpg ./img_pre/tj2.jpg
+// ./textcleaner -g -e none -f 100 -o 3 pics/heb.jpg ./img_pre/heb.jpg
 
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
@@ -17,7 +17,7 @@
 int main()
 {
   // const char* inputfile = "./img_pre/heb2.jpg";
-  const char* inputfile = "./imgOut1.jpg";
+  const char* inputfile = "./img_pre/heb.ocv.jpg";
   char *outText = NULL;
   // const char* inputfile = "./pics/tj2.jpg";
   tesseract::Orientation orientation;
