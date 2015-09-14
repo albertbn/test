@@ -17,9 +17,9 @@
 int main()
 {
   // const char* inputfile = "./img_pre/heb2.jpg";
-  const char* inputfile = "./img_pre/heb.ocv.jpg";
+  // const char* inputfile = "./img_pre/heb.ocv.jpg";
   char *outText = NULL;
-  // const char* inputfile = "./pics/tj2.jpg";
+  const char* inputfile = "./pics/heb.jpg";
   tesseract::Orientation orientation;
   tesseract::WritingDirection direction;
   tesseract::TextlineOrder order;
