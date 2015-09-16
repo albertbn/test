@@ -1,6 +1,6 @@
 
 var sax = require("sax"),
-  strict = true, // set to false for html-mode
+  strict = false, // set to false for html-mode
     //parser = sax.parser(strict),
     fs = require('fs');
 

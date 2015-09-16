@@ -1,9 +1,10 @@
 
-var xmlfile = './test.xml';
+// var xmlfile = './test.xml';
+var xmlfile = './gpf_70k.xml';
 var strict = true;
 
 var sax = require("sax")
-, printer = sax.createStream(strict, {lowercasetags:true, trim:true})
+, printer = sax.createStream(strict, { lowercasetags:true, trim:true, strictEntities:true })
 , fs = require("fs");
 
 function entity (str) {
@@ -20,6 +21,19 @@ printer.indent = function () {
     }
   }
 }
+
+// credits: http://stackoverflow.com/questions/7918868/how-to-escape-xml-entities-in-javascript
+
+if (!String.prototype.encodeHTML) {
+  String.prototype.encodeHTML = function () {
+    return this.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;')
+               .replace(/"/g, '&quot;')
+               .replace(/'/g, '&apos;');
+  };
+}
+
 
 printer.on("opentag", function (tag) {
 
@@ -38,7 +52,7 @@ printer.on("text", ontext);
 //printer.on("doctype", ontext);
 function ontext (text) {
   this.indent();
-  print(text);
+  print(text.encodeHTML());
 }
 
 printer.on("closetag", function (tag) {
