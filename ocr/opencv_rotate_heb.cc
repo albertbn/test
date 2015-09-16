@@ -30,10 +30,12 @@ void deskew(const char* filename, double angle)
   cv::Mat cropped;
   cv::getRectSubPix(rotated, box_size, box.center, cropped);
 
-  cv::imshow("Original", img);
-  cv::imshow("Rotated", rotated);
-  cv::imshow("Cropped", cropped);
-  cv::waitKey(0);
+  // cv::imshow("Original", img);
+  // cv::imshow("Rotated", rotated);
+  // cv::imshow("Cropped", cropped);
+  // cv::waitKey(0);
+  cv::bitwise_not(cropped, cropped);
+  cv::imwrite("./img_pre/heb_rot.jpg", cropped);
 }
 
 int main ( int argc, char** argv )
@@ -42,7 +44,8 @@ int main ( int argc, char** argv )
   // deskew( "./img_pre/heb.jpg", -11.3953 );
   // deskew( "./img_pre/heb.jpg", 11.3953 );
   // deskew( "./img_pre/heb.jpg", 292.0 ); /*this is working???*/
-  deskew( "./img_pre/heb.jpg", 258.6047 ); /*this is working???*/
+  deskew( "./pics/heb.jpg", 289.95 ); /*this is working???*/
+  // deskew( "./img_pre/heb.jpg", 248.6047 ); /*this is working???*/
   // deskew( "./img_pre/heb.jpg", 348.6 );
 
   return 0;

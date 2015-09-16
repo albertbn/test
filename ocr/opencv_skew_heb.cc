@@ -10,7 +10,11 @@ void compute_skew(const char* filename)
   cv::Mat src = cv::imread(filename, 0);
   cv::Size size = src.size();
 
+  cv::imwrite( "./img_pre/heb_0.jpg", src);
+
   cv::bitwise_not(src, src);
+
+  cv::imwrite( "./img_pre/heb_1.jpg", src);
 
   std::vector<cv::Vec4i> lines;
 

@@ -17,9 +17,10 @@
 int main()
 {
   // const char* inputfile = "./img_pre/heb2.jpg";
-  // const char* inputfile = "./img_pre/heb.ocv.jpg";
+  // const char* inputfile = "./img_pre/heb_rot.jpg";
+  const char* inputfile = "./img_pre/heb_rot_tc.jpg";
+  // const char* inputfile = "./pics/heb.jpg";
   char *outText = NULL;
-  const char* inputfile = "./pics/heb.jpg";
   tesseract::Orientation orientation;
   tesseract::WritingDirection direction;
   tesseract::TextlineOrder order;
@@ -71,24 +72,24 @@ int main()
          "Deskew angle: %.4f\n",
          orientation, direction, order, deskew_angle);
 
-  if( orientation == 3 ){
+  // if( orientation == 3 ){
 
-    image = pixRotate90( image, 1 );
-    printf("ok, orientations is 3\n=======\n");
+ //    image = pixRotate90( image, 1 );
+ //    printf("ok, orientations is 3\n=======\n");
 
-    api->SetImage(image);
+ //    api->SetImage(image);
 
-    api->Recognize(0);
-    it =  api->AnalyseLayout();
-    it->Orientation(&orientation, &direction, &order, &deskew_angle);
- }
+ //    api->Recognize(0);
+ //    it =  api->AnalyseLayout();
+ //    it->Orientation(&orientation, &direction, &order, &deskew_angle);
+ // }
 
-  if( deskew_angle !=0  ){
-    int redsearch = 2;
-    printf( "making pixDeskew... %d\n", redsearch );
-    image = pixDeskew(image,2);
-    api->SetImage(image);
-  }
+ //  if( deskew_angle !=0  ){
+ //    int redsearch = 2;
+ //    printf( "making pixDeskew... %d\n", redsearch );
+ //    image = pixDeskew(image,2);
+ //    api->SetImage(image);
+ //  }
 
   api->SetPageSegMode(tesseract::PSM_AUTO);
 

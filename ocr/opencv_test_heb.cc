@@ -31,8 +31,9 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 int main ( int argc,char** argv )
 {
     //Read
-    // cv::Mat img1=cv::imread("./img_pre/heb.jpg");
-    cv::Mat img1=cv::imread("./img_pre/heb2.jpg");
+    // cv::Mat img1=cv::imread("./pics/heb.jpg");
+    // cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
+    cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
 
     //Detect
     std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
@@ -73,7 +74,7 @@ int main ( int argc,char** argv )
       );
 
       // DEBUG - un-mark for debug
-      // cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+      cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
     cv::Point p_tl(tl[0],tl[1]);
@@ -82,7 +83,7 @@ int main ( int argc,char** argv )
     cv::Rect rect_out(p_tl, p_br);
 
     // DEBUG - un-mark for debug
-    // cv::rectangle ( img1, rect_out, cv::Scalar(0,255,0) ,3, 8, 0 );
+    cv::rectangle ( img1, rect_out, cv::Scalar(0,255,0) ,3, 8, 0 );
 
     printf("ok man, should have got (and drawn?) the rect coords for whole receipt, lets see: \ntl: %d, %d\nbr: %d, %d\n",
            tl[0],tl[1],
@@ -93,8 +94,8 @@ int main ( int argc,char** argv )
 
     img1 = img1(rect_out);
 
-    // cv::imwrite( "./img_pre/heb.ocv.jpg", img1);
-    cv::imwrite( "./img_pre/heb2.ocv.jpg", img1);
+    cv::imwrite( "./img_pre/heb.ocv.jpg", img1);
+    // cv::imwrite( "./img_pre/heb_rot_cropped.jpg", img1);
     // cv::namedWindow("Display Image", cv::WINDOW_NORMAL );
     // cv::imshow("Display Image", img1);
 
