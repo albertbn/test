@@ -7,13 +7,27 @@
 // credits: http://stackoverflow.com/questions/23506105/extracting-text-opencv
 std::vector<cv::Rect> detectLetters(cv::Mat img)
 {
+    // cv::namedWindow("Display Image", cv::WINDOW_NORMAL );
+
     std::vector<cv::Rect> boundRect;
     cv::Mat img_gray, img_sobel, img_threshold, element;
     cvtColor(img, img_gray, CV_BGR2GRAY);
+    // cv::imshow("Display Image", img_gray); cv::waitKey(0);
+    cv::imwrite( "./img_pre/0.jpg", img_gray);
+
     cv::Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
+    // cv::imshow("Display Image", img_sobel); cv::waitKey(0);
+    cv::imwrite( "./img_pre/1.jpg", img_sobel);
+
     cv::threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
+    // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
+    cv::imwrite( "./img_pre/2.jpg", img_threshold);
+
     element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
     cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
+    // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
+    cv::imwrite( "./img_pre/3.jpg", img_threshold);
+
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
     std::vector<std::vector<cv::Point> > contours_poly( contours.size() );
