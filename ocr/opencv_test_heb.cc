@@ -47,7 +47,7 @@ int main ( int argc,char** argv )
     //Read
     // cv::Mat img1=cv::imread("./pics/heb.jpg");
     // cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
-    cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
+    cv::Mat img1=cv::imread("./img_pre/c0.jpg");
 
     //Detect
     std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
