@@ -1,4 +1,6 @@
 
+// this detects receipt borders by letters...
+
 // DONE :: ok, yep! go on from finding the coords for boxes and printing...
 
 // g++ $(pkg-config --cflags --libs opencv) opencv_test_heb.cc -o opencv_test_heb && ./opencv_test_heb
@@ -17,16 +19,16 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 
     cv::Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
     // cv::imshow("Display Image", img_sobel); cv::waitKey(0);
-    cv::imwrite( "./img_pre/1.jpg", img_sobel);
+    // cv::imwrite( "./img_pre/1.jpg", img_sobel);
 
     cv::threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
     // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
-    cv::imwrite( "./img_pre/2.jpg", img_threshold);
+    // cv::imwrite( "./img_pre/2.jpg", img_threshold);
 
     element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
     cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
     // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
-    cv::imwrite( "./img_pre/3.jpg", img_threshold);
+    // cv::imwrite( "./img_pre/3.jpg", img_threshold);
 
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
@@ -46,8 +48,9 @@ int main ( int argc,char** argv )
 {
     //Read
     // cv::Mat img1=cv::imread("./pics/heb.jpg");
-    // cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
-    cv::Mat img1=cv::imread("./img_pre/c0.jpg");
+    cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
+    // cv::Mat img1=cv::imread("./img_pre/heb_rot_tc.jpg");
+    // cv::Mat img1=cv::imread("./img_pre/c0.jpg");
 
     //Detect
     std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
@@ -88,7 +91,7 @@ int main ( int argc,char** argv )
       );
 
       // DEBUG - un-mark for debug
-      cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+      // cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
     cv::Point p_tl(tl[0],tl[1]);
@@ -97,7 +100,7 @@ int main ( int argc,char** argv )
     cv::Rect rect_out(p_tl, p_br);
 
     // DEBUG - un-mark for debug
-    cv::rectangle ( img1, rect_out, cv::Scalar(0,255,0) ,3, 8, 0 );
+    // cv::rectangle ( img1, rect_out, cv::Scalar(0,255,0) ,3, 8, 0 );
 
     printf("ok man, should have got (and drawn?) the rect coords for whole receipt, lets see: \ntl: %d, %d\nbr: %d, %d\n",
            tl[0],tl[1],

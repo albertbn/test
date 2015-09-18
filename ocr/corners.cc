@@ -1,4 +1,7 @@
 
+// this outputs a black with a 3 of 4 lines of the tilted invoice - from stack, the python
+// translation to c++...
+
 // g++ $(pkg-config --cflags --libs opencv) corners.cc -o corners && ./corners
 
 #include "opencv2/opencv.hpp"
