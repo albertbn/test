@@ -44,7 +44,8 @@ int main ( int argc, char** argv )
   // deskew( "./img_pre/heb.jpg", -11.3953 );
   // deskew( "./img_pre/heb.jpg", 11.3953 );
   // deskew( "./img_pre/heb.jpg", 292.0 ); /*this is working???*/
-  deskew( "./pics/heb.jpg", 289.95 ); /*this is working???*/
+  deskew( "./pics/heb.jpg", -69.83 );
+  // deskew( "./pics/heb.jpg", 289.95 ); /*this is working???*/
   // deskew( "./img_pre/heb.jpg", 248.6047 ); /*this is working???*/
   // deskew( "./img_pre/heb.jpg", 348.6 );
 
