@@ -10,11 +10,11 @@ void compute_skew(const char* filename)
   cv::Mat src = cv::imread(filename, 0);
   cv::Size size = src.size();
 
-  cv::imwrite( "./img_pre/heb_0.jpg", src);
+  // cv::imwrite( "./img_pre/heb_0.jpg", src);
 
   cv::bitwise_not(src, src);
 
-  cv::imwrite( "./img_pre/heb_1.jpg", src);
+  // cv::imwrite( "./img_pre/heb_1.jpg", src);
 
   std::vector<cv::Vec4i> lines;
 
@@ -54,7 +54,8 @@ void compute_skew(const char* filename)
 int main ( int argc, char** argv )
 {
   // compute_skew( "./pics/heb.jpg" ); /*don't - use origininal image - use grayscaled/threholded + reduce size...*/
-  compute_skew( "./img_pre/heb.jpg" );
+  // compute_skew( "./img_pre/heb.jpg" );
+  compute_skew( "./pics/heb2.jpg" );
 
   return 0;
 }

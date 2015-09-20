@@ -1,6 +1,7 @@
 
 // compile
 // g++ $(pkg-config --cflags --libs opencv) hough.cc -o hough && ./hough ./pics/heb.jpg
+// g++ $(pkg-config --cflags --libs opencv) hough.cc -o hough && ./hough ./pics/heb2.jpg
 
 // credits: http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html
 
@@ -29,13 +30,17 @@ float get_line_len(Vec4i points){
   return sqrt(a*a + b*b);
 }
 
+// in radians...
+// nop - in degrees?
 float get_line_angle(Vec4i points){
 
   // use Pythagorean Theorem
   int a = points[3] -  points[1];
   int b = points[2] -  points[0];
 
+  // the working buggy ???
   return atan2(a*a, b*b) *  180 / CV_PI;
+  // return atan2(a, b);
 }
 
 int main(int argc, char** argv)
@@ -76,20 +81,32 @@ int main(int argc, char** argv)
 
   std::cout << "No. of lines: " << lines.size() << std::endl;
 
-  float angle = 0., angle2=0.;
+  float angle = 0., angle2=0., line_len = 0.;
+  int angle_count = 0;
   for( size_t i = 0; i < lines.size(); i++ )
   {
     Vec4i l = lines[i];
+    line_len = get_line_len(l);
+
+    if(line_len<101) continue;
+
     line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 3, CV_AA);
 
     angle2 = get_line_angle(l);
+    // angle2 < 0 && (angle2+=CV_PI*2);
     angle+=angle2;
+    ++angle_count;
 
-    std::cout << "line length is: " << get_line_len(l) << std::endl;
-    std::cout << "line angle is: " << angle2 << std::endl;
+    std::cout << "line length is: " << line_len << std::endl;
+    // std::cout << "line angle is: " << angle2*180/CV_PI << ", " << angle2  << std::endl;
+    std::cout << "line angle is: " << angle2  << std::endl;
   }
 
-  std::cout << "rotation is: " << angle/lines.size() << std::endl;
+  // angle /= (angle_count/2);
+  angle /= angle_count;
+  // angle *= 180/CV_PI;
+
+  std::cout << "rotation is: " << angle  << std::endl;
 
  #endif
  // imshow("source", src);
