@@ -19,7 +19,7 @@ int main()
   // const char* inputfile = "./img_pre/heb2.jpg";
   // const char* inputfile = "./img_pre/heb_rot.jpg";
   // const char* inputfile = "./img_pre/heb_rot_tc.jpg";
-  const char* inputfile = "./img_pre/heb.ocv.jpg";
+  const char* inputfile = "./img_pre/heb.ocv.jpg"; /*working*/
   // const char* inputfile = "./pics/heb.jpg";
   char *outText = NULL;
   tesseract::Orientation orientation;

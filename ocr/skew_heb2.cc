@@ -1,7 +1,5 @@
 
-// compile
-// g++ $(pkg-config --cflags --libs opencv) hough.cc -o hough && ./hough ./pics/heb.jpg
-// g++ $(pkg-config --cflags --libs opencv) hough.cc -o hough && ./hough ./pics/heb2.jpg
+// g++ $(pkg-config --cflags --libs opencv) skew_heb2.cc -o skew_heb2 && ./skew_heb2 ./pics/heb.jpg
 
 // credits: http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html
 
@@ -34,13 +32,12 @@ float get_line_len(Vec4i points){
 // nop - in degrees?
 float get_line_angle(Vec4i points){
 
-  // use Pythagorean Theorem
   int a = points[3] -  points[1];
   int b = points[2] -  points[0];
 
   // the working buggy ???
-  return atan2(a*a, b*b) *  180 / CV_PI;
-  // return atan2(a, b);
+  // return atan2(a*a, b*b) *  180 / CV_PI;
+  return atan2(a, b);
 }
 
 int main(int argc, char** argv)
@@ -57,29 +54,18 @@ int main(int argc, char** argv)
      return -1;
  }
 
+ // imwrite("./img_pre/hough.jpg", src);
+ // return 0;
+
  Mat dst, cdst;
- Canny(src, dst, 50, 200, 3);
+ Canny(src, dst, 150, 450, 3);
+ // blur(dst, dst, Size(5,5));
+
  cvtColor(dst, cdst, CV_GRAY2BGR);
 
- #if 0
-  vector<Vec2f> lines;
-  HoughLines(dst, lines, 1, CV_PI/180, 100, 0, 0 );
 
-  for( size_t i = 0; i < lines.size(); i++ )
-  {
-     float rho = lines[i][0], theta = lines[i][1];
-     Point pt1, pt2;
-     double a = cos(theta), b = sin(theta);
-     double x0 = a*rho, y0 = b*rho;
-     pt1.x = cvRound(x0 + 1000*(-b));
-     pt1.y = cvRound(y0 + 1000*(a));
-     pt2.x = cvRound(x0 - 1000*(-b));
-     pt2.y = cvRound(y0 - 1000*(a));
-     line( cdst, pt1, pt2, Scalar(0,0,255), 3, CV_AA);
-  }
- #else
   vector<Vec4i> lines;
-  HoughLinesP(dst, lines, 1, CV_PI/180, 100, 750, 100 );
+  HoughLinesP(dst, lines, 1, CV_PI/180, 100, size.width/5.7f, 100 );
 
   std::cout << "No. of lines: " << lines.size() << std::endl;
 
@@ -100,17 +86,16 @@ int main(int argc, char** argv)
     ++angle_count;
 
     std::cout << "line length is: " << line_len << std::endl;
-    // std::cout << "line angle is: " << angle2*180/CV_PI << ", " << angle2  << std::endl;
-    std::cout << "line angle is: " << angle2  << std::endl;
+    std::cout << "line angle is: " << angle2*180/CV_PI << ", " << angle2  << std::endl;
+    // std::cout << "line angle is: " << angle2  << std::endl;
   }
 
   // angle /= (angle_count/2);
   angle /= angle_count;
-  // angle *= 180/CV_PI;
+  angle *= 180/CV_PI;
 
   std::cout << "rotation is: " << angle  << std::endl;
 
- #endif
  // imshow("source", src);
  // imshow("detected lines", cdst);
   imwrite("./img_pre/hough.jpg", cdst);
