@@ -20,6 +20,7 @@ int main()
   // const char* inputfile = "./img_pre/heb_rot.jpg";
   // const char* inputfile = "./img_pre/heb_rot_tc.jpg";
   const char* inputfile = "./img_pre/heb.ocv.jpg"; /*working*/
+  // const char* inputfile = "./img_pre/heb.ocv.working.jpg"; /*working*/
   // const char* inputfile = "./pics/heb.jpg";
   char *outText = NULL;
   tesseract::Orientation orientation;
@@ -40,7 +41,7 @@ int main()
   // vars_vec.push_back("load_unambig_dawg");
   // vars_vec.push_back("load_bigram_dawg");
   // vars_vec.push_back("load_fixed_length_dawgs");
-  //vars_vec.push_back("user_patterns_suffix");
+  // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
   // vars_values.push_back("F");
@@ -50,7 +51,7 @@ int main()
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
-  //vars_values.push_back("pharma-words");
+  // vars_values.push_back("pharma-words");
 
   // api->Init( NULL, "heb" );
   // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
@@ -60,9 +61,10 @@ int main()
   // api->SetVariable("tessedit_char_whitelist",
   //                  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   //                  "0123456789,®");
-  // api->SetVariable("language_model_penalty_non_dict_word", "0");
+  api->SetVariable("language_model_penalty_non_dict_word", "0");
 
   api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
+  // api->SetPageSegMode(tesseract::PSM_SPARSE_TEXT_OSD);
   api->SetImage(image);
   api->Recognize(0);
 
@@ -85,14 +87,15 @@ int main()
     it->Orientation(&orientation, &direction, &order, &deskew_angle);
  }
 
-  if( deskew_angle !=0  ){
-    int redsearch = 2;
-    printf( "making pixDeskew... %d\n", redsearch );
-    image = pixDeskew(image,2);
-    api->SetImage(image);
-  }
+  // if( deskew_angle !=0  ){
+  //   int redsearch = 2;
+  //   printf( "making pixDeskew... %d\n", redsearch );
+  //   image = pixDeskew(image,2);
+  //   api->SetImage(image);
+  // }
 
   api->SetPageSegMode(tesseract::PSM_AUTO);
+  // api->SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
 
 
   // Check if change of init parameters was successful

@@ -58,14 +58,14 @@ int main(int argc, char** argv)
  // return 0;
 
  Mat dst, cdst;
- Canny(src, dst, 150, 450, 3);
+ Canny(src, dst, 50, 120, 3);
  // blur(dst, dst, Size(5,5));
 
  cvtColor(dst, cdst, CV_GRAY2BGR);
 
 
   vector<Vec4i> lines;
-  HoughLinesP(dst, lines, 1, CV_PI/180, 100, size.width/5.7f, 100 );
+  HoughLinesP(dst, lines, 1, CV_PI/180, 100, size.width/5.7f, 50 );
 
   std::cout << "No. of lines: " << lines.size() << std::endl;
 
