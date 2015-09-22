@@ -15,11 +15,52 @@ using namespace cv;
 using namespace std;
 
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-corners-of-paper-sheet-in-photo
+
+/**
+ * Helper function to find a cosine of angle between vectors
+ * from pt0->pt1 and pt0->pt2
+ https://github.com/bsdnoobz/opencv-code/blob/master/shape-detect.cpp
+ http://opencv-code.com/tutorials/detecting-simple-shapes-in-an-image/
+ */
+static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
+{
+	double dx1 = pt1.x - pt0.x;
+	double dy1 = pt1.y - pt0.y;
+	double dx2 = pt2.x - pt0.x;
+	double dy2 = pt2.y - pt0.y;
+	return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+}
+
+int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
+
+  // Number of vertices of polygonal curve
+  int vtc = approx.size();
+
+  // Get the degree (in cosines) of all corners
+  std::vector<double> cos;
+  double ang, ang_deg;
+  for (int j = 2; j < vtc+1; j++) {
+    ang = angle(approx[j%vtc], approx[j-2], approx[j-1]);
+    cos.push_back(ang);
+
+    ang_deg = ang*180/CV_PI;
+
+    if(ang_deg >-10 && ang_deg<10){
+      // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
+      cv::circle( drawing, approx[j-1], 50,  cv::Scalar(0,0,255) );
+    }
+
+    // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
+  }
+
+  return 0;
+}
+
 void corners()
 {
    // Mat mat = imread( "./pics/heb.jpg");
-   Mat mat = imread( "./pics/heb_new.jpg");
-   // Mat mat = imread( "./pics/heb2.jpg");
+   // Mat mat = imread( "./pics/heb_new.jpg");
+   Mat mat = imread( "./pics/heb2.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
    cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
@@ -63,11 +104,14 @@ void corners()
    std::cout << "contoursArea count (this is where the animal stinks): " <<  contoursArea.size()  << std::endl;
 
    std::vector<std::vector<cv::Point> > contoursDraw (contoursCleaned.size());
-   // Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
+   Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
    for (int i=0; i < contoursArea.size(); i++){
      cv::approxPolyDP(Mat(contoursArea[i]), contoursDraw[i], 40, true);
 
      std::cout << "draw lines count: " << contoursDraw[i].size() << std::endl;
+
+     // (i==4 || i==8) && get_angles( contoursDraw[i], drawing );
+     get_angles( contoursDraw[i], drawing );
 
      // std::vector<std::vector<cv::Point> > ctemp;
      // ctemp.push_back(contoursDraw[i]);
@@ -76,7 +120,7 @@ void corners()
      // filename <<  "./img_pre/cor0" << i << ".jpg";
      // cv::imwrite( filename.str(), drawing);
    }
-   Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
+   // Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contoursDraw, -1, cv::Scalar(0,255,0),1);
 
    // namedWindow( "fock", CV_WINDOW_AUTOSIZE );
