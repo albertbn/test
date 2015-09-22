@@ -36,17 +36,23 @@ int get_longest_side_poly( std::vector<cv::Point> approx ){
 
   int len = approx.size();
 
-  float xs[len], ys[len], magns[len];
-  Mat plane = Mat_<float>();
+  Mat xs = Mat_<float>(approx.size(),CV_32F),
+    ys = Mat_<float>(approx.size(),CV_32F);
 
   for(int i=0; i<len; ++i){
-    xs[i] = approx[i].x;
-    ys[i] = approx[i].y;
-    plane.push_back(xs[i]);
+    xs.at<float>(i) = approx[i].x;
+    ys.at<float>(i) = approx[i].y;
   }
 
-  magnitude(plane, plane, plane);
-  return 0;
+  cv::Mat magns(xs.size(), xs.type());
+
+  magnitude(xs, ys, magns);
+  double min, max;
+  cv::Point min_loc, max_loc;
+  minMaxLoc ( magns, &min, &max, &min_loc, &max_loc );
+  std::cout << "min max magns are: " << min << ',' <<  max << ',' << max_loc << std::endl;
+
+  return 1;
 }
 
 int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
@@ -75,14 +81,16 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
     // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
   }
 
+  has_angle90 && get_longest_side_poly(approx);
+
   return 0;
 }
 
 void corners()
 {
-   // Mat mat = imread( "./pics/heb.jpg");
+   Mat mat = imread( "./pics/heb.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
-   Mat mat = imread( "./pics/heb2.jpg");
+   // Mat mat = imread( "./pics/heb2.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
    cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
