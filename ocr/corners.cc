@@ -5,6 +5,7 @@
 // g++ $(pkg-config --cflags --libs opencv) corners.cc -o corners && ./corners
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <math.h>
@@ -31,6 +32,23 @@ static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
 }
 
+int get_longest_side_poly( std::vector<cv::Point> approx ){
+
+  int len = approx.size();
+
+  float xs[len], ys[len], magns[len];
+  Mat plane = Mat_<float>();
+
+  for(int i=0; i<len; ++i){
+    xs[i] = approx[i].x;
+    ys[i] = approx[i].y;
+    plane.push_back(xs[i]);
+  }
+
+  magnitude(plane, plane, plane);
+  return 0;
+}
+
 int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   // Number of vertices of polygonal curve
@@ -39,7 +57,10 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
   // Get the degree (in cosines) of all corners
   std::vector<double> cos;
   double ang, ang_deg;
+  int has_angle90 = 0;
   for (int j = 2; j < vtc+1; j++) {
+
+    has_angle90 = 0;
     ang = angle(approx[j%vtc], approx[j-2], approx[j-1]);
     cos.push_back(ang);
 
@@ -48,6 +69,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
     if(ang_deg >-10 && ang_deg<10){
       // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
       cv::circle( drawing, approx[j-1], 50,  cv::Scalar(0,0,255) );
+      has_angle90 = 1;
     }
 
     // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
