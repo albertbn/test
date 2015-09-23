@@ -32,16 +32,17 @@ static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
 }
 
-int get_longest_side_poly( std::vector<cv::Point> approx ){
+// this is not what i need... i need just a simple diagonal - tl, br...
+int get_longest_side_poly_magn( std::vector<cv::Point> approx ){
 
   int len = approx.size();
 
-  Mat xs = Mat_<float>(approx.size(),CV_32F),
-    ys = Mat_<float>(approx.size(),CV_32F);
+  Mat xs = Mat_<double>(approx.size(),CV_32F),
+    ys = Mat_<double>(approx.size(),CV_32F);
 
   for(int i=0; i<len; ++i){
-    xs.at<float>(i) = approx[i].x;
-    ys.at<float>(i) = approx[i].y;
+    xs.at<double>(i) = approx[i].x;
+    ys.at<double>(i) = approx[i].y;
   }
 
   cv::Mat magns(xs.size(), xs.type());
@@ -55,42 +56,67 @@ int get_longest_side_poly( std::vector<cv::Point> approx ){
   return 1;
 }
 
+// get the diagonal of the bounding rect...
+double get_longest_side_poly( std::vector<cv::Point> approx ){
+
+  Rect rect = boundingRect(approx);
+
+  return sqrt(rect.width*rect.width + rect.height*rect.height );
+}
+
 int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   // Number of vertices of polygonal curve
   int vtc = approx.size();
 
   // Get the degree (in cosines) of all corners
-  std::vector<double> cos;
+  // std::vector<double> cos;
   double ang, ang_deg;
   int has_angle90 = 0;
+  std::vector<cv::Point> circles;
   for (int j = 2; j < vtc+1; j++) {
 
-    has_angle90 = 0;
     ang = angle(approx[j%vtc], approx[j-2], approx[j-1]);
-    cos.push_back(ang);
+    // cos.push_back(ang);
 
     ang_deg = ang*180/CV_PI;
 
     if(ang_deg >-10 && ang_deg<10){
       // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
-      cv::circle( drawing, approx[j-1], 50,  cv::Scalar(0,0,255) );
       has_angle90 = 1;
+      circles.push_back(approx[j-1]);
+      // std::cout << "drawing circles... "  << std::endl;
     }
 
     // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
   }
 
-  has_angle90 && get_longest_side_poly(approx);
+  double diag = 0;
+  has_angle90 && (diag = get_longest_side_poly ( circles ));
+
+  if(has_angle90){
+
+    std::cout << "diag is: " << diag << std::endl;
+
+    if(diag>100){
+      std::cout << "ok, drawing circles... " << std::endl;
+      int clen = circles.size();
+      for(int j=0; j<clen; ++j){
+
+        cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
+      }
+    }
+
+  }
 
   return 0;
 }
 
 void corners()
 {
-   Mat mat = imread( "./pics/heb.jpg");
+   // Mat mat = imread( "./pics/heb.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
-   // Mat mat = imread( "./pics/heb2.jpg");
+   Mat mat = imread( "./pics/heb2.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
    cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
