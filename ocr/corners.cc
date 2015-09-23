@@ -120,6 +120,7 @@ void corners()
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
    cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
+   // blur(mat, mat, Size(3,3));
    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(9,9));
    cv::Mat dilated;
    cv::dilate(mat, dilated, kernel);
