@@ -17,8 +17,8 @@ using namespace std;
 
 void longest_closed()
 {
-   Mat mat = imread( "./pics/heb.jpg");
-   // Mat mat = imread( "./pics/heb2.jpg");
+   // Mat mat = imread( "./pics/heb.jpg");
+   Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/pers.jpg");
    // Mat mat = imread( "./pics/heb.ocv.working.jpg");
@@ -47,22 +47,29 @@ void longest_closed()
 
    std::cout << "contours count: " <<  contours.size()  << std::endl;
 
+   // TODO - go on from checking if the >10000 is a single len
    double len;
    std::vector< std::vector<cv::Point> > contours_f1;
+   std::vector<std::vector<cv::Point> > contoursDraw (contours.size());
+   Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
    for (int i=0; i < contours.size(); i++){
+
+     cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
 
      len = cv::arcLength(contours[i], true);
 
      if(len>0){
-       std::cout << "closed line...: " << len << std::endl;
+       std::cout << "closed line len...: " << len << std::endl;
        contours_f1.push_back(contours[i]);
      }
    }
 
    Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
+   cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
 
    cv::imwrite( "./img_pre/long2.jpg", drawing);
+   cv::imwrite( "./img_pre/long3.jpg", poly);
 }
 
 int main ( int argc, char** argv )
