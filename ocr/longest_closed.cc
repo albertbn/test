@@ -18,21 +18,32 @@ using namespace std;
 void longest_closed()
 {
    Mat mat = imread( "./pics/heb.jpg");
+   // Mat mat = imread( "./pics/heb2.jpg");
+   // Mat mat = imread( "./pics/heb_new.jpg");
+   // Mat mat = imread( "./pics/pers.jpg");
+   // Mat mat = imread( "./pics/heb.ocv.working.jpg");
+   // Mat mat = imread( "./pics/tj.jpg");
+   // Mat mat = imread( "./pics/tj2.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
-   cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
-   // blur(mat, mat, Size(3,3));
-   cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(9,9));
+   // cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
+   // blur(mat, mat, Size(20,20));
+   cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(19,19));
    cv::Mat dilated;
    cv::dilate(mat, dilated, kernel);
+   blur(dilated, dilated, Size(10,10));
+
+   cv::imwrite( "./img_pre/long0.jpg", dilated );
 
    cv::Mat edges;
-   cv::Canny(dilated, edges, 100, 3);
+   cv::Canny(dilated, edges, 40, 1);
+   blur(edges, edges, Size(10,10));
 
-   cv::imwrite( "./img_pre/long0.jpg", edges);
+   cv::imwrite( "./img_pre/long1.jpg", edges);
 
    std::vector< std::vector<cv::Point> > contours;
-   cv::findContours(edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+   // cv::findContours(edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
 
    std::cout << "contours count: " <<  contours.size()  << std::endl;
 
@@ -42,7 +53,7 @@ void longest_closed()
 
      len = cv::arcLength(contours[i], true);
 
-     if(len>3000){
+     if(len>0){
        std::cout << "closed line...: " << len << std::endl;
        contours_f1.push_back(contours[i]);
      }
@@ -51,7 +62,7 @@ void longest_closed()
    Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
-   cv::imwrite( "./img_pre/long1.jpg", drawing);
+   cv::imwrite( "./img_pre/long2.jpg", drawing);
 }
 
 int main ( int argc, char** argv )
