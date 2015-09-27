@@ -1,10 +1,10 @@
 
 // TODO - deal with field names collision
 // TODO - add cdata as well
-var xmlfile =  './xml0.xml';
+var xmlfile =  './google_product_feed_0.xml';
 // var xmlfile =  './cotd.xml';
 var path_dump_obj = 'dump_obj.txt';
-var mongo_collection = 'test_parse2mongo';
+var mongo_collection = 'gpf_takealot';
 
 // require and call the inspect
 var inspect = require('./inspect.js');
@@ -20,7 +20,7 @@ function parse ( inspect_result ){
 
   //strict
   var strict = false
-  ,BULK_SIZE = 1000 /*this here could be larger - for example 10,000. mongo sub-divides it internally to smaller batches, say 1000...*/
+  ,BULK_SIZE = 10000 /*this here could be larger - for example 10,000. mongo sub-divides it internally to smaller batches, say 1000...*/
   ,counter = 0 /*counter for the bulk inset*/
   ;
 

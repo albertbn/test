@@ -1,6 +1,6 @@
 
 // var xmlfile = './test.xml';
-var xmlfile = './gpf_70k.xml';
+var xmlfile = './google_product_feed_0.xml';
 var strict = true;
 
 var sax = require("sax")
@@ -26,7 +26,7 @@ printer.indent = function () {
 
 if (!String.prototype.encodeHTML) {
   String.prototype.encodeHTML = function () {
-    return this.replace(/&/g, '&amp;')
+    return this.replace(/&(?!amp;)/g, '&amp;')
                .replace(/</g, '&lt;')
                .replace(/>/g, '&gt;')
                .replace(/"/g, '&quot;')

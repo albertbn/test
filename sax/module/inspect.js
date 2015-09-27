@@ -2,7 +2,7 @@
 module.exports = inspect;
 
 // test
-// inspect('./xml0.xml', function(err, obj){
+// inspect('./google_product_feed_0.xml', function(err, obj){
 
 //   console.log('this is the answer from inspect I got... %j',obj);
 // });
@@ -90,6 +90,8 @@ function inspect ( xmlfile, callback, options ) {
   //@tag is optional - if not supplied - get it from the elem_open arr...
   //@@returns levelX - levelX is also init-ed if needed
   function increment ( key, tag ) {
+
+    if(!printer) return;
 
     var levelX = stats['level'+printer.level];
     !levelX && (levelX = stats['level'+printer.level] = {} );
