@@ -82,8 +82,8 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
 void longest_closed()
 {
-   // Mat mat = imread( "./pics/heb.jpg");
-   Mat mat = imread( "./pics/heb2.jpg");
+   Mat mat = imread( "./pics/heb.jpg");
+   // Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/pers.jpg");
    // Mat mat = imread( "./pics/heb.ocv.working.jpg");
