@@ -2,10 +2,11 @@
 module.exports = inspect;
 
 // test
-// inspect('./google_product_feed_0.xml', function(err, obj){
+// inspect ('./1.xml', function(err, obj){
 
 //   console.log('this is the answer from inspect I got... %j',obj);
 // });
+
 // =========
 
 function process_options ( options ){
@@ -36,6 +37,7 @@ function inspect ( xmlfile, callback, options ) {
   // the writable sax memory stream
   var printer = sax.createStream(strict,
                                  {
+                                   xmlns:false,
                                    lowercasetags:true,
                                    trim:true,
                                    position:false /*no need to record pos for stats */
