@@ -1,7 +1,7 @@
 
 // var xmlfile = './test.xml';
-var xmlfile = './google_product_feed_0.xml';
-var strict = true;
+var xmlfile = './goo.xml';
+var strict = false;
 
 var sax = require("sax")
 , printer = sax.createStream(strict, { lowercasetags:true, trim:true, strictEntities:true })
@@ -46,7 +46,7 @@ printer.on("opentag", function (tag) {
     print(" "+i+"=\""+entity(tag.attributes[i])+"\"");
   }
   print(">");
-})
+});
 
 printer.on("text", ontext);
 //printer.on("doctype", ontext);

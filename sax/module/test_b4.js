@@ -9,7 +9,7 @@ var xml2js = require("xml2js");
 //    xml += "<entry><id>222</id><name>yyy & b</name></ent>";
 // xml += "</root>";
 
-var xml = fs.readFileSync('./cotd.xml');
+var xml = fs.readFileSync('./cotd_big.xml');
 
 var fn_attrNameProcessor = function(name){
   return name.toLowerCase();
@@ -21,7 +21,7 @@ var xml2js_parser = new xml2js.Parser({
   attrNameProcessors:[fn_attrNameProcessor]
 });
 
-for(var i=0; i< 12; ++i ){
+for(var i=0; i<4; ++i ){
 
   //parse the elem string gathered...
   xml2js_parser.parseString ( xml, xml2js_parserString_cb );
