@@ -7,6 +7,8 @@ events = require('events');
 var r_entry = /^[\s\S]*?<entry>/;
 var r_entry_close = /<.entry>(?![\s\S]*?<.entry>)[\s\S]*$/;
 
+var err_count = 0;
+
 exports.parse = function(readStream, options) {
   var each, emitter, parser;
   if (options == null) {
@@ -20,10 +22,13 @@ exports.parse = function(readStream, options) {
   readStream.on('data', function(data) {
     // data = data.toString().replace(r_entry,"<entry>");
     // data = data.toString().replace(r_entry_close,"</entry>");
-    return parser.parse(data.toString());
+    var ret = parser.parse(data.toString());
+    !ret && ++err_count && console.log(parser.getError(), data.toString());
+    return ret;
   });
   readStream.on('end', function() {
     return process.nextTick(function() {
+      console.log('errors:',err_count);
       return emitter.emit('end');
     });
   });

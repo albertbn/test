@@ -9,12 +9,13 @@ fs = require('fs');
 readStream = fs.createReadStream('goo.xml');
 // readStream = fs.createReadStream('goo2.xml');
 // readStream = fs.createReadStream('goo3.xml');
+// readStream = fs.createReadStream('err_xos.log');
 
 parser = xml.parse(readStream);
 
 var count = 0;
-// parser.each('row', function(row) {
-parser.each('entry', function(row) {
+parser.each('row', function(row) {
+// parser.each('entry', function(row) {
   ++count;
 });
 
