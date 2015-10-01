@@ -4,40 +4,55 @@ expat = require('node-expat');
 
 events = require('events');
 
-var r_entry = /^[\s\S]*?<entry>/;
-var r_entry_close = /<.entry>(?![\s\S]*?<.entry>)[\s\S]*$/;
-
+// fucking bytes cleanup!!! yep! Albert 1 oct 2015
+var r_cleanup = /[\u0000-\u0008\u000b-\u000c\u000e-\u001f\u007f-\u009f]+/g;
 var err_count = 0;
 
 exports.parse = function(readStream, options) {
   var each, emitter, parser;
-  if (options == null) {
-    options = {};
-  }
+
+  !options && (options = {});
+
   if (options.stripNamespaces == null) {
     options.stripNamespaces = true;
   }
+
+  // Albert - oct 2015
+  // bytes_cleanup is false by default
+  if ( options['bytes_cleanup'] == null ) {
+    options['bytes_cleanup'] = false;
+  }
+
   parser = new expat.Parser("UTF-8");
   emitter = new events.EventEmitter();
-  readStream.on('data', function(data) {
-    // data = data.toString().replace(r_entry,"<entry>");
-    // data = data.toString().replace(r_entry_close,"</entry>");
+
+  readStream.on ('data', function(data) {
+
+    // if bytes cleanup should be made - it should be made BEFORE attempting parse
+    // else it doesn't work - tested
+    options['bytes_cleanup'] && (data = data.toString().replace(r_cleanup, ''));
     var ret = parser.parse(data.toString());
-    !ret && ++err_count && console.log(parser.getError(), data.toString());
+
+    // !ret && ++err_count && console.log(parser.getError(), data.toString());
+    !ret && ++err_count;
     return ret;
   });
+
   readStream.on('end', function() {
     return process.nextTick(function() {
-      console.log('errors:',err_count);
+      // console.log('errors:',err_count);
       return emitter.emit('end');
     });
   });
+
   readStream.on('error', function(err) {
     return emitter.emit('error', err);
   });
+
   readStream.on('close', function() {
     return emitter.emit('close');
   });
+
   each = function(nodeName, eachNode) {
     var currentNode, eachNodeDelayed;
     eachNodeDelayed = function(node) {
@@ -94,6 +109,7 @@ exports.parse = function(readStream, options) {
       return currentNode = parent;
     });
   };
+
   return {
     each: each,
     on: function(e, cb) {

@@ -1,0 +1,118 @@
+
+{
+    "$name": "entry",
+    "$": {},
+    "$parent": null,
+    "$children": [
+        {
+            "$name": "id",
+            "$": {},
+            "$text": "PLID8575-3"
+        },
+        {
+            "$name": "title",
+            "$": {},
+            "$text": "Defiant Ones (DVD)"
+        },
+        {
+            "$name": "description",
+            "$": {},
+            "$text": "Set in the deep south, two escaped convicts (Tony Curtis and Sidney Poitier) are separated by their color, but bound by their desire for freedom -- and a 29-inch steel chain."
+        },
+        {
+            "$name": "product_type",
+            "$": {},
+            "$text": "Drama"
+        },
+        {
+            "$name": "link",
+            "$": {},
+            "$text": "http://www.takealot.com/defiant-ones-dvd/PLID8575"
+        },
+        {
+            "$name": "image_link",
+            "$": {},
+            "$text": "http://takealot.s3.amazonaws.com/covers/2/cover.jpg?1326380048"
+        },
+        {
+            "$name": "condition",
+            "$": {},
+            "$text": "new"
+        },
+        {
+            "$name": "availability",
+            "$": {},
+            "$text": "in stock"
+        },
+        {
+            "$name": "price",
+            "$": {},
+            "$text": "39.00 ZAR"
+        },
+        {
+            "$name": "custom_label_0",
+            "$": {},
+            "$text": "general"
+        },
+        {
+            "$name": "custom_label_1",
+            "$": {},
+            "$text": "Movies & TV"
+        }
+    ],
+    "id": {
+        "$name": "id",
+        "$": {},
+        "$text": "PLID8575-3"
+    },
+    "title": {
+        "$name": "title",
+        "$": {},
+        "$text": "Defiant Ones (DVD)"
+    },
+    "description": {
+        "$name": "description",
+        "$": {},
+        "$text": "Set in the deep south, two escaped convicts (Tony Curtis and Sidney Poitier) are separated by their color, but bound by their desire for freedom -- and a 29-inch steel chain."
+    },
+    "product_type": {
+        "$name": "product_type",
+        "$": {},
+        "$text": "Drama"
+    },
+    "link": {
+        "$name": "link",
+        "$": {},
+        "$text": "http://www.takealot.com/defiant-ones-dvd/PLID8575"
+    },
+    "image_link": {
+        "$name": "image_link",
+        "$": {},
+        "$text": "http://takealot.s3.amazonaws.com/covers/2/cover.jpg?1326380048"
+    },
+    "condition": {
+        "$name": "condition",
+        "$": {},
+        "$text": "new"
+    },
+    "availability": {
+        "$name": "availability",
+        "$": {},
+        "$text": "in stock"
+    },
+    "price": {
+        "$name": "price",
+        "$": {},
+        "$text": "39.00 ZAR"
+    },
+    "custom_label_0": {
+        "$name": "custom_label_0",
+        "$": {},
+        "$text": "general"
+    },
+    "custom_label_1": {
+        "$name": "custom_label_1",
+        "$": {},
+        "$text": "Movies & TV"
+    }
+}
