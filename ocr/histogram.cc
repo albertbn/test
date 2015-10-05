@@ -1,6 +1,6 @@
 
 
-// g++ $(pkg-config --cflags --libs opencv) histogram.cc -o histogram && ./histogram ./img_pre/heb.jpg
+// g++ $(pkg-config --cflags --libs opencv) histogram.cc -o histogram && ./histogram ./pics/heb.jpg
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
