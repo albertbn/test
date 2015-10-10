@@ -1,33 +1,113 @@
 
 <script type="text/javascript">
+
+var canvas_width = 600;
+var canvas_height = 600;
+
 var context;
-var dx= 4;
-var dy=4;
+var dx= 3;
+var dy=3;
 var y=150;
 var x=10;
+
+var tenis_racket_width = 30;
+var tenis_racket_height = 100;
+var tenis_racket_x = canvas_width-tenis_racket_width;
+var tenis_racket_y = canvas_height-tenis_racket_height;
+
+// 0 if not hit, 1 if yes
+function is_hit_test(){
+
+  var racket_bottom_y = tenis_racket_y+tenis_racket_height;
+
+  var is_hit =
+      y>=tenis_racket_y &&
+      (
+        y<=racket_bottom_y
+          ||
+       (y>=canvas_height && racket_bottom_y>=canvas_height)
+      );
+
+  !is_hit && console.log(y,tenis_racket_y, tenis_racket_y+tenis_racket_height);
+
+  return is_hit;
+}
+
+function should_check_hit_test(){
+  return dx > 0 && x>tenis_racket_x;
+}
+
+var iinterval = 0;
 function draw(){
-	context= myCanvas.getContext('2d');
-	context.clearRect(0,0,600,600);
-	context.beginPath();
-	context.fillStyle="#ffff00";
-	context.arc(x,y,20,0,Math.PI*2,true);
-	context.closePath();
-	context.fill();
-	if( x<0 || x>600)
-	dx=-dx;
-	if( y<0 || y>600)
-		dy=-dy;
-		x+=dx;
+
+  context= myCanvas.getContext('2d');
+  context.clearRect(0,0,canvas_width,canvas_height);
+
+  // ball
+  context.beginPath();
+  context.fillStyle="#ffff00"; /*yellow ball*/
+  context.arc(x,y,20,0,Math.PI*2,true);
+  context.closePath();
+  context.fill();
+
+  // check if there is a hit
+  if ( should_check_hit_test() && !is_hit_test() ){
+    console.log('busted');
+    context.clearRect(0,0,canvas_width,canvas_height);
+    clearInterval(iinterval);
+  }
+  else if( should_check_hit_test() && is_hit_test() ){
+    dx=-dx;
+  }
+  // if got to x left/right boundary - change dir
+  else if ( x<0 )
+  {
+    dx=-dx;
+  }
+
+  // if got to y left/right boundary - change dir
+  if ( y<0 || y>canvas_height )
+  {
+    dy=-dy
+  };
+
+  x+=dx;
   y+=dy;
 
+  // Tennis racket
   context.beginPath();
   context.fillStyle="pink";
-  context.rect(545,500,550,550);
+  context.rect ( tenis_racket_x,tenis_racket_y, tenis_racket_width, tenis_racket_height ); /* x,y,width,height */
   context.closePath();
   context.fill();
 }
 
-setInterval(draw,10); 
+iinterval =
+    setInterval(draw,10);
+
+document.onkeydown = function(e){
+
+  var ev = window.event ? window.event : e;
+
+  // console.log(ev.keyCode);
+
+  // ^
+  if(ev.keyCode===38) {
+    tenis_racket_y-=10
+  }
+  // v
+  else if(ev.keyCode===40){
+    tenis_racket_y+=10;
+  }
+  else{
+    return;
+  }
+
+  tenis_racket_y<0 && (tenis_racket_y = 0);
+  (tenis_racket_y+tenis_racket_height)>canvas_height && (tenis_racket_y = canvas_height-tenis_racket_height);
+
+};
+
 </script>
 <!DOCTYPE html>
 <html>
