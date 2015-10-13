@@ -45,7 +45,7 @@ function draw(){
 
   // ball
   context.beginPath();
-  context.fillStyle="#ffff00"; /*yellow ball*/
+  context.fillStyle="#ff0000"; /*yellow ball*/
   context.arc(x,y,20,0,Math.PI*2,true);
   context.closePath();
   context.fill();
@@ -93,11 +93,11 @@ document.onkeydown = function(e){
 
   // ^
   if(ev.keyCode===38) {
-    tenis_racket_y-=10
+    tenis_racket_y-=40
   }
   // v
   else if(ev.keyCode===40){
-    tenis_racket_y+=10;
+    tenis_racket_y+=40;
   }
   else{
     return;
