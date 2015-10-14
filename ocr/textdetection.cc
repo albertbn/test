@@ -1,12 +1,16 @@
 /*
-  g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
-
-  credits: https://github.com/Itseez/opencv_contrib/blob/master/modules/text/samples/textdetection.cpp
+ * textdetection.cpp
+ *
+ * A demo program of the Extremal Region Filter algorithm described in
+ * Neumann L., Matas J.: Real-Time Scene Text Localization and Recognition, CVPR 2012
+ *
+ * Created on: Sep 23, 2013
+ *     Author: Lluis Gomez i Bigorda <lgomez AT cvc.uab.es>
  */
 
-// #include  "opencv2/core/text.hpp"
-#include  "opencv2/highgui/highgui.hpp"
-#include  "opencv2/imgproc/imgproc.hpp"
+#include  "opencv2/text.hpp"
+#include  "opencv2/highgui.hpp"
+#include  "opencv2/imgproc.hpp"
 
 #include  <vector>
 #include  <iostream>
