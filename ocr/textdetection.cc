@@ -1,3 +1,10 @@
+
+/*
+
+ g++ -ggdb `pkg-config --cflags --libs opencv3` textdetection.cc -o textdetection && ./textdetection ./pics/heb.jpg
+
+*/
+
 /*
  * textdetection.cpp
  *
@@ -32,7 +39,7 @@ int main(int argc, const char * argv[])
 
     if (argc < 2) show_help_and_exit(argv[0]);
 
-    namedWindow("grouping",WINDOW_NORMAL);
+    // namedWindow("grouping",WINDOW_NORMAL);
     Mat src = imread(argv[1]);
 
     // Extract channels to be processed individually
@@ -62,17 +69,19 @@ int main(int argc, const char * argv[])
     cout << "Grouping extracted ERs ... ";
     vector< vector<Vec2i> > region_groups;
     vector<Rect> groups_boxes;
-    erGrouping(src, channels, regions, region_groups, groups_boxes, ERGROUPING_ORIENTATION_HORIZ);
-    //erGrouping(src, channels, regions, region_groups, groups_boxes, ERGROUPING_ORIENTATION_ANY, "./trained_classifier_erGrouping.xml", 0.5);
+    // erGrouping(src, channels, regions, region_groups, groups_boxes, ERGROUPING_ORIENTATION_HORIZ);
+    erGrouping(src, channels, regions, region_groups, groups_boxes, ERGROUPING_ORIENTATION_ANY, "./trained_classifier_erGrouping.xml", 0.5);
 
     // draw groups
     groups_draw(src, groups_boxes);
-    imshow("grouping",src);
+    // imshow("grouping",src);
+    cv::imwrite( "./img_pre/textdetection0.jpg", src );
 
     cout << "Done!" << endl << endl;
-    cout << "Press 'e' to show the extracted Extremal Regions, any other key to exit." << endl << endl;
-    if( waitKey (-1) == 101)
-        er_show(channels,regions);
+    // cout << "Press 'e' to show the extracted Extremal Regions, any other key to exit." << endl << endl;
+
+    // if( waitKey (-1) == 101)
+    er_show(channels,regions);
 
     // memory clean-up
     er_filter1.release();
@@ -120,9 +129,11 @@ void er_show(vector<Mat> &channels, vector<vector<ERStat> > &regions)
                           Scalar(255),0,Scalar(er.level),Scalar(0),flags);
             }
         }
-        char buff[10]; char *buff_ptr = buff;
-        sprintf(buff, "channel %d", c);
-        imshow(buff_ptr, dst);
+        char buff[100]; char *buff_ptr = buff;
+        sprintf(buff, "./img_pre/textdetection%d.jpg", c);
+        // imshow(buff_ptr, dst);
+        cv::imwrite( buff_ptr, dst );
+
     }
-    waitKey(-1);
+    // waitKey(-1);
 }
