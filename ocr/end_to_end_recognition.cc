@@ -1,6 +1,8 @@
 /*
  g++ -ggdb `pkg-config --cflags --libs opencv3` end_to_end_recognition.cc -o end_to_end_recognition && ./end_to_end_recognition ./pics/heb.jpg
 
+https://github.com/Itseez/opencv_contrib/blob/master/modules/text/samples/end_to_end_recognition.cpp
+
  * end_to_end_recognition.cpp
  *
  * A demo program of End-to-end Scene Text Detection and Recognition:
@@ -39,8 +41,10 @@ int main(int argc, char* argv[])
     cout << "Neumann L., Matas J.: Real-Time Scene Text Localization and Recognition, CVPR 2012" << endl << endl;
 
     Mat image;
-    if(argc>1)
+    if(argc>1){
         image  = imread(argv[1]);
+        imwrite("./img_pre/e2e0.jpg", image);
+    }
     else
     {
         cout << "    Usage: " << argv[0] << " <input_image> [<gt_word1> ... <gt_wordN>]" << endl;
@@ -66,6 +70,8 @@ int main(int argc, char* argv[])
     // Create ERFilter objects with the 1st and 2nd stage default classifiers
     Ptr<ERFilter> er_filter1 = createERFilterNM1(loadClassifierNM1("trained_classifierNM1.xml"),8,0.00015f,0.13f,0.2f,true,0.1f);
     Ptr<ERFilter> er_filter2 = createERFilterNM2(loadClassifierNM2("trained_classifierNM2.xml"),0.5);
+
+    cout << "channels size: " << channels.size() << endl;
 
     vector<vector<ERStat> > regions(channels.size());
     // Apply the default cascade classifier to each independent channel (could be done in parallel)
@@ -99,10 +105,11 @@ int main(int argc, char* argv[])
     // Detect character groups
     vector< vector<Vec2i> > nm_region_groups;
     vector<Rect> nm_boxes;
-    erGrouping(image, channels, regions, nm_region_groups, nm_boxes,ERGROUPING_ORIENTATION_HORIZ);
+
+    // erGrouping(image, channels, regions, nm_region_groups, nm_boxes,ERGROUPING_ORIENTATION_HORIZ);
+    erGrouping(image, channels, regions, nm_region_groups, nm_boxes, ERGROUPING_ORIENTATION_ANY, "./trained_classifier_erGrouping.xml", 0.5);
+
     cout << "TIME_GROUPING = " << ((double)getTickCount() - t_g)*1000/getTickFrequency() << endl;
-
-
 
     /*Text Recognition (OCR)*/
 

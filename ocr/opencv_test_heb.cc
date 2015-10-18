@@ -19,26 +19,27 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 
     cv::Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
     // cv::imshow("Display Image", img_sobel); cv::waitKey(0);
-    // cv::imwrite( "./img_pre/1.jpg", img_sobel);
+    cv::imwrite( "./img_pre/1.jpg", img_sobel);
 
     cv::threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
     // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
-    // cv::imwrite( "./img_pre/2.jpg", img_threshold);
+    cv::imwrite( "./img_pre/2.jpg", img_threshold);
 
     element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
     cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
     // cv::imshow("Display Image", img_threshold); cv::waitKey(0);
-    // cv::imwrite( "./img_pre/3.jpg", img_threshold);
+    cv::imwrite( "./img_pre/3.jpg", img_threshold);
 
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
     std::vector<std::vector<cv::Point> > contours_poly( contours.size() );
     for( int i = 0; i < contours.size(); i++ )
-        if (contours[i].size()>100)
+        if (contours[i].size()>50)
         {
             cv::approxPolyDP( cv::Mat(contours[i]), contours_poly[i], 3, true );
             cv::Rect appRect( boundingRect( cv::Mat(contours_poly[i]) ));
-            if (appRect.width>appRect.height)
+            // if (appRect.width>appRect.height)
+            //     boundRect.push_back(appRect);
                 boundRect.push_back(appRect);
         }
     return boundRect;
@@ -48,9 +49,10 @@ int main ( int argc,char** argv )
 {
     //Read
     // cv::Mat img1=cv::imread("./pics/heb.jpg");
-    cv::Mat img1=cv::imread("./img_pre/heb_rot.jpg");
-    // cv::Mat img1=cv::imread("./img_pre/heb_rot_tc.jpg");
-    // cv::Mat img1=cv::imread("./img_pre/c0.jpg");
+    // cv::Mat img1=cv::imread("./pics/heb2.jpg");
+    // cv::Mat img1=cv::imread("./pics/heb_new.jpg");
+    // cv::Mat img1=cv::imread("./pics/tj.jpg");
+    cv::Mat img1=cv::imread("./pics/tj2.jpg");
 
     //Detect
     std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
@@ -90,8 +92,8 @@ int main ( int argc,char** argv )
               letterBBoxes1[i].width, letterBBoxes1[i].height
       );
 
-      // DEBUG - un-mark for debug
-      // cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+      // DEBUG - un-mark for debug - small rectangles - letters...
+      cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
     }
 
     cv::Point p_tl(tl[0],tl[1]);
@@ -109,7 +111,7 @@ int main ( int argc,char** argv )
            br[0],br[1]
     );
 
-    img1 = img1(rect_out);
+    // img1 = img1(rect_out);
 
     cv::imwrite( "./img_pre/heb.ocv.jpg", img1);
     // cv::imwrite( "./img_pre/heb_rot_cropped.jpg", img1);
