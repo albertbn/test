@@ -14,6 +14,9 @@ using namespace std;
 
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-longest_closed-of-paper-sheet-in-photo
 
+// c/c++ dummy declaration
+void cosine_longest ( std::vector < std::vector<cv::Point> > contours );
+
 static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 {
 	double dx1 = pt1.x - pt0.x;
@@ -150,9 +153,52 @@ void longest_closed()
      get_angles( contours_long[i], clong );
    }
 
+   // cosine_longest(contours_long);
+   cosine_longest(contoursDraw);
+
    cv::imwrite( "./img_pre/long2.jpg", drawing);
    cv::imwrite( "./img_pre/long3.jpg", poly);
    cv::imwrite( "./img_pre/long4.jpg", clong);
+}
+
+void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
+
+  Mat a,b;
+  double ab, aa, bb;
+  int size_a, size_b;
+  for(int i=0; i<(int)contours.size(); ++i){
+
+    a = Mat(contours[i]);
+
+    for(int j=0; j<contours.size(); ++j){
+
+      size_a = (int)contours[i].size();
+      size_b = (int)contours[j].size();
+
+      if(size_a>size_b){
+        for(int m=0; m<(size_a-size_b); ++m){
+          contours[j].push_back(contours[j][0]);
+        }
+      }
+      else if(size_b>size_a){
+        for(int m=0; m<(size_b-size_a); ++m){
+          contours[i].push_back(contours[i][0]);
+        }
+        // remake the matrix again...
+        a = Mat(contours[i]);
+      }
+
+      b = Mat(contours[j]);
+
+      // std::cout << "sizes: " << size_a << ',' << size_b << std::endl;
+
+      ab = a.dot(b);
+      aa = a.dot(a);
+      bb = b.dot(b);
+
+      std::cout << "cosine: " <<  ab / sqrt(aa*bb)  << std::endl;
+    }
+  }
 }
 
 int main ( int argc, char** argv )
