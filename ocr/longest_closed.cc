@@ -17,6 +17,12 @@ using namespace std;
 // c/c++ dummy declaration
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours );
 
+static float angle_2points ( cv::Point p1, cv::Point p2 ) {
+
+  float ang = atan2(p1.y - p2.y, p1.x - p2.x);
+  return ang * 180 / CV_PI;
+}
+
 static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 {
 	double dx1 = pt1.x - pt0.x;
@@ -149,7 +155,7 @@ void longest_closed()
    cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
 
-   for(int i=0; i<contours_long.size(); ++i){
+   for(int i=0; i<(int)contours_long.size(); ++i){
      get_angles( contours_long[i], clong );
    }
 
@@ -164,25 +170,28 @@ void longest_closed()
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
 
   Mat a,b;
-  double ab, aa, bb;
+  // double ab, aa, bb;
   int size_a, size_b;
-  for(int i=0; i<(int)contours.size(); ++i){
+  for ( int i=0; i<(int)contours.size(); ++i ) {
 
+    if(contours[i].size()<2) continue;
     a = Mat(contours[i]);
 
-    for(int j=0; j<contours.size(); ++j){
+    for(int j=0; j<(int)contours.size(); ++j){
+
+      if(contours[j].size()<2) continue;
 
       size_a = (int)contours[i].size();
       size_b = (int)contours[j].size();
 
       if(size_a>size_b){
         for(int m=0; m<(size_a-size_b); ++m){
-          contours[j].push_back(contours[j][0]);
+          contours[j].push_back(contours[j][size_b-1]);
         }
       }
       else if(size_b>size_a){
         for(int m=0; m<(size_b-size_a); ++m){
-          contours[i].push_back(contours[i][0]);
+          contours[i].push_back(contours[i][size_a-1]);
         }
         // remake the matrix again...
         a = Mat(contours[i]);
@@ -191,15 +200,22 @@ void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
       b = Mat(contours[j]);
 
       // std::cout << "sizes: " << size_a << ',' << size_b << std::endl;
+      // std::cout << "sizes: " << a << ',' << b << std::endl;
+      std::cout << "angles: " << angle_2points(contours[i][0],contours[i][1]) << ',' <<  angle_2points(contours[j][0],contours[j][1]) << std::endl;
 
-      ab = a.dot(b);
-      aa = a.dot(a);
-      bb = b.dot(b);
+      // ab = a.dot(b);
+      // aa = a.dot(a);
+      // bb = b.dot(b);
 
-      std::cout << "cosine: " <<  ab / sqrt(aa*bb)  << std::endl;
+      // std::cout << "cosine: "  <<  ab / (sqrt(aa) * sqrt(bb))  << std::endl;
+
+      // std::cout << "cosine: " << cv::arcLength(contours[i], true) << ',' << cv::arcLength(contours[j], true) << ','  <<  ab / (sqrt(aa) * sqrt(bb))  << std::endl;
+
     }
   }
 }
+
+// TODO go on from doing another simple loop, just to calc the angles and then try the kmean clustering... yep! may the force be with you
 
 int main ( int argc, char** argv )
 {
