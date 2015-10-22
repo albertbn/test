@@ -16,6 +16,8 @@ using namespace std;
 
 // c/c++ dummy declaration
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours );
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours );
+Mat coord_clusters( std::vector < std::vector<cv::Point> > contours );
 
 static float angle_2points ( cv::Point p1, cv::Point p2 ) {
 
@@ -136,7 +138,7 @@ void longest_closed()
    std::vector< std::vector<cv::Point> > contours_long;
    std::vector<std::vector<cv::Point> > contoursDraw (contours.size());
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
-   for (int i=0; i < contours.size(); i++){
+   for (int i=0; i < (int)contours.size(); i++){
 
      cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
 
@@ -152,19 +154,73 @@ void longest_closed()
    Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
    Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
-   cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
+
+   // cosine_longest(contours_long);
+   // cosine_longest(contoursDraw);
+   Mat_<int> labels = angle_clusters(contoursDraw);
+
+   std::vector< std::vector<cv::Point> > contours_l0;
+   std::vector< std::vector<cv::Point> > contours_l1;
+
+   for(int j=0; j<labels.rows; ++j){
+
+     std::cout << "l.cols: " << labels(j,0) << std::endl;
+
+     if(labels(j,0)==0){
+       contours_l0.push_back(contoursDraw[j]);
+     }else if(labels(j,0)==1){
+       contours_l1.push_back(contoursDraw[j]);
+     }
+   }
+   std::cout << "sizes: " << contours_l0.size() << ',' << contours_l1.size() << std::endl;
+
+   // cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
+   cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
 
    for(int i=0; i<(int)contours_long.size(); ++i){
      get_angles( contours_long[i], clong );
    }
 
-   // cosine_longest(contours_long);
-   cosine_longest(contoursDraw);
-
    cv::imwrite( "./img_pre/long2.jpg", drawing);
    cv::imwrite( "./img_pre/long3.jpg", poly);
    cv::imwrite( "./img_pre/long4.jpg", clong);
+}
+
+// TODO go on from here...
+Mat coord_clusters( std::vector < std::vector<cv::Point> > contours ){
+
+  Mat x_es;
+  for ( int i=0; i<(int)contours.size(); ++i ) {
+  }
+
+  int clusterCount = 2;
+  Mat labels;
+  int attempts = 5;
+  Mat centers;
+  kmeans(x_es, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+
+  std::cout << "labels: " << labels << "centers" << centers << "angles" << x_es << std::endl;
+
+  return labels;
+}
+
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours ){
+
+  Mat angles;
+  for ( int i=0; i<(int)contours.size(); ++i ) {
+    angles.push_back(abs(angle_2points(contours[i][0], contours[i][1])));
+  }
+
+  int clusterCount = 2;
+  Mat labels;
+  int attempts = 5;
+  Mat centers;
+  kmeans(angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+
+  std::cout << "labels: " << labels << "centers" << centers << "angles" << angles << std::endl;
+
+  return labels;
 }
 
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
