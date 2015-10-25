@@ -16,14 +16,17 @@ using namespace std;
 
 // c/c++ dummy declaration
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours );
-Mat angle_clusters( std::vector < std::vector<cv::Point> > contours );
-Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours);
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles );
+Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles);
+// not in use
 Point2f get_mass_center(Point a, Point b);
+void get_closest_diagonal ( Rect rect,  Mat_<float> angles );
 
 static float angle_2points ( cv::Point p1, cv::Point p2 ) {
 
   float ang = atan2(p1.y - p2.y, p1.x - p2.x);
-  return ang * 180 / CV_PI;
+  ang = ang * 180 / CV_PI;
+  return (ang>0.0) ? ang : 180.0 + ang;
 }
 
 static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
@@ -158,7 +161,9 @@ void longest_closed()
 
    // cosine_longest(contours_long);
    // cosine_longest(contoursDraw);
-   Mat_<int> labels = angle_clusters(contoursDraw);
+   Mat_<float> angles, angles0, angles1;
+   Mat_<int> labels = angle_clusters(contoursDraw, angles);
+   std::cout << "angles ref: " << angles  << std::endl;
 
    std::vector< std::vector<cv::Point> > contours_l0;
    std::vector< std::vector<cv::Point> > contours_l1;
@@ -169,13 +174,17 @@ void longest_closed()
 
      if(labels(j,0)==0){
        contours_l0.push_back(contoursDraw[j]);
+       angles0.push_back(angles(j,0));
      }else if(labels(j,0)==1){
        contours_l1.push_back(contoursDraw[j]);
+       angles1.push_back(angles(j,0));
      }
    }
-   std::cout << "sizes: " << contours_l0.size() << ',' << contours_l1.size() << std::endl;
 
-   coord_clusters( mat.size(), contours_l0);
+   std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
+
+   // TODO - dynamic here for 0,1 ...
+   coord_clusters( mat.size(), contours_l0, angles0);
 
    // cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
@@ -190,45 +199,36 @@ void longest_closed()
    cv::imwrite( "./img_pre/long4.jpg", clong);
 }
 
-Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours ) {
-
-  // TODO - decide here by the degrees if to check x or y...
+void get_closest_diagonal ( Rect rect,  Mat_<float> angles ) {
+  std::cout << "avg angles: " << mean(angles) << std::endl;
+}
+Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles ) {
 
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
-
-    // points.push_back((Point2f)contours[i][0]);
     points.push_back( Point2f(contours[i][0].x, 0) );
-    // points.push_back ( get_mass_center(contours[i][0],contours[i][1]) );
   }
 
-  int clusterCount = 2;
-  Mat llabels;
-  int attempts = 1;
-  Mat centers;
+  int clusterCount = 2, attempts = 1;
+  Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-
   std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: " << llabels << "centers" << centers << "points" << points << std::endl;
 
   std::vector < std::vector<cv::Point> > contours_l0, contours_l1;
-  Mat l0 = Mat::zeros( size, CV_8UC3 );
-  Mat l1 = Mat::zeros( size, CV_8UC3 );
+  Mat l0 = Mat::zeros( size, CV_8UC3 ), l1 = Mat::zeros( size, CV_8UC3 );
 
-  Mat_<int> labels = llabels;
+  Mat_<int> labels = llabels;  Mat_<float> angles0, angles1;
   for ( int j=0; j<labels.rows; ++j ) {
-
     if(labels(j,0)==0){
-      contours_l0.push_back(contours[j]);
+      contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
     }else if(labels(j,0)==1){
-      contours_l1.push_back(contours[j]);
+      contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
     }
   }
-
-  cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);
-  cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
+  
+  cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);  cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
 
   std::vector<cv::Point> points0, points1;
-
   for(int i=0; i<(int)contours_l0.size();++i){
     if ( contours_l0[i][0].x==0 || contours_l0[i][1].x==0 ) continue;
     points0.push_back(contours_l0[i][0]);
@@ -241,28 +241,14 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours 
     points1.push_back(contours_l1[i][1]);
   }
 
-  std::cout << "points0:" << points0  << std::endl;
-  std::cout << "points1:" << points1  << std::endl;
+  std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
 
-  Rect r0 = cv::boundingRect(points0);
-  Rect r1 = cv::boundingRect(points1);
+  Rect r0 = cv::boundingRect(points0);  Rect r1 = cv::boundingRect(points1);
+  get_closest_diagonal(r0, angles0);  get_closest_diagonal(r1, angles1);
 
-  Point pt01, pt02,  pt11, pt12;
-  pt01.x = r0.x;
-  pt01.y = r0.y;
-  pt02.x = r0.x + r0.width;
-  pt02.y = r0.y + r0.height;
+  rectangle ( l0,r0,cv::Scalar(0,255,0) );  rectangle ( l1,r1,cv::Scalar(0,255,0) );
 
-  pt11.x = r1.x;
-  pt11.y = r1.y;
-  pt12.x = r1.x + r1.width;
-  pt12.y = r1.y + r1.height;
-
-  rectangle(l0,pt01,pt02,cv::Scalar(0,255,0),1);
-  rectangle(l1,pt11,pt12,cv::Scalar(0,255,0),1);
-
-  cv::imwrite( "./img_pre/long5.jpg", l0);
-  cv::imwrite( "./img_pre/long6.jpg", l1);
+  cv::imwrite( "./img_pre/long5.jpg", l0);  cv::imwrite( "./img_pre/long6.jpg", l1);
 
   return labels;
 }
@@ -272,11 +258,12 @@ Point2f get_mass_center(Point a, Point b){
   return Point2f( (int)((a.x+b.x)/2), (int)((a.y+b.y)/2) );
 }
 
-Mat angle_clusters( std::vector < std::vector<cv::Point> > contours ){
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles ){
 
-  Mat angles;
+  // Mat angles;
   for ( int i=0; i<(int)contours.size(); ++i ) {
-    angles.push_back(abs(angle_2points(contours[i][0], contours[i][1])));
+    // angles.push_back(abs(angle_2points(contours[i][0], contours[i][1])));
+    angles.push_back ( angle_2points(contours[i][0], contours[i][1]) );
   }
 
   int clusterCount = 2;
