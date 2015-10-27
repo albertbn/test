@@ -205,7 +205,7 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
   Vec4f line_result;
-  fitLine(points, line_result, DIST_L2, 0, .01, .01 );
+  fitLine(points, line_result, CV_DIST_L2, 0, .01, .01 );
 
   float vx = line_result[0];
   float vy = line_result[1];
@@ -214,11 +214,11 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 
   float x0, y0, x1, y1;
 
-  x0 = x - vx*x; x0<0 && (x0=0);
-  y0 = y - vy*y; y0<0 && (y0=0);
+  x0 = x - vx*x;
+  y0 = y - vy*y; if(y0>0 && y0<pic.rows) y0 = y-vy*(pic.rows);
 
-  x1 = x + vx*pic.cols; x1>pic.cols && (x1=pic.cols);
-  y1 = y + vy*pic.rows; y1>pic.rows && (y1=pic.rows);
+  x1 = x + vx*pic.cols;
+  y1 = y + vy*pic.rows;
 
   std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
 
