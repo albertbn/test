@@ -20,7 +20,7 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
 Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles);
 // not in use
 Point2f get_mass_center(Point a, Point b);
-void get_closest_diagonal ( Rect rect,  Mat_<float> angles );
+void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
 
 static float angle_2points ( cv::Point p1, cv::Point p2 ) {
 
@@ -199,9 +199,21 @@ void longest_closed()
    cv::imwrite( "./img_pre/long4.jpg", clong);
 }
 
-void get_closest_diagonal ( Rect rect,  Mat_<float> angles ) {
+void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
   std::cout << "avg angles: " << mean(angles) << std::endl;
+
+ Vec4f line_result;
+ fitLine(points, line_result, DIST_L2, 0, .01, .01 );
+
+  // vx=points_result[0];
+
+ Point p1,p2;
+ // (line_result[0], line_result[1]);
+  // int lefty = int((-x*vy/vx) + y);
+  // int righty = int(((cols-x)*vy/vx)+y)
+ cv::line(pic, Point(line_result[0], line_result[1]), Point(line_result[2], line_result[3]),cv::Scalar(0,64,64),2);
 }
+
 Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles ) {
 
   std::vector<cv::Point2f> points;
@@ -225,7 +237,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
       contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
     }
   }
-  
+
   cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);  cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
 
   std::vector<cv::Point> points0, points1;
@@ -244,7 +256,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
 
   Rect r0 = cv::boundingRect(points0);  Rect r1 = cv::boundingRect(points1);
-  get_closest_diagonal(r0, angles0);  get_closest_diagonal(r1, angles1);
+  get_closest_diagonal(r0, angles0, points0, l0);  get_closest_diagonal(r1, angles1, points1, l1);
 
   rectangle ( l0,r0,cv::Scalar(0,255,0) );  rectangle ( l1,r1,cv::Scalar(0,255,0) );
 
