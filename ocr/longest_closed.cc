@@ -202,16 +202,27 @@ void longest_closed()
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
   std::cout << "avg angles: " << mean(angles) << std::endl;
 
- Vec4f line_result;
- fitLine(points, line_result, DIST_L2, 0, .01, .01 );
+  // vx,vy,x,y
+  // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
+  Vec4f line_result;
+  fitLine(points, line_result, DIST_L2, 0, .01, .01 );
 
-  // vx=points_result[0];
+  float vx = line_result[0];
+  float vy = line_result[1];
+  float x = line_result[2];
+  float y = line_result[3];
 
- Point p1,p2;
- // (line_result[0], line_result[1]);
-  // int lefty = int((-x*vy/vx) + y);
-  // int righty = int(((cols-x)*vy/vx)+y)
- cv::line(pic, Point(line_result[0], line_result[1]), Point(line_result[2], line_result[3]),cv::Scalar(0,64,64),2);
+  float x0, y0, x1, y1;
+
+  x0 = x - vx*x; x0<0 && (x0=0);
+  y0 = y - vy*y; y0<0 && (y0=0);
+
+  x1 = x + vx*pic.cols; x1>pic.cols && (x1=pic.cols);
+  y1 = y + vy*pic.rows; y1>pic.rows && (y1=pic.rows);
+
+  std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
+
+  cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
 Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles ) {
