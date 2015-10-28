@@ -214,11 +214,11 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 
   float x0, y0, x1, y1;
 
-  x0 = x - vx*x;
-  y0 = y - vy*y; if(y0>0 && y0<pic.rows) y0 = y-vy*(pic.rows);
+  x0 = x - vx*(4*pic.cols);
+  y0 = y - vy*(4*pic.rows);
 
-  x1 = x + vx*pic.cols;
-  y1 = y + vy*pic.rows;
+  x1 = x + vx*(4*pic.cols);
+  y1 = y + vy*(4*pic.rows);
 
   std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
 
