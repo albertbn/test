@@ -1,6 +1,6 @@
 
 // g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
-
+// longest_closed > angle_clusters
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -94,6 +94,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
   return 0;
 }
 
+// start here
 void longest_closed()
 {
    // Mat mat = imread( "./pics/heb.jpg");
@@ -105,7 +106,7 @@ void longest_closed()
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
 
-/// Apply Histogram Equalization - not clear - sometimes is good, sometimes not???
+   /// Apply Histogram Equalization - not clear - sometimes is good, sometimes not???
    // equalizeHist ( mat, mat );
 
    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
@@ -347,10 +348,11 @@ void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
   }
 }
 
-// TODO go on from doing another simple loop, just to calc the angles and then try the kmean clustering... yep! may the force be with you
+// DONE go on from doing another simple loop, just to calc the angles and then try the kmean clustering... yep! may the force be with you
 
 int main ( int argc, char** argv )
 {
+  std::cout << "argc: " << argc << ',' << "argv (pointer): " << argv << std::endl;
   longest_closed();
   return 0;
 }
