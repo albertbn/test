@@ -110,8 +110,8 @@ void longest_closed()
    // Mat mat = imread( "./pics/heb.jpg");
    // Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
-   // Mat mat = imread( "./pics/tj.jpg");
-   Mat mat = imread( "./pics/tj2.jpg");
+   Mat mat = imread( "./pics/tj.jpg");
+   // Mat mat = imread( "./pics/tj2.jpg");
 
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
@@ -148,15 +148,20 @@ void longest_closed()
 
    // TODO - go on from checking if the >10000 is a single len
    double len;
+   std::vector<double> vec_len;
    std::vector< std::vector<cv::Point> > contours_f1;
    std::vector< std::vector<cv::Point> > contours_long;
-   std::vector<std::vector<cv::Point> > contoursDraw (contours.size());
+   std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
+   std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
    for (int i=0; i < (int)contours.size(); i++){
 
-     cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
-
      len = cv::arcLength(contours[i], true);
+     if(len < 200.0) continue;
+     vec_len.push_back(len);
+
+     cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
+     contoursDraw2.push_back(contoursDraw[i]);
 
      if(len>0){
        std::cout << "closed line len...: " << len << std::endl;
@@ -172,7 +177,7 @@ void longest_closed()
    // cosine_longest(contours_long);
    // cosine_longest(contoursDraw);
    Mat_<float> angles, angles0, angles1;
-   Mat_<int> labels = angle_clusters(contoursDraw, angles);
+   Mat_<int> labels = angle_clusters(contoursDraw2, angles); /*TODO - go on from here - add centers as ref param*/
    std::cout << "angles ref: " << angles  << std::endl;
 
    std::vector< std::vector<cv::Point> > contours_l0;
@@ -180,13 +185,14 @@ void longest_closed()
 
    for(int j=0; j<labels.rows; ++j){
 
+     // if(vec_len[j]<200) continue;
      std::cout << "l.cols: " << labels(j,0) << std::endl;
 
      if(labels(j,0)==0){
-       contours_l0.push_back(contoursDraw[j]);
+       contours_l0.push_back(contoursDraw2[j]);
        angles0.push_back(angles(j,0));
      }else if(labels(j,0)==1){
-       contours_l1.push_back(contoursDraw[j]);
+       contours_l1.push_back(contoursDraw2[j]);
        angles1.push_back(angles(j,0));
      }
    } /*separate / divide into 2 groups with approximate 90 degree alignment */
@@ -194,10 +200,10 @@ void longest_closed()
    std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
 
    // TODO - dynamic here for 0,1 ...
-   coord_clusters( mat.size(), contours_l0, angles0);
+   coord_clusters( mat.size(), contours_l0, angles0); /*TODO then pass center[0] or centers[1] here...*/
 
-   // cv::drawContours(poly, contoursDraw, -1, cv::Scalar(0,255,0),1);
-   cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
+   cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
+   // cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
 
    for(int i=0; i<(int)contours_long.size(); ++i){
@@ -236,11 +242,13 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 }
 
 // TODO - make dynamic here - currently assumes those are the vertical lines...
-Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles ) {
+Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles /*TODO get center angle here...*/ ) {
 
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
-    points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+    // TODO - by centre angle determine vert or hor - may the force be with you...
+    // points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+    points.push_back( Point2f(0, contours[i][0].y) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
   }
 
   int clusterCount = 2, attempts = 1;
@@ -303,12 +311,21 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
   int clusterCount = 2;
   Mat labels;
   int attempts = 5;
-  Mat centers;
+  Mat_<double> centers;
   kmeans(angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
-  std::cout << "labels: " << labels << "centers" << centers << "angles" << angles << std::endl;
+  Mat_<int> labels2 = labels;
 
-  return labels;
+  double angle_centre_diff = abs(centers(0,0)-centers(1,0));
+  if ( angle_centre_diff > 170.0 || angle_centre_diff<5.0 ){
+    for ( int j=0; j<labels.rows; ++ j ) {
+      labels2(j,0) = 0;
+    }
+  }
+
+  std::cout << "labels: " << labels2 << "centers" << centers << "angles" << angles << std::endl;
+
+  return labels2;
 }
 
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
