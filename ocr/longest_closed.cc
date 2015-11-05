@@ -1,6 +1,16 @@
 
 // g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
 // longest_closed > angle_clusters
+
+// longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
+// push to contours_long where arc_len > 5000
+// var labels =  angle_clusters > cluster to contours_l0, contours_l1 - here we get hopefully 2 angles sets with approximate 90 degree alignment
+// TODO - check the angle_clusters logic
+// coord_clusters - TODO - make dynamic for vertical/horizontal - see what happens with 45 degree angles...
+// get_closest_diagonal for (temp) left/right or future up/down lines... TODO check what happens with rotated - 45 degree lines
+// WORK, work worrk ... and then go on, get intersection points, affine transform rotate, crop etc...
+// may the force be with you
+
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -179,7 +189,7 @@ void longest_closed()
        contours_l1.push_back(contoursDraw[j]);
        angles1.push_back(angles(j,0));
      }
-   }
+   } /*separate / divide into 2 groups with approximate 90 degree alignment */
 
    std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
 
@@ -225,11 +235,12 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
+// TODO - make dynamic here - currently assumes those are the vertical lines...
 Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles ) {
 
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
-    points.push_back( Point2f(contours[i][0].x, 0) );
+    points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
   }
 
   int clusterCount = 2, attempts = 1;
