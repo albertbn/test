@@ -56,63 +56,66 @@ double get_longest_side_poly( std::vector<cv::Point> approx ){
   return sqrt(rect.width*rect.width + rect.height*rect.height );
 }
 
+// returns the angle90 count as well as draws circles... love u emacs
 int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   // Number of vertices of polygonal curve
   int vtc = approx.size();
 
+  // TODO - go on and crack the cos/degree thing...
   // Get the degree (in cosines) of all corners
   // std::vector<double> cos;
   double ang, ang_deg;
-  int has_angle90 = 0;
+  int angle90_count = 0;
   std::vector<cv::Point> circles;
   for (int j = 1; j < vtc+1; j++) {
 
     ang = angle(approx[j%vtc], approx[j-2], approx[j-1]);
     // cos.push_back(ang);
 
-    ang_deg = ang*180/CV_PI;
+    ang_deg = abs(ang*180/CV_PI);
 
-    if(ang_deg >-25 && ang_deg<25){
+    if ( ang_deg >-25 && ang_deg<25 ) {
       // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
-      has_angle90 = 1;
+      ++angle90_count;
       circles.push_back(approx[j-1]);
       // std::cout << "drawing circles... "  << std::endl;
     }
 
-    // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
+    std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
   }
 
   double diag = 0;
-  has_angle90 && (diag = get_longest_side_poly ( circles ));
+  angle90_count && (diag = get_longest_side_poly ( circles ));
 
-  if(has_angle90){
+  if ( angle90_count ) {
 
     std::cout << "diag is: " << diag << std::endl;
 
     if(diag>100){
       std::cout << "ok, drawing circles... " << std::endl;
       int clen = circles.size();
-      for(int j=0; j<clen; ++j){
-
+      for ( int j=0; j<clen; ++j ) {
         cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
       }
     }
-
   }
 
-  return 0;
+  return angle90_count;
 }
 
 // start here
 void longest_closed()
 {
    // Mat mat = imread( "./pics/heb.jpg");
-   // Mat mat = imread( "./pics/heb2.jpg");
+   Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
-   Mat mat = imread( "./pics/tj.jpg");
+   // Mat mat = imread( "./pics/tj.jpg");
    // Mat mat = imread( "./pics/tj2.jpg");
 
+   // cleanup some images...
+   remove("./img_pre/long5.jpg");
+   remove("./img_pre/long6.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
 
@@ -154,11 +157,13 @@ void longest_closed()
    std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
    std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
+
+   // filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px...
    for (int i=0; i < (int)contours.size(); i++){
 
      len = cv::arcLength(contours[i], true);
      if(len < 200.0) continue;
-     vec_len.push_back(len);
+     vec_len.push_back(len); /*not used for now*/
 
      cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
      contoursDraw2.push_back(contoursDraw[i]);
@@ -174,42 +179,48 @@ void longest_closed()
    Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
-   // cosine_longest(contours_long);
-   // cosine_longest(contoursDraw);
-   Mat_<float> angles, angles0, angles1;
-   Mat_<double> angle_centers;
-   Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*TODO - go on from here - add centers as ref param*/
-   std::cout << "angles ref: " << angles  << std::endl;
+   int _angle90_count=0;
+   for ( int i=0; i<(int)contours_long.size(); ++i ) {
+     _angle90_count += get_angles( contours_long[i], clong );
+   }
 
-   std::vector< std::vector<cv::Point> > contours_l0;
-   std::vector< std::vector<cv::Point> > contours_l1;
+   std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+   // OK, this is the dotted line connection and expansion algorithm
+   if ( _angle90_count<2 ) {
 
-   for(int j=0; j<labels.rows; ++j){
+     // cosine_longest(contours_long);
+     // cosine_longest(contoursDraw);
+     Mat_<float> angles, angles0, angles1;
+     Mat_<double> angle_centers;
+     Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*TODO - go on from here - add centers as ref param*/
+     std::cout << "angles ref: " << angles  << std::endl;
 
-     // if(vec_len[j]<200) continue;
-     std::cout << "l.cols: " << labels(j,0) << std::endl;
+     std::vector< std::vector<cv::Point> > contours_l0;
+     std::vector< std::vector<cv::Point> > contours_l1;
 
-     if(labels(j,0)==0){
-       contours_l0.push_back(contoursDraw2[j]);
-       angles0.push_back(angles(j,0));
-     }else if(labels(j,0)==1){
-       contours_l1.push_back(contoursDraw2[j]);
-       angles1.push_back(angles(j,0));
-     }
-   } /*separate / divide into 2 groups with approximate 90 degree alignment */
+     for(int j=0; j<labels.rows; ++j){
 
-   std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
+       // if(vec_len[j]<200) continue;
+       std::cout << "l.cols: " << labels(j,0) << std::endl;
 
-   // TODO - dynamic here for 0,1 ...
-   coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*TODO then pass center[0] or centers[1] here...*/
+       if(labels(j,0)==0){
+         contours_l0.push_back(contoursDraw2[j]);
+         angles0.push_back(angles(j,0));
+       }else if(labels(j,0)==1){
+         contours_l1.push_back(contoursDraw2[j]);
+         angles1.push_back(angles(j,0));
+       }
+     } /*separate / divide into 2 groups with approximate 90 degree alignment */
+
+     std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
+
+     // TODO - dynamic here for 0,1 ...
+     coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*TODO then pass center[0] or centers[1] here...*/
+   }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
    // cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
-
-   for(int i=0; i<(int)contours_long.size(); ++i){
-     get_angles( contours_long[i], clong );
-   }
 
    cv::imwrite( "./img_pre/long2.jpg", drawing);
    cv::imwrite( "./img_pre/long3.jpg", poly);
