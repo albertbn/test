@@ -26,8 +26,8 @@ using namespace std;
 
 // c/c++ dummy declaration
 void cosine_longest ( std::vector < std::vector<cv::Point> > contours );
-Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles );
-Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles);
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
+Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center );
 // not in use
 Point2f get_mass_center(Point a, Point b);
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
@@ -177,7 +177,8 @@ void longest_closed()
    // cosine_longest(contours_long);
    // cosine_longest(contoursDraw);
    Mat_<float> angles, angles0, angles1;
-   Mat_<int> labels = angle_clusters(contoursDraw2, angles); /*TODO - go on from here - add centers as ref param*/
+   Mat_<double> angle_centers;
+   Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*TODO - go on from here - add centers as ref param*/
    std::cout << "angles ref: " << angles  << std::endl;
 
    std::vector< std::vector<cv::Point> > contours_l0;
@@ -200,7 +201,7 @@ void longest_closed()
    std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
 
    // TODO - dynamic here for 0,1 ...
-   coord_clusters( mat.size(), contours_l0, angles0); /*TODO then pass center[0] or centers[1] here...*/
+   coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*TODO then pass center[0] or centers[1] here...*/
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
    // cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
@@ -242,13 +243,19 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 }
 
 // TODO - make dynamic here - currently assumes those are the vertical lines...
-Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles /*TODO get center angle here...*/ ) {
+Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center /*TODO get center angle here...*/ ) {
 
+  bool is_vert = angle_center > 45.0 && angle_center < 135.0; /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
-    // TODO - by centre angle determine vert or hor - may the force be with you...
-    // points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
-    points.push_back( Point2f(0, contours[i][0].y) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+
+    // TODO - by center angle determine vert or hor - may the force be with you...
+    if ( is_vert ) {
+      points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+    }
+    else {
+      points.push_back( Point2f(0, contours[i][0].y) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+    }
   }
 
   int clusterCount = 2, attempts = 1;
@@ -300,7 +307,7 @@ Point2f get_mass_center(Point a, Point b){
   return Point2f( (int)((a.x+b.x)/2), (int)((a.y+b.y)/2) );
 }
 
-Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles ){
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers ){
 
   // Mat angles;
   for ( int i=0; i<(int)contours.size(); ++i ) {
@@ -311,7 +318,6 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
   int clusterCount = 2;
   Mat labels;
   int attempts = 5;
-  Mat_<double> centers;
   kmeans(angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
   Mat_<int> labels2 = labels;
