@@ -45,10 +45,12 @@ static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	double dy1 = pt1.y - pt0.y;
 	double dx2 = pt2.x - pt0.x;
 	double dy2 = pt2.y - pt0.y;
-	return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+        double cos_value = (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+
+        return acos(cos_value) * 180.0 / CV_PI;
 }
 
-// get the diagonal of the bounding rect...
+// get the diagonal of the bounding rectangle...
 double get_longest_side_poly( std::vector<cv::Point> approx ){
 
   Rect rect = boundingRect(approx);
@@ -61,21 +63,29 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   // Number of vertices of polygonal curve
   int vtc = approx.size();
+  std::cout << "vtc: " << vtc << std::endl;
 
-  // TODO - go on and crack the cos/degree thing...
+  // DONE - go on and crack the cos/degree thing...
   // Get the degree (in cosines) of all corners
   // std::vector<double> cos;
   double ang, ang_deg;
   int angle90_count = 0;
   std::vector<cv::Point> circles;
-  for (int j = 1; j < vtc+1; j++) {
 
-    ang = angle(approx[j%vtc], approx[j-2], approx[j-1]);
+  // ang = ang_deg = angle(approx[1], approx[7], approx[0]);
+  // ++angle90_count;
+  // circles.push_back(approx[0]);
+
+  int j_mid;
+  for ( int j = 1; j < vtc+1; j++ ) {
+
+    (j==1 && (j_mid = vtc-1)) || (j_mid=j-2); /*6 nov 2015, Albert, Shawn 1 month old - fixed net/github script - go figure how come it's an educated world of assholes, writing un-perfect scripts */
+    std::cout << "approx indexes: " << j%vtc << ',' << j_mid << ',' << j-1 << std::endl;
+    ang = ang_deg = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
     // cos.push_back(ang);
+    // ang_deg = abs(ang*180/CV_PI);
 
-    ang_deg = abs(ang*180/CV_PI);
-
-    if ( ang_deg >-25 && ang_deg<25 ) {
+    if ( ang_deg >60.0 && ang_deg<120.0 ) {
       // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
       ++angle90_count;
       circles.push_back(approx[j-1]);
@@ -108,10 +118,10 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 void longest_closed()
 {
    // Mat mat = imread( "./pics/heb.jpg");
-   Mat mat = imread( "./pics/heb2.jpg");
+   // Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/tj.jpg");
-   // Mat mat = imread( "./pics/tj2.jpg");
+   Mat mat = imread( "./pics/tj2.jpg");
 
    // cleanup some images...
    remove("./img_pre/long5.jpg");
@@ -192,7 +202,7 @@ void longest_closed()
      // cosine_longest(contoursDraw);
      Mat_<float> angles, angles0, angles1;
      Mat_<double> angle_centers;
-     Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*TODO - go on from here - add centers as ref param*/
+     Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
      std::cout << "angles ref: " << angles  << std::endl;
 
      std::vector< std::vector<cv::Point> > contours_l0;
@@ -228,6 +238,7 @@ void longest_closed()
 }
 
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
+  
   std::cout << "avg angles: " << mean(angles) << std::endl;
 
   // vx,vy,x,y
