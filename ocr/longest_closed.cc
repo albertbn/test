@@ -38,9 +38,9 @@ void longest_closed()
 {
    // Mat mat = imread( "./pics/heb.jpg");
    // Mat mat = imread( "./pics/heb2.jpg");
-   Mat mat = imread( "./pics/heb_new.jpg");
+   // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/tj.jpg");
-   // Mat mat = imread( "./pics/tj2.jpg");
+   Mat mat = imread( "./pics/tj2.jpg");
 
    // cleanup some images...
    remove("./img_pre/long5.jpg");
@@ -182,8 +182,19 @@ double get_longest_side_poly( std::vector<cv::Point> approx ){
   return sqrt(rect.width*rect.width + rect.height*rect.height );
 }
 
-void filter_points (   std::vector<cv::Point> &circles, std::vector<cv::Point> approx ){
+void filter_points_if_needed (   std::vector<cv::Point> &circles, std::vector<cv::Point> approx ){
 
+  cv::RotatedRect rect_minAreaRect = minAreaRect(approx);
+  double area1 = contourArea(approx), area_minAreaRect;
+  area_minAreaRect = rect_minAreaRect.size.width * rect_minAreaRect.size.height;
+  std::cout << "area: " << area1 << " ,minAreaRect area:" << area_minAreaRect  << std::endl;
+  // DONE - go on from here... - divide the area (width * height of the minArea) and then divide by the contourArea - and see if result is (>2,3,4) larger than say 2...
+  bool is_bouble_hollow_shape = (area_minAreaRect/area1)>3.0;
+
+  if(!is_bouble_hollow_shape) return;
+
+  // if you got to here, it's a hollow rectangle - like ===\\ and should be ---\
+  // that is, remove double close ~90 degree angles...
   std::vector<cv::Point2f> circle_points; /*need to convert to Point2f for kmeans */
   for ( int i=0; i<(int)circles.size(); ++i ) {
     circle_points.push_back(Point2f(circles[i].x, circles[i].y));
@@ -192,21 +203,22 @@ void filter_points (   std::vector<cv::Point> &circles, std::vector<cv::Point> a
   int clusterCount = ceil((float)circles.size()/2.0);
   int attempts = 1;
   Mat llabels, centers;
+  std::vector<int> labels_dummy;
   kmeans(circle_points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
   std::cout << "\n\n ~~~~ filter points ~~~~ \n\n labels: " << llabels << "centers" << centers << "circle_points" << circle_points << std::endl;
 
-  cv::RotatedRect rect_minAreaRect = minAreaRect(approx);
-  double area1 = contourArea(approx);
-  std::cout << "area: " << area1 << " ,rect size:" << rect_minAreaRect.size.width << ',' << rect_minAreaRect.size.height << std::endl;
+  std::vector<cv::Point> circles_filtered;
+  Mat_<int> labels = llabels;
+  for ( int j=0; j<llabels.rows; ++j ) {
 
-  // TODO - go on from here... - divide the area (width * height of  the minArea) and then divide by the contourArea - and see if result is (>2,3,4) larger than say 2...
-  // for ( int j=0; j<llabels.rows; ++j ) {
-  //   if(labels(j,0)==0){
-  //     contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
-  //   }else if(labels(j,0)==1){
-  //     contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
-  //   }
-  // }
+    if ( std::find(labels_dummy.begin(), labels_dummy.end(), labels(j,0)) != labels_dummy.end() )
+      continue;
+
+    labels_dummy.push_back(labels(j,0));
+    circles_filtered.push_back(circles[j]);
+  }
+
+  circles = circles_filtered;
 }
 
 // returns the angle90 count as well as draws circles... love u emacs
@@ -250,14 +262,14 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
     std::cout << "diag is: " << diag << std::endl;
 
     if(diag>100){
-      std::cout << "ok, drawing circles... " << std::endl;
+      filter_points_if_needed(circles, approx);
       int clen = circles.size();
+      std::cout << "OK, drawing circles... " << clen << std::endl;
       for ( int j=0; j<clen; ++j ) {
         cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
       }
     }
 
-    filter_points(circles, approx);
   }
 
   return angle90_count;
