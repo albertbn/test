@@ -182,7 +182,7 @@ double get_longest_side_poly( std::vector<cv::Point> approx ){
   return sqrt(rect.width*rect.width + rect.height*rect.height );
 }
 
-void filter_points (   std::vector<cv::Point> &circles ){
+void filter_points (   std::vector<cv::Point> &circles, std::vector<cv::Point> approx ){
 
   std::vector<cv::Point2f> circle_points; /*need to convert to Point2f for kmeans */
   for ( int i=0; i<(int)circles.size(); ++i ) {
@@ -195,6 +195,11 @@ void filter_points (   std::vector<cv::Point> &circles ){
   kmeans(circle_points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
   std::cout << "\n\n ~~~~ filter points ~~~~ \n\n labels: " << llabels << "centers" << centers << "circle_points" << circle_points << std::endl;
 
+  cv::RotatedRect rect_minAreaRect = minAreaRect(approx);
+  double area1 = contourArea(approx);
+  std::cout << "area: " << area1 << " ,rect size:" << rect_minAreaRect.size.width << ',' << rect_minAreaRect.size.height << std::endl;
+
+  // TODO - go on from here... - divide the area (width * height of  the minArea) and then divide by the contourArea - and see if result is (>2,3,4) larger than say 2...
   // for ( int j=0; j<llabels.rows; ++j ) {
   //   if(labels(j,0)==0){
   //     contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
@@ -252,7 +257,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
       }
     }
 
-    filter_points(circles);
+    filter_points(circles, approx);
   }
 
   return angle90_count;
