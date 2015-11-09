@@ -1,5 +1,5 @@
 
-// G@++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
 // Longest@_closed > angle_clusters
 
 // longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
@@ -78,7 +78,7 @@ void longest_closed()
 
    std::cout << "contours count: " <<  contours.size()  << std::endl;
 
-   // TODO - go on from checking if the >10000 is a single len
+   // DONE? - go on from checking if the >10000 is a single len
    double len;
    std::vector<double> vec_len;
    std::vector< std::vector<cv::Point> > contours_f1;
@@ -280,7 +280,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 }
 
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
-  
+
   std::cout << "avg angles: " << mean(angles) << std::endl;
 
   // vx,vy,x,y
@@ -316,13 +316,17 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
     // DONE - by center angle determine vert or hor - may the force be with you...
     if ( is_vert ) {
       points.push_back( Point2f(contours[i][0].x, 0) ); /*DONE - here it assumes those are vertical lines, thus separates/clusters by x... DONE dynamic */
+      if(contours.size()<2)
+        points.push_back( Point2f(contours[i][1].x, 0) );
     }
     else {
       points.push_back( Point2f(0, contours[i][0].y) ); /*DONE - here it assumes those are vertical lines, thus separates/clusters by x... DONE dynamic */
+      if(contours.size()<2)
+        points.push_back( Point2f(0, contours[i][1].y) );
     }
   }
 
-  int clusterCount = (contours.size()>1) ? 2 : 1;
+  int clusterCount =  2;
   int attempts = 1;
   Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
@@ -358,9 +362,16 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
 
   Rect r0 = cv::boundingRect(points0);  Rect r1 = cv::boundingRect(points1);
-  get_closest_diagonal(r0, angles0, points0, l0);  get_closest_diagonal(r1, angles1, points1, l1);
 
-  rectangle ( l0,r0,cv::Scalar(0,255,0) );  rectangle ( l1,r1,cv::Scalar(0,255,0) );
+  if(points0.size()>0){
+    get_closest_diagonal(r0, angles0, points0, l0);
+    rectangle ( l0,r0,cv::Scalar(0,255,0) );
+  }
+
+  if(points1.size()>0){
+    get_closest_diagonal(r1, angles1, points1, l1);
+    rectangle ( l1,r1,cv::Scalar(0,255,0) );
+  }
 
   cv::imwrite( "./img_pre/long5.jpg", l0);  cv::imwrite( "./img_pre/long6.jpg", l1);
 
