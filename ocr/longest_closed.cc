@@ -1,6 +1,6 @@
 
-// g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
-// longest_closed > angle_clusters
+// G@++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// Longest@_closed > angle_clusters
 
 // longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
 // push to contours_long where arc_len > 5000
@@ -109,6 +109,7 @@ void longest_closed()
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
    int _angle90_count=0;
+   // count the ~90 degree angles...
    for ( int i=0; i<(int)contours_long.size(); ++i ) {
      _angle90_count += get_angles( contours_long[i], clong );
    }
@@ -129,7 +130,6 @@ void longest_closed()
 
      for(int j=0; j<labels.rows; ++j){
 
-       // if(vec_len[j]<200) continue;
        std::cout << "l.cols: " << labels(j,0) << std::endl;
 
        if(labels(j,0)==0){
@@ -141,10 +141,14 @@ void longest_closed()
        }
      } /*separate / divide into 2 groups with approximate 90 degree alignment */
 
-     std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << std::endl;
+     std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()<< ',' <<  angle_centers(0,1) << std::endl;
 
-     // TODO - dynamic here for 0,1 ...
-     coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*TODO then pass center[0] or centers[1] here...*/
+     // DONE - dynamic here for 0,1 ...
+     if( contours_l0.size() )
+       coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
+
+     if( contours_l1.size() )
+       coord_clusters( mat.size(), contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
@@ -302,23 +306,24 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
-// TODO - make dynamic here - currently assumes those are the vertical lines...
-Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center /*TODO get center angle here...*/ ) {
+// DONE - make dynamic here - currently assumes those are the vertical lines...
+Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center /* DONE get center angle here... */ ) {
 
   bool is_vert = angle_center > 45.0 && angle_center < 135.0; /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
 
-    // TODO - by center angle determine vert or hor - may the force be with you...
+    // DONE - by center angle determine vert or hor - may the force be with you...
     if ( is_vert ) {
-      points.push_back( Point2f(contours[i][0].x, 0) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+      points.push_back( Point2f(contours[i][0].x, 0) ); /*DONE - here it assumes those are vertical lines, thus separates/clusters by x... DONE dynamic */
     }
     else {
-      points.push_back( Point2f(0, contours[i][0].y) ); /*TODO - here it assumes those are vertical lines, thus separates/clusters by x... TODO dynamic */
+      points.push_back( Point2f(0, contours[i][0].y) ); /*DONE - here it assumes those are vertical lines, thus separates/clusters by x... DONE dynamic */
     }
   }
 
-  int clusterCount = 2, attempts = 1;
+  int clusterCount = (contours.size()>1) ? 2 : 1;
+  int attempts = 1;
   Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
   std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: " << llabels << "centers" << centers << "points" << points << std::endl;
