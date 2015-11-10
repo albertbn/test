@@ -42,7 +42,26 @@ void longest_closed()
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/tj.jpg");
    // Mat mat = imread( "./pics/tj2.jpg");
-   Mat mat = imread( "./pics/tj22.jpg");
+   // Mat mat = imread( "./pics/tj22.jpg");
+   // Mat mat = imread( "./pics/pers.jpg");
+   // Mat mat = imread( "./pics/1.jpg");
+   // Mat mat = imread( "./pics/2.jpg");
+   // Mat mat = imread( "./pics/3.jpg");
+   // Mat mat = imread( "./pics/4.jpg");
+   // Mat mat = imread( "./pics/5.jpg");
+   // Mat mat = imread( "./pics/6.jpg");
+   // Mat mat = imread( "./pics/7.jpg");
+   // Mat mat = imread( "./pics/8.jpg");
+  Mat mat = imread( "./pics/9.jpg"); /* flash */
+   // Mat mat = imread( "./pics/10.jpg");
+   // Mat mat = imread( "./pics/11.jpg");
+   // Mat mat = imread( "./pics/12.jpg");
+   // Mat mat = imread( "./pics/13.jpg");
+   // Mat mat = imread( "./pics/14.jpg");
+   // Mat mat = imread( "./pics/15.jpg");
+   // Mat mat = imread( "./pics/16.jpg");
+   // Mat mat = imread( "./pics/17.jpg");
+   // Mat mat = imread( "./pics/18.jpg");
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
