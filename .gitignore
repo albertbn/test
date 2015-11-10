@@ -1,3 +1,5 @@
+*.dSYM
+hello
 longest_closed
 # Logs
 logs
