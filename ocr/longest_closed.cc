@@ -1,5 +1,6 @@
 
-// g++ -g -rdynamic $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// g++ -g $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed
 
 // Longest@_closed > angle_clusters
 
@@ -20,7 +21,6 @@
 #include <iostream>
 #include <signal.h>
 #include <execinfo.h>
-
 
 using namespace cv;
 using namespace std;
