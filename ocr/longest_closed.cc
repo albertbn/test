@@ -1,5 +1,6 @@
 
-// g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// g++ -g -rdynamic $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+
 // Longest@_closed > angle_clusters
 
 // longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
@@ -16,8 +17,10 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <math.h>
-
 #include <iostream>
+#include <signal.h>
+#include <execinfo.h>
+
 
 using namespace cv;
 using namespace std;
@@ -40,7 +43,8 @@ void longest_closed()
    // Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/tj.jpg");
-   Mat mat = imread( "./pics/tj2.jpg");
+   // Mat mat = imread( "./pics/tj2.jpg");
+   Mat mat = imread( "./pics/tj22.jpg");
 
    // cleanup some images...
    remove("./img_pre/long5.jpg");
@@ -143,11 +147,12 @@ void longest_closed()
 
      std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()<< ',' <<  angle_centers(0,1) << std::endl;
 
+     // TODO - if there is only 1 line in ether contours_l0 or contours_l1, the coord_clusters crashes - add trace log info and implement also for a single
      // DONE - dynamic here for 0,1 ...
-     if( contours_l0.size() )
+     if( contours_l0.size()>1 )
        coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
 
-     if( contours_l1.size() )
+     if( contours_l1.size()>1 )
        coord_clusters( mat.size(), contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
    }
 
@@ -330,7 +335,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   int attempts = 1;
   Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: " << llabels << "centers" << centers << "points" << points << std::endl;
+  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << std::endl;
 
   std::vector < std::vector<cv::Point> > contours_l0, contours_l1;
   Mat l0 = Mat::zeros( size, CV_8UC3 ), l1 = Mat::zeros( size, CV_8UC3 );
@@ -460,8 +465,20 @@ void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
 
 // DONE go on from doing another simple loop, just to calc the angles and then try the kmean clustering... yep! may the force be with you
 
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 int main ( int argc, char** argv )
 {
+  // signal(SIGSEGV, handler);   // install our handler
   std::cout << "argc: " << argc << ',' << "argv (pointer): " << argv << std::endl;
   longest_closed();
   return 0;
