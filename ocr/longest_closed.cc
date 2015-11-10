@@ -19,8 +19,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <math.h>
 #include <iostream>
-#include <signal.h>
-#include <execinfo.h>
 
 using namespace cv;
 using namespace std;
@@ -47,6 +45,7 @@ void longest_closed()
    Mat mat = imread( "./pics/tj22.jpg");
 
    // cleanup some images...
+   remove("./img_pre/long4.jpg");
    remove("./img_pre/long5.jpg");
    remove("./img_pre/long6.jpg");
 
@@ -80,7 +79,7 @@ void longest_closed()
    // cv::findContours(edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
    cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
 
-   std::cout << "contours count: " <<  contours.size()  << std::endl;
+   // std::cout << "contours count: " <<  contours.size()  << std::endl;
 
    // DONE? - go on from checking if the >10000 is a single len
    double len;
@@ -91,20 +90,23 @@ void longest_closed()
    std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
 
-   // filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px...
+   double min_line_length = max(mat.size().width, mat.size().height)/10.0;
+   int min_closed_line_len = (mat.size().width + mat.size().height);
+
+   // filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
    for (int i=0; i < (int)contours.size(); i++){
 
      len = cv::arcLength(contours[i], true);
-     if(len < 200.0) continue;
+     if(len < min_line_length) continue;
      vec_len.push_back(len); /*not used for now*/
 
      cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
      contoursDraw2.push_back(contoursDraw[i]);
 
      if(len>0){
-       std::cout << "closed line len...: " << len << std::endl;
+       // std::cout << "closed line len...: " << len << std::endl;
        contours_f1.push_back(contours[i]);
-       if(len>5000) contours_long.push_back(contoursDraw[i]);
+       if(len>min_closed_line_len) contours_long.push_back(contoursDraw[i]);
      }
    }
 
@@ -118,7 +120,7 @@ void longest_closed()
      _angle90_count += get_angles( contours_long[i], clong );
    }
 
-   std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+   // std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
    if ( _angle90_count<2 ) {
 
@@ -127,14 +129,14 @@ void longest_closed()
      Mat_<float> angles, angles0, angles1;
      Mat_<double> angle_centers;
      Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
-     std::cout << "angles ref: " << angles  << std::endl;
+     // std::cout << "angles ref: " << angles  << std::endl;
 
      std::vector< std::vector<cv::Point> > contours_l0;
      std::vector< std::vector<cv::Point> > contours_l1;
 
      for(int j=0; j<labels.rows; ++j){
 
-       std::cout << "l.cols: " << labels(j,0) << std::endl;
+       // std::cout << "l.cols: " << labels(j,0) << std::endl;
 
        if(labels(j,0)==0){
          contours_l0.push_back(contoursDraw2[j]);
@@ -145,7 +147,7 @@ void longest_closed()
        }
      } /*separate / divide into 2 groups with approximate 90 degree alignment */
 
-     std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()<< ',' <<  angle_centers(0,1) << std::endl;
+     // std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()<< ',' <<  angle_centers(0,1) << std::endl;
 
      // TODO - if there is only 1 line in ether contours_l0 or contours_l1, the coord_clusters crashes - add trace log info and implement also for a single
      // DONE - dynamic here for 0,1 ...
@@ -196,7 +198,7 @@ void filter_points_if_needed (   std::vector<cv::Point> &circles, std::vector<cv
   cv::RotatedRect rect_minAreaRect = minAreaRect(approx);
   double area1 = contourArea(approx), area_minAreaRect;
   area_minAreaRect = rect_minAreaRect.size.width * rect_minAreaRect.size.height;
-  std::cout << "area: " << area1 << " ,minAreaRect area:" << area_minAreaRect  << std::endl;
+  // std::cout << "area: " << area1 << " ,minAreaRect area:" << area_minAreaRect  << std::endl;
   // DONE - go on from here... - divide the area (width * height of the minArea) and then divide by the contourArea - and see if result is (>2,3,4) larger than say 2...
   bool is_bouble_hollow_shape = (area_minAreaRect/area1)>3.0;
 
@@ -214,7 +216,7 @@ void filter_points_if_needed (   std::vector<cv::Point> &circles, std::vector<cv
   Mat llabels, centers;
   std::vector<int> labels_dummy;
   kmeans(circle_points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-  std::cout << "\n\n ~~~~ filter points ~~~~ \n\n labels: " << llabels << "centers" << centers << "circle_points" << circle_points << std::endl;
+  // std::cout << "\n\n ~~~~ filter points ~~~~ \n\n labels: " << llabels << "centers" << centers << "circle_points" << circle_points << std::endl;
 
   std::vector<cv::Point> circles_filtered;
   Mat_<int> labels = llabels;
@@ -235,7 +237,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   // Number of vertices of polygonal curve
   int vtc = approx.size();
-  std::cout << "vtc: " << vtc << std::endl;
+  // std::cout << "vtc: " << vtc << std::endl;
 
   // DONE - go on and crack the cos/degree thing...
   // Get the degree (in cosines) of all corners
@@ -248,7 +250,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
   for ( int j = 1; j < vtc+1; j++ ) {
 
     (j==1 && (j_mid = vtc-1)) || (j_mid=j-2); /*6 nov 2015, Albert, Shawn 1 month old - fixed net/github script - go figure how come it's an educated world of assholes, writing un-perfect scripts */
-    std::cout << "approx indexes: " << j%vtc << ',' << j_mid << ',' << j-1 << std::endl;
+    // std::cout << "approx indexes: " << j%vtc << ',' << j_mid << ',' << j-1 << std::endl;
     ang = ang_deg = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
     // cos.push_back(ang);
     // ang_deg = abs(ang*180/CV_PI);
@@ -260,7 +262,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
       // std::cout << "drawing circles... "  << std::endl;
     }
 
-    std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
+    // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
   }
 
   double diag = 0;
@@ -268,12 +270,12 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
   if ( angle90_count ) {
 
-    std::cout << "diag is: " << diag << std::endl;
+    // std::cout << "diag is: " << diag << std::endl;
 
     if(diag>100){
       filter_points_if_needed(circles, approx);
       int clen = circles.size();
-      std::cout << "OK, drawing circles... " << clen << std::endl;
+      // std::cout << "OK, drawing circles... " << clen << std::endl;
       for ( int j=0; j<clen; ++j ) {
         cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
       }
@@ -286,7 +288,7 @@ int get_angles ( std::vector<cv::Point> approx, Mat drawing ) {
 
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  std::cout << "avg angles: " << mean(angles) << std::endl;
+  // std::cout << "avg angles: " << mean(angles) << std::endl;
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -306,7 +308,7 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   x1 = x + vx*(4*pic.cols);
   y1 = y + vy*(4*pic.rows);
 
-  std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
+  // std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
 
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
@@ -335,7 +337,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   int attempts = 1;
   Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << std::endl;
+  // std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << std::endl;
 
   std::vector < std::vector<cv::Point> > contours_l0, contours_l1;
   Mat l0 = Mat::zeros( size, CV_8UC3 ), l1 = Mat::zeros( size, CV_8UC3 );
@@ -364,7 +366,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
     points1.push_back(contours_l1[i][1]);
   }
 
-  std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
+  // std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
 
   Rect r0 = cv::boundingRect(points0);  Rect r1 = cv::boundingRect(points1);
 
@@ -404,7 +406,9 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
   Mat_<int> labels2 = labels;
 
   double angle_centre_diff = abs(centers(0,0)-centers(1,0));
-  if ( angle_centre_diff > 170.0 || angle_centre_diff<5.0 ){
+
+  std::cout << "centers: " << centers <<  "angle_centre_diff: " << angle_centre_diff  << std::endl;
+  if ( angle_centre_diff > 170.0 || angle_centre_diff<10.0 ){
     for ( int j=0; j<labels.rows; ++ j ) {
       labels2(j,0) = 0;
     }
@@ -464,22 +468,9 @@ void cosine_longest ( std::vector < std::vector<cv::Point> > contours ) {
 }
 
 // DONE go on from doing another simple loop, just to calc the angles and then try the kmean clustering... yep! may the force be with you
-
-void handler(int sig) {
-  void *array[10];
-  size_t size;
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
-}
-
 int main ( int argc, char** argv )
 {
-  // signal(SIGSEGV, handler);   // install our handler
-  std::cout << "argc: " << argc << ',' << "argv (pointer): " << argv << std::endl;
+  // std::cout << "argc: " << argc << ',' << "argv (pointer): " << argv << std::endl;
   longest_closed();
   return 0;
 }
