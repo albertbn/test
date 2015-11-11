@@ -44,24 +44,24 @@ void longest_closed()
    // Mat mat = imread( "./pics/tj2.jpg");
    // Mat mat = imread( "./pics/tj22.jpg");
    // Mat mat = imread( "./pics/pers.jpg");
-   // Mat mat = imread( "./pics/1.jpg");
+  // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
    // Mat mat = imread( "./pics/2.jpg");
    // Mat mat = imread( "./pics/3.jpg");
    // Mat mat = imread( "./pics/4.jpg");
    // Mat mat = imread( "./pics/5.jpg");
-   // Mat mat = imread( "./pics/6.jpg");
-   // Mat mat = imread( "./pics/7.jpg");
-   // Mat mat = imread( "./pics/8.jpg");
-  Mat mat = imread( "./pics/9.jpg"); /* flash */
+  // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
+  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm   */
+  // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
+   // Mat mat = imread( "./pics/9.jpg"); /* flash */
    // Mat mat = imread( "./pics/10.jpg");
-   // Mat mat = imread( "./pics/11.jpg");
-   // Mat mat = imread( "./pics/12.jpg");
-   // Mat mat = imread( "./pics/13.jpg");
-   // Mat mat = imread( "./pics/14.jpg");
-   // Mat mat = imread( "./pics/15.jpg");
-   // Mat mat = imread( "./pics/16.jpg");
-   // Mat mat = imread( "./pics/17.jpg");
-   // Mat mat = imread( "./pics/18.jpg");
+  // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
+  // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
+  // Mat mat = imread( "./pics/14.jpg"); /*same as above*/
+  // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
+  // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
+  // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
+  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
