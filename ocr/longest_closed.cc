@@ -37,15 +37,15 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 // start here
 void longest_closed()
 {
-   // Mat mat = imread( "./pics/heb.jpg");
+  // Mat mat = imread( "./pics/heb.jpg");
    // Mat mat = imread( "./pics/heb2.jpg");
    // Mat mat = imread( "./pics/heb_new.jpg");
    // Mat mat = imread( "./pics/tj.jpg");
    // Mat mat = imread( "./pics/tj2.jpg");
    // Mat mat = imread( "./pics/tj22.jpg");
    // Mat mat = imread( "./pics/pers.jpg");
-  // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
-   // Mat mat = imread( "./pics/2.jpg");
+  Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
+  // Mat mat = imread( "./pics/2.jpg");
    // Mat mat = imread( "./pics/3.jpg");
    // Mat mat = imread( "./pics/4.jpg");
    // Mat mat = imread( "./pics/5.jpg");
@@ -56,7 +56,7 @@ void longest_closed()
    // Mat mat = imread( "./pics/10.jpg");
   // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
-  Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
+  // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
   // Mat mat = imread( "./pics/14.jpg"); /*same as above*/
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
@@ -104,7 +104,6 @@ void longest_closed()
 
    // DONE? - go on from checking if the >10000 is a single len
    double len;
-   std::vector<double> vec_len;
    std::vector< std::vector<cv::Point> > contours_f1;
    std::vector< std::vector<cv::Point> > contours_long;
    std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
@@ -118,8 +117,10 @@ void longest_closed()
    for (int i=0; i < (int)contours.size(); i++){
 
      len = cv::arcLength(contours[i], true);
-     if(len < min_line_length) continue;
-     vec_len.push_back(len); /*not used for now*/
+     if(len < min_line_length) {
+       // std::cout << "length smaller than min_line_length...: " << len << ',' << min_line_length << std::endl;
+       continue;
+     }
 
      cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
      contoursDraw2.push_back(contoursDraw[i]);
@@ -150,7 +151,7 @@ void longest_closed()
      Mat_<float> angles, angles0, angles1;
      Mat_<double> angle_centers;
      Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
-     // std::cout << "angles ref: " << angles  << std::endl;
+     std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
 
      std::vector< std::vector<cv::Point> > contours_l0;
      std::vector< std::vector<cv::Point> > contours_l1;
@@ -192,7 +193,10 @@ static float angle_2points ( cv::Point p1, cv::Point p2 ) {
 
   float ang = atan2(p1.y - p2.y, p1.x - p2.x);
   ang = ang * 180 / CV_PI;
+  // std::cout << "area: " << area1 << " ,minAreaRect area:" << area_minAreaRect  << std::endl;
   return (ang>0.0) ? ang : 180.0 + ang;
+  // return abs(ang);
+  // return ang;
 }
 
 static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
