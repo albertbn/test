@@ -56,12 +56,12 @@ void longest_closed()
    // Mat mat = imread( "./pics/10.jpg");
   // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
-  // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
+  Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
   // Mat mat = imread( "./pics/14.jpg"); /*same as above*/
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
-  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
+  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -69,6 +69,8 @@ void longest_closed()
    remove("./img_pre/long6.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
+
+   // std::cout << mat << std::endl;
 
    /// Apply Histogram Equalization - not clear - sometimes is good, sometimes not???
    // equalizeHist ( mat, mat );
