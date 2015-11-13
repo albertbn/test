@@ -1,0 +1,120 @@
+
+1open_test.cc,15
+int main(7,72
+
+2opencv_test.cc,15
+int main(7,72
+
+canny.cc,287
+Mat src,18,427
+Mat src, src_gray;18,427
+Mat dst,19,446
+Mat dst, detected_edges;19,446
+int edgeThresh 21,472
+int lowThreshold;22,492
+int const max_lowThreshold 23,510
+int ratio 24,544
+int kernel_size 25,559
+char* window_name 26,580
+void CannyThreshold(32,719
+int main(52,1194
+
+canny_borders.cc,332
+Mat src,23,599
+Mat src, src_gray;23,599
+Mat dst,24,618
+Mat dst, detected_edges;24,618
+int edgeThresh 26,644
+int lowThreshold;27,664
+int const max_lowThreshold 28,682
+int ratio 29,716
+int kernel_size 30,731
+char* window_name 31,752
+std::vector<cv::Rect> detectLetters(33,785
+void CannyThreshold(65,1856
+int main(96,2606
+
+corners.cc,172
+static double angle(26,760
+int get_longest_side_poly_magn(36,1101
+double get_longest_side_poly(60,1716
+int get_angles 67,1885
+void corners(115,3049
+int main 190,5775
+
+discrete_fourier_transform.cc,42
+static void help(15,368
+int main(24,816
+
+end_to_end_recognition.cc,158
+int main(36,1319
+size_t min(296,11869
+size_t edit_distance(301,11955
+bool isRepetitive(326,12559
+void er_draw(344,12873
+bool   sort_by_lenght(359,13514
+
+histogram.cc,17
+int main(14,286
+
+hough.cc,92
+void help(17,446
+float get_line_len(24,632
+float get_line_angle(35,832
+int main(46,1063
+
+longest_closed.cc,383
+void longest_closed(38,1816
+static float angle_2points 192,8788
+static double angle(202,9101
+double get_longest_side_poly(214,9487
+void filter_points_if_needed 221,9656
+int get_angles 261,11509
+void get_closest_diagonal 314,13193
+Mat coord_clusters 342,14181
+Point2f get_mass_center(413,17137
+Mat angle_clusters(418,17244
+void cosine_longest 447,18233
+int main 496,19802
+
+mser.cc,17
+int main(16,299
+
+opencv_rotate_heb.cc,37
+void deskew(7,213
+int main 41,1167
+
+opencv_skew_heb.cc,43
+void compute_skew(7,206
+int main 54,2055
+
+opencv_test.cc,61
+std::vector<cv::Rect> detectLetters(8,279
+int main 31,1349
+
+opencv_test_heb.cc,61
+std::vector<cv::Rect> detectLetters(9,337
+int main 47,1982
+
+orient_scritp.cc,17
+int main(17,457
+
+orient_scritp_heb.cc,17
+int main(17,469
+
+persp.cc,80
+cv::Point2f computeIntersect(14,387
+void sortCorners(31,897
+int main(59,1572
+
+skew_heb2.cc,91
+void help(15,358
+float get_line_len(22,544
+float get_line_angle(33,744
+int main(43,946
+
+textdetection.cc,100
+int main(34,793
+void show_help_and_exit(98,3276
+void groups_draw(105,3516
+void er_show(116,3856
