@@ -1,16 +1,16 @@
 
-// // g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
-// // g++ -g $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed
+// g++ $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed && ./longest_closed
+// g++ -g $(pkg-config --cflags --libs opencv) longest_closed.cc -o longest_closed
 
-// // Longest@_closed > angle_clusters
+// Longest@_closed > angle_clusters
 
-// // longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
-// // push to contours_long where arc_len > 5000
-// // var labels =  angle_clusters > cluster to contours_l0, contours_l1 - here we get hopefully 2 angles sets with approximate 90 degree alignment
-// // TODO - check the angle_clusters logic
-// // coord_clusters - TODO - make dynamic for vertical/horizontal - see what happens with 45 degree angles...
-// // get_closest_diagonal for (temp) left/right or future up/down lines... TODO check what happens with rotated - 45 degree lines
-// // WORK, work worrk ... and then go on, get intersection points, affine transform rotate, crop etc...
+// longest_closed > findContours(contours) > loop contours (approxPolyDP(contoursDraw)) >
+// push to contours_long where arc_len > 5000
+// var labels =  angle_clusters > cluster to contours_l0, contours_l1 - here we get hopefully 2 angles sets with approximate 90 degree alignment
+// TODO - check the angle_clusters logic
+// coord_clusters - TODO - make dynamic for vertical/horizontal - see what happens with 45 degree angles...
+// get_closest_diagonal for (temp) left/right or future up/down lines... TODO check what happens with rotated - 45 degree lines
+// WORK, work worrk ... and then go on, get intersection points, affine transform rotate, crop etc...
 // // may the force be with you
 
 #include "opencv2/opencv.hpp"
@@ -40,26 +40,26 @@ Point2f get_mass_center(Point a, Point b);
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
 static float angle_2points ( cv::Point p1, cv::Point p2 );
 
-// // start here
+// start here
 void longest_closed()
 {
   // Mat mat = imread( "./pics/heb.jpg");
   // Mat mat = imread( "./pics/heb2.jpg");
   // Mat mat = imread( "./pics/heb_new.jpg");
   // Mat mat = imread( "./pics/tj.jpg");
-   // Mat mat = imread( "./pics/tj2.jpg");
-   // Mat mat = imread( "./pics/tj22.jpg");
-   // Mat mat = imread( "./pics/pers.jpg");
+  // Mat mat = imread( "./pics/tj2.jpg");
+  // Mat mat = imread( "./pics/tj22.jpg");
+  // Mat mat = imread( "./pics/pers.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
-  Mat mat = imread( "./pics/2.jpg");
-   // Mat mat = imread( "./pics/3.jpg");
-   // Mat mat = imread( "./pics/4.jpg");
-   // Mat mat = imread( "./pics/5.jpg");
+  // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
+  // Mat mat = imread( "./pics/3.jpg");
+  Mat mat = imread( "./pics/4.jpg"); /*TODO*/
+  // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
-  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm   */
+  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
-   // Mat mat = imread( "./pics/9.jpg"); /* flash */
-   // Mat mat = imread( "./pics/10.jpg");
+  // Mat mat = imread( "./pics/9.jpg"); /* flash */
+  // Mat mat = imread( "./pics/10.jpg");
   // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
   // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
@@ -414,15 +414,18 @@ Mat coord_clusters_munge ( Size size,
 
 double get_max_deviation(Size size, double angle_center, bool is_vert){
 
-  double max_deviation=0.0, len_side;
-  //vert - take x, hor - take y
+  double max_deviation=0.0, len_side, angle_center_rad;
   len_side = is_vert ? size.height : size.width;
+  angle_center = is_vert ? angle_center-90.0 : 180-angle_center;
+  angle_center_rad = angle_center/180*CV_PI;
+  max_deviation = abs ( tan(angle_center_rad) * len_side ) ;
+
+  std::cout << "angle_center: " << angle_center << ", len_side: " << len_side << ", angle_center_rad: " << angle_center_rad << ", max_deviation: " << max_deviation  <<  std::endl;
+  return max_deviation;
 }
 
 Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center ){
 
-  // TODO - make get_max_deviation(size, angle_center, is_vert)
-  
   bool is_vert = angle_center > 45.0 && angle_center < 135.0; /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
@@ -440,14 +443,21 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   Mat llabels, centers;
   kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
-  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << std::endl;
-
   std::vector < std::vector<cv::Point> > contours_l0, contours_l1;
 
   Mat_<double> centersd = centers;
-  double angle_centre_diff = abs(centersd(0,0)-centersd(1,0));
-
   Mat_<int> labels = llabels;  Mat_<float> angles0, angles1;
+  double xy_centre_diff = is_vert ? abs(centersd(0,0)-centersd(1,0)) : abs(centersd(0,1)-centersd(1,1));
+
+  // this here means there is just 1 group of hor or vert lines
+  if( get_max_deviation(size, angle_center, is_vert) > xy_centre_diff ){
+    for ( int j=0; j<labels.rows; ++ j ) {
+      labels(j,0) = 0;
+    }
+  }
+
+  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << '\n' << "xy_centre_diff: " << xy_centre_diff << std::endl;
+
   for ( int j=0; j<labels.rows; ++j ) {
     if(labels(j,0)==0){
       contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
