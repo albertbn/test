@@ -39,7 +39,10 @@ Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, 
 Point2f get_mass_center(Point a, Point b);
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
 static float angle_2points ( cv::Point p1, cv::Point p2 );
-
+Mat coord_clusters_munge ( Size size,
+                           std::vector < std::vector<cv::Point> > contours_l0, std::vector < std::vector<cv::Point> > contours_l1,
+                           Mat_<float> angles0, Mat_<float> angles1
+                           );
 // start here
 void longest_closed()
 {
@@ -53,7 +56,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
   // Mat mat = imread( "./pics/3.jpg");
-  Mat mat = imread( "./pics/4.jpg"); /*TODO*/
+  // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
   // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
@@ -67,7 +70,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
-  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
+  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -157,7 +160,7 @@ void longest_closed()
      Mat_<float> angles, angles0, angles1;
      Mat_<double> angle_centers;
      Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
-     std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
+     // std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
 
      std::vector< std::vector<cv::Point> > contours_l0;
      std::vector< std::vector<cv::Point> > contours_l1;
@@ -176,13 +179,21 @@ void longest_closed()
        }
      } /*separate / divide into 2 groups with approximate 90 degree alignment */
 
-     std::cout << "angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << std::endl;
+     std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
+
+     std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
      if( contours_l0.size()>1 && len_sum0>min_line_length*5 )
        coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
+     else if( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
+       coord_clusters_munge( mat.size(), contours_l0, dumm, angles0, angles_dumm );
+     }
 
      if( contours_l1.size()>1 && len_sum1>min_line_length*5 )
        coord_clusters( mat.size(), contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
+     else if( contours_l1.size()<2 && len_sum1>min_line_length*5 ){
+       coord_clusters_munge( mat.size(), contours_l1, dumm, angles1, angles_dumm );
+     }
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
@@ -420,7 +431,7 @@ double get_max_deviation(Size size, double angle_center, bool is_vert){
   angle_center_rad = angle_center/180*CV_PI;
   max_deviation = abs ( tan(angle_center_rad) * len_side ) ;
 
-  std::cout << "angle_center: " << angle_center << ", len_side: " << len_side << ", angle_center_rad: " << angle_center_rad << ", max_deviation: " << max_deviation  <<  std::endl;
+  // std::cout << "angle_center: " << angle_center << ", len_side: " << len_side << ", angle_center_rad: " << angle_center_rad << ", max_deviation: " << max_deviation  <<  std::endl;
   return max_deviation;
 }
 
@@ -456,7 +467,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
     }
   }
 
-  std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << '\n' << "xy_centre_diff: " << xy_centre_diff << std::endl;
+  // std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << '\n' << "xy_centre_diff: " << xy_centre_diff << std::endl;
 
   for ( int j=0; j<labels.rows; ++j ) {
     if(labels(j,0)==0){
@@ -490,14 +501,14 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
 
   double angle_centre_diff = abs(centers(0,0)-centers(1,0));
 
-  std::cout <<  "angle_centre_diff: " << angle_centre_diff  << std::endl;
+  // std::cout <<  "angle_centre_diff: " << angle_centre_diff  << std::endl;
   if ( angle_centre_diff > 170.0 || angle_centre_diff<10.0 ){
     for ( int j=0; j<labels.rows; ++ j ) {
       labels2(j,0) = 0;
     }
   }
 
-  std::cout << "labels: " << labels2 << std::endl;
+  // std::cout << "labels: " << labels2 << std::endl;
 
   return labels2;
 }
