@@ -43,6 +43,12 @@ Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0, std::vector < std::vector<cv::Point> > contours_l1,
                            Mat_<float> angles0, Mat_<float> angles1
                            );
+static void deal_with_geometry_when_not_enough_90d_angles(
+                                                          Size mat_size,
+                                                          std::vector<std::vector<cv::Point> > contoursDraw2,
+                                                          std::vector<double> len_contours_contoursDraw2,
+                                                          double min_line_length);
+
 // start here
 void longest_closed()
 {
@@ -123,7 +129,7 @@ void longest_closed()
    double min_line_length = max(mat.size().width, mat.size().height)/10.0;
    int min_closed_line_len = (mat.size().width + mat.size().height);
 
-   // filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
+   // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
    for (int i=0; i < (int)contours.size(); i++){
 
      len = cv::arcLength(contours[i], true);
@@ -157,52 +163,92 @@ void longest_closed()
    // OK, this is the dotted line connection and expansion algorithm
    if ( _angle90_count<2 ) {
 
-     Mat_<float> angles, angles0, angles1;
-     Mat_<double> angle_centers;
-     Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
-     // std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
-
-     std::vector< std::vector<cv::Point> > contours_l0;
-     std::vector< std::vector<cv::Point> > contours_l1;
-     double len_sum0=0.0, len_sum1=0.0;
-
-     for(int j=0; j<labels.rows; ++j){
-
-       if(labels(j,0)==0){
-         contours_l0.push_back(contoursDraw2[j]);
-         angles0.push_back(angles(j,0));
-         len_sum0+=len_contours_contoursDraw2[j];
-       }else if(labels(j,0)==1){
-         contours_l1.push_back(contoursDraw2[j]);
-         angles1.push_back(angles(j,0));
-         len_sum1+=len_contours_contoursDraw2[j];
-       }
-     } /*separate / divide into 2 groups with approximate 90 degree alignment */
-
-     std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
-
-     std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
-
-     if( contours_l0.size()>1 && len_sum0>min_line_length*5 )
-       coord_clusters( mat.size(), contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
-     else if( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
-       coord_clusters_munge( mat.size(), contours_l0, dumm, angles0, angles_dumm );
-     }
-
-     if( contours_l1.size()>1 && len_sum1>min_line_length*5 )
-       coord_clusters( mat.size(), contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
-     else if( contours_l1.size()<2 && len_sum1>min_line_length*5 ){
-       coord_clusters_munge( mat.size(), contours_l1, dumm, angles1, angles_dumm );
-     }
+     deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
-   // cv::drawContours(poly, contours_l0, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
 
    cv::imwrite( "./img_pre/long2.jpg", drawing);
    cv::imwrite( "./img_pre/long3.jpg", poly);
    cv::imwrite( "./img_pre/long4.jpg", clong);
+}
+
+// splits contours to dotted lines, no matter if closed or not - should get just a collection of 2 point straight vanilla lines
+static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contoursDraw2, std::vector<double> &len_contours_contoursDraw2 ){
+
+  std::vector<std::vector<cv::Point> > contoursDraw3;
+  std::vector<cv::Point> line_tmp;
+  std::vector<double> len_contours_contoursDraw3;
+
+  for ( int i=0; i < (int)contoursDraw2.size(); i++ ) {
+
+    if ( contoursDraw2[i].size()<3 ){
+      contoursDraw3.push_back(contoursDraw2[i]);
+      len_contours_contoursDraw3.push_back( arcLength(contoursDraw2[i], false) );
+      continue;
+    }
+    int ssize = (int)contoursDraw2[i].size();
+    for ( int j=0; j<ssize; ++j ) {
+      line_tmp.clear();
+      line_tmp.push_back( contoursDraw2[i][j] );
+      (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
+      contoursDraw3.push_back( line_tmp  );
+      len_contours_contoursDraw3.push_back( arcLength(line_tmp, false) );
+    }
+  }
+
+  contoursDraw2 = contoursDraw3;
+  len_contours_contoursDraw3 = len_contours_contoursDraw2;
+}
+
+static void deal_with_geometry_when_not_enough_90d_angles(
+                                                          Size mat_size,
+                                                          std::vector<std::vector<cv::Point> > contoursDraw2,
+                                                          std::vector<double> len_contours_contoursDraw2,
+                                                          double min_line_length
+                                                          ){
+
+  // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
+  split_contours_2_dotted_lines ( contoursDraw2, len_contours_contoursDraw2 );
+
+  Mat_<float> angles, angles0, angles1;
+  Mat_<double> angle_centers;
+  Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
+  // std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
+
+  std::vector< std::vector<cv::Point> > contours_l0;
+  std::vector< std::vector<cv::Point> > contours_l1;
+  double len_sum0=0.0, len_sum1=0.0;
+
+  for(int j=0; j<labels.rows; ++j){
+
+    if(labels(j,0)==0){
+      contours_l0.push_back(contoursDraw2[j]);
+      angles0.push_back(angles(j,0));
+      len_sum0+=len_contours_contoursDraw2[j];
+    }else if(labels(j,0)==1){
+      contours_l1.push_back(contoursDraw2[j]);
+      angles1.push_back(angles(j,0));
+      len_sum1+=len_contours_contoursDraw2[j];
+    }
+  } /*separate / divide into 2 groups with approximate 90 degree alignment */
+
+  std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
+
+  std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
+
+  if( contours_l0.size()>1 && len_sum0>min_line_length*5 )
+    coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
+  else if( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
+    coord_clusters_munge( mat_size, contours_l0, dumm, angles0, angles_dumm );
+  }
+
+  if( contours_l1.size()>1 && len_sum1>min_line_length*5 )
+    coord_clusters( mat_size, contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
+  else if( contours_l1.size()<2 && len_sum1>min_line_length*5 ){
+    coord_clusters_munge( mat_size, contours_l1, dumm, angles1, angles_dumm );
+  }
 }
 
 static float angle_2points ( cv::Point p1, cv::Point p2 ) {
