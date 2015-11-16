@@ -65,7 +65,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
   // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
-  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
+  Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash */
   // Mat mat = imread( "./pics/10.jpg");
@@ -76,7 +76,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
-  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
+  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -175,26 +175,37 @@ void longest_closed()
 }
 
 // splits contours to dotted lines, no matter if closed or not - should get just a collection of 2 point straight vanilla lines
-static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contoursDraw2, std::vector<double> &len_contours_contoursDraw2 ){
+static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contoursDraw2, std::vector<double> &len_contours_contoursDraw2, double min_line_length ){
 
   std::vector<std::vector<cv::Point> > contoursDraw3;
   std::vector<cv::Point> line_tmp;
   std::vector<double> len_contours_contoursDraw3;
+  double len;
 
   for ( int i=0; i < (int)contoursDraw2.size(); i++ ) {
 
+    // a regular 2 point line
     if ( contoursDraw2[i].size()<3 ){
-      contoursDraw3.push_back(contoursDraw2[i]);
-      len_contours_contoursDraw3.push_back( arcLength(contoursDraw2[i], false) );
+
+      len = arcLength(contoursDraw2[i], true);
+      if ( len>min_line_length ) {
+        contoursDraw3.push_back(contoursDraw2[i]);
+        len_contours_contoursDraw3.push_back(len);
+      }
       continue;
     }
     int ssize = (int)contoursDraw2[i].size();
-    for ( int j=0; j<ssize; ++j ) {
+    // for ( int j=0; j<ssize; ++j ) {
+    for ( int j=0; j<ssize-1; ++j ) { /*don't do last with first - that is, don't plot a closing line */
       line_tmp.clear();
       line_tmp.push_back( contoursDraw2[i][j] );
-      (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
-      contoursDraw3.push_back( line_tmp  );
-      len_contours_contoursDraw3.push_back( arcLength(line_tmp, false) );
+      line_tmp.push_back(contoursDraw2[i][j+1]);
+      // (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
+      len = arcLength(line_tmp, true);
+      if ( len>min_line_length ) {
+        contoursDraw3.push_back( line_tmp  );
+        len_contours_contoursDraw3.push_back(len);
+      }
     }
   }
 
@@ -210,7 +221,8 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           ){
 
   // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
-  split_contours_2_dotted_lines ( contoursDraw2, len_contours_contoursDraw2 );
+  split_contours_2_dotted_lines ( contoursDraw2, len_contours_contoursDraw2, min_line_length );
+  std::cout << "cd2 len:" << contoursDraw2.size() << std::endl;
 
   Mat_<float> angles, angles0, angles1;
   Mat_<double> angle_centers;
