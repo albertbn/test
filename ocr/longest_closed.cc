@@ -34,7 +34,7 @@ bool file_exists ( const std::string& name ) {
 // c/c++ dummy declaration
 int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing );
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
-Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center );
+Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours );
 // not in use
 Point2f get_mass_center(Point a, Point b);
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
@@ -221,28 +221,30 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           ){
 
   // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
-  split_contours_2_dotted_lines ( contoursDraw2, len_contours_contoursDraw2, min_line_length );
+  split_contours_2_dotted_lines ( /*ref*/contoursDraw2, /*ref*/len_contours_contoursDraw2, min_line_length );
   std::cout << "cd2 len:" << contoursDraw2.size() << std::endl;
 
   Mat_<float> angles, angles0, angles1;
   Mat_<double> angle_centers;
-  Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*DONE - go on from here - add centers as ref param*/
+  Mat_<int> labels = angle_clusters(contoursDraw2, angles, angle_centers); /*OK if a single line,*/
   // std::cout << "angles ref: " << angles << ", angle centers: " << angle_centers  << std::endl;
 
   std::vector< std::vector<cv::Point> > contours_l0;
   std::vector< std::vector<cv::Point> > contours_l1;
   double len_sum0=0.0, len_sum1=0.0;
-
+  std::vector<double> len_contours0, len_contours1;
   for(int j=0; j<labels.rows; ++j){
 
     if(labels(j,0)==0){
       contours_l0.push_back(contoursDraw2[j]);
       angles0.push_back(angles(j,0));
       len_sum0+=len_contours_contoursDraw2[j];
+      len_contours0.push_back(len_contours_contoursDraw2[j]);
     }else if(labels(j,0)==1){
       contours_l1.push_back(contoursDraw2[j]);
       angles1.push_back(angles(j,0));
       len_sum1+=len_contours_contoursDraw2[j];
+      len_contours1.push_back(len_contours_contoursDraw2[j]);
     }
   } /*separate / divide into 2 groups with approximate 90 degree alignment */
 
@@ -250,14 +252,14 @@ static void deal_with_geometry_when_not_enough_90d_angles(
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
-  if( contours_l0.size()>1 && len_sum0>min_line_length*5 )
-    coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0)); /*DONE then pass center[0] or centers[1] here...*/
-  else if( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
+  if ( contours_l0.size()>1 && len_sum0>min_line_length*5 )
+    coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0), len_contours0); /*DONE then pass center[0] or centers[1] here...*/
+  else if ( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
     coord_clusters_munge( mat_size, contours_l0, dumm, angles0, angles_dumm );
   }
 
   if( contours_l1.size()>1 && len_sum1>min_line_length*5 )
-    coord_clusters( mat_size, contours_l1, angles1, angle_centers(1,0)); /*DONE then pass center[0] or centers[1] here...*/
+    coord_clusters( mat_size, contours_l1, angles1, angle_centers(1,0), len_contours1); /*DONE then pass center[0] or centers[1] here...*/
   else if( contours_l1.size()<2 && len_sum1>min_line_length*5 ){
     coord_clusters_munge( mat_size, contours_l1, dumm, angles1, angles_dumm );
   }
@@ -493,7 +495,8 @@ double get_max_deviation(Size size, double angle_center, bool is_vert){
   return max_deviation;
 }
 
-Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center ){
+// TODO - go on from here - think whether to clean noise before or after grouping... - maybe after for now?
+Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours ){
 
   bool is_vert = angle_center > 45.0 && angle_center < 135.0; /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
   std::vector<cv::Point2f> points;
@@ -545,18 +548,26 @@ Point2f get_mass_center(Point a, Point b){
 
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers ){
 
+  int clusterCount = 2;
+  Mat labels;
+  Mat_<int> labels2;
+
   // Mat angles;
   for ( int i=0; i<(int)contours.size(); ++i ) {
     angles.push_back ( angle_2points(contours[i][0], contours[i][1]) );
   }
 
-  int clusterCount = 2;
-  Mat labels;
+  // check if there was just one line - then return here
+  if( (int)contours.size() < clusterCount){
+    labels2.push_back(0);
+    centers.push_back(angles.at<float>(0,0));
+    return labels2;
+  }
+
   int attempts = 5;
   kmeans(angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
-  Mat_<int> labels2 = labels;
-
+  labels2 = labels;
   double angle_centre_diff = abs(centers(0,0)-centers(1,0));
 
   // std::cout <<  "angle_centre_diff: " << angle_centre_diff  << std::endl;
