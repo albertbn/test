@@ -48,6 +48,7 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           std::vector<std::vector<cv::Point> > contoursDraw2,
                                                           std::vector<double> len_contours_contoursDraw2,
                                                           double min_line_length);
+void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
 
 // start here
 void longest_closed()
@@ -55,7 +56,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/heb.jpg");
   // Mat mat = imread( "./pics/heb2.jpg");
   // Mat mat = imread( "./pics/heb_new.jpg");
-  // Mat mat = imread( "./pics/tj.jpg");
+  Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/pers.jpg");
@@ -65,7 +66,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
   // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
-  Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
+  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash */
   // Mat mat = imread( "./pics/10.jpg");
@@ -530,15 +531,47 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
 
   // std::cout << "\n\n ~~~~ coord clusters ~~~~ \n\n labels: is vert: "<< is_vert << '\n' << llabels << "centers" << centers << "points" << points << '\n' << "xy_centre_diff: " << xy_centre_diff << std::endl;
 
+  std::vector<double> len_contours0, len_contours1;
+
   for ( int j=0; j<labels.rows; ++j ) {
     if(labels(j,0)==0){
       contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
+      len_contours0.push_back(len_contours[j]);
     }else if(labels(j,0)==1){
       contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
+      len_contours1.push_back(len_contours[j]);
     }
   }
 
+  // go on from here - check for size > 1 maybe..., declare fn below...
+  if( (int)contours_l0.size()>1) reduce_noise_short_lines( contours_l0, angles0, len_contours0);
+  if( (int)contours_l1.size()>1) reduce_noise_short_lines( contours_l1, angles1, len_contours1);
+
   return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1 );
+}
+
+void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours){
+
+  Mat m ( len_contours );
+  cv::Scalar mean, stdev;
+  cv::meanStdDev(m, mean, stdev);
+
+
+  std::vector < std::vector<cv::Point> > contours2;
+  Mat_<float> angles2;
+  std::vector<double>::iterator biggest = std::max_element(std::begin(len_contours), std::end(len_contours));
+  double d_stdev = stdev[0] / (*biggest / stdev[0]);
+
+  std::cout << "d_stdev" << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << std::endl << std::endl;
+
+  for(int i=0; i<(int)len_contours.size(); ++i){
+    if(len_contours[i]>=d_stdev){
+      contours2.push_back(contours[i]);
+      angles2.push_back(angles[i]);
+    }
+  }
+
+  contours = contours2; angles = angles2; /*TODO - go on from here */
 }
 
 Point2f get_mass_center(Point a, Point b){
