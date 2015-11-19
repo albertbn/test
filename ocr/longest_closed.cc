@@ -56,11 +56,11 @@ void longest_closed()
   // Mat mat = imread( "./pics/heb.jpg");
   // Mat mat = imread( "./pics/heb2.jpg");
   // Mat mat = imread( "./pics/heb_new.jpg");
-  Mat mat = imread( "./pics/tj.jpg");
+  // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/pers.jpg");
-  // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines*/
+  Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
   // Mat mat = imread( "./pics/3.jpg");
   // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
@@ -450,7 +450,8 @@ Mat coord_clusters_munge ( Size size,
     if ( contours_l0[i][0].x==0 || contours_l0[i][1].x==0 ) continue;
     points0.push_back(contours_l0[i][0]);
     points0.push_back(contours_l0[i][1]);
-  }
+    // std::cout << "c0 len: " << arcLength(contours_l0[i], true) << std::endl;
+ }
 
   // the second one is optional
   if(contours_l1.size()>0){
@@ -458,6 +459,7 @@ Mat coord_clusters_munge ( Size size,
       if ( contours_l1[i][0].x==0 || contours_l1[i][1].x==0  ) continue;
       points1.push_back(contours_l1[i][0]);
       points1.push_back(contours_l1[i][1]);
+      // std::cout << "c1 len: " << arcLength(contours_l1[i], true) << std::endl;
     }
   }
 
@@ -467,7 +469,7 @@ Mat coord_clusters_munge ( Size size,
 
   if(points0.size()>0){
     get_closest_diagonal(r0, angles0, points0, l0);
-    rectangle ( l0,r0,cv::Scalar(0,255,0) );
+    // rectangle ( l0,r0,cv::Scalar(0,255,0) );
   }
   cv::imwrite( "./img_pre/long5.jpg", l0);
 
@@ -476,7 +478,7 @@ Mat coord_clusters_munge ( Size size,
     Rect r1 = cv::boundingRect(points1);
     if(points1.size()>0){
       get_closest_diagonal(r1, angles1, points1, l1);
-      rectangle ( l1,r1,cv::Scalar(0,255,0) );
+      // rectangle ( l1,r1,cv::Scalar(0,255,0) );
     }
     cv::imwrite( "./img_pre/long6.jpg", l1);
   }
@@ -536,10 +538,12 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   for ( int j=0; j<labels.rows; ++j ) {
     if(labels(j,0)==0){
       contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
-      len_contours0.push_back(len_contours[j]);
+      // len_contours0.push_back(len_contours[j]);
+      len_contours0.push_back( arcLength(contours[j],true));
     }else if(labels(j,0)==1){
       contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
-      len_contours1.push_back(len_contours[j]);
+      // len_contours1.push_back(len_contours[j]);
+      len_contours1.push_back(arcLength(contours[j],true));
     }
   }
 
@@ -562,7 +566,7 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
   std::vector<double>::iterator biggest = std::max_element(std::begin(len_contours), std::end(len_contours));
   double d_stdev = stdev[0] / (*biggest / stdev[0]);
 
-  std::cout << "d_stdev" << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << std::endl << std::endl;
+  std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << std::endl << std::endl;
 
   for(int i=0; i<(int)len_contours.size(); ++i){
     if(len_contours[i]>=d_stdev){
