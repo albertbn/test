@@ -60,24 +60,26 @@ void longest_closed()
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/pers.jpg");
-  Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
+  // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
   // Mat mat = imread( "./pics/3.jpg");
   // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
   // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
+  // TODO - go on from checking why the vertical line is gone in clustering? - 7
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash */
   // Mat mat = imread( "./pics/10.jpg");
   // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  // Yep. but for me for now it's perfect ;)
   // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
   // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
   // Mat mat = imread( "./pics/14.jpg"); /*same as above*/
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
-  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!!*/
+  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on form here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -127,7 +129,7 @@ void longest_closed()
    std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
 
-   double min_line_length = max(mat.size().width, mat.size().height)/10.0;
+   double min_line_length = max(mat.size().width, mat.size().height)/12.0; /*TODO - here - check this chap*/
    int min_closed_line_len = (mat.size().width + mat.size().height);
 
    // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
@@ -563,15 +565,15 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
   std::vector < std::vector<cv::Point> > contours2;
   Mat_<float> angles2;
-  std::vector<double>::iterator biggest = std::max_element(std::begin(len_contours), std::end(len_contours));
+  std::vector<double>::iterator biggest = std::max_element(len_contours.begin(), len_contours.end());
   double d_stdev = stdev[0] / (*biggest / stdev[0]);
 
-  std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << std::endl << std::endl;
+  std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << ", contours.size: " << contours.size() << ", angles.size: " << angles.size() << std::endl << std::endl;
 
   for(int i=0; i<(int)len_contours.size(); ++i){
     if(len_contours[i]>=d_stdev){
       contours2.push_back(contours[i]);
-      angles2.push_back(angles[i]);
+      angles2.push_back(angles(0,i));
     }
   }
 
