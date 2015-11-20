@@ -50,24 +50,26 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           double min_line_length);
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
 
+double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
-  // Mat mat = imread( "./pics/heb.jpg");
-  // Mat mat = imread( "./pics/heb2.jpg");
-  // Mat mat = imread( "./pics/heb_new.jpg");
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
-  // Mat mat = imread( "./pics/pers.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
+  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
+  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
+
+  // Mat mat = imread( "./pics/heb.jpg");
+  // Mat mat = imread( "./pics/heb2.jpg");
+  // Mat mat = imread( "./pics/heb_new.jpg");
+  // Mat mat = imread( "./pics/pers.jpg");
   // Mat mat = imread( "./pics/3.jpg");
   // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
   // Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
-  // TODO - go on from checking why the vertical line is gone in clustering? - 7
-  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash */
   // Mat mat = imread( "./pics/10.jpg");
@@ -79,12 +81,13 @@ void longest_closed()
   // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
-  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on form here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
    remove("./img_pre/long5.jpg");
    remove("./img_pre/long6.jpg");
+   remove("./img_pre/long44.jpg");
+   remove("./img_pre/long444.jpg");
 
    cv::cvtColor(mat, mat, CV_BGR2GRAY);
 
@@ -129,7 +132,8 @@ void longest_closed()
    std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
 
-   double min_line_length = max(mat.size().width, mat.size().height)/12.0; /*TODO - here - check this chap*/
+   double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(mat.size().width, mat.size().height)/13.0; /*TODO - here - check this chap*/
+   MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
    int min_closed_line_len = (mat.size().width + mat.size().height);
 
    // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
@@ -190,7 +194,7 @@ static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > 
     // a regular 2 point line
     if ( contoursDraw2[i].size()<3 ){
 
-      len = arcLength(contoursDraw2[i], true);
+      len = cv::arcLength(contoursDraw2[i], true);
       if ( len>min_line_length ) {
         contoursDraw3.push_back(contoursDraw2[i]);
         len_contours_contoursDraw3.push_back(len);
@@ -204,7 +208,7 @@ static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > 
       line_tmp.push_back( contoursDraw2[i][j] );
       line_tmp.push_back(contoursDraw2[i][j+1]);
       // (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
-      len = arcLength(line_tmp, true);
+      len = cv::arcLength(line_tmp, true);
       if ( len>min_line_length ) {
         contoursDraw3.push_back( line_tmp  );
         len_contours_contoursDraw3.push_back(len);
@@ -213,7 +217,7 @@ static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > 
   }
 
   contoursDraw2 = contoursDraw3;
-  len_contours_contoursDraw3 = len_contours_contoursDraw2;
+  len_contours_contoursDraw2 = len_contours_contoursDraw3;
 }
 
 static void deal_with_geometry_when_not_enough_90d_angles(
@@ -223,9 +227,30 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           double min_line_length
                                                           ){
 
+  // std::cout << "dwgwne9a: cd2: " << contoursDraw2.size() << std::endl;
+
+  // Mat l44, l444;
+  // if(file_exists("./img_pre/long44.jpg"))
+  //   l44 = imread("./img_pre/long44.jpg");
+  // else
+  //   l44 = Mat::zeros( mat_size, CV_8UC3 );
+
+  // if(file_exists("./img_pre/long444.jpg"))
+  //   l444 = imread("./img_pre/long444.jpg");
+  // else
+  //   l444 = Mat::zeros( mat_size, CV_8UC3 );
+
+  // // before split contours
+  // cv::drawContours(l44, contoursDraw2, -1, cv::Scalar(0,255,0),1);
+  // cv::imwrite( "./img_pre/long44.jpg", l44);
+
   // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
   split_contours_2_dotted_lines ( /*ref*/contoursDraw2, /*ref*/len_contours_contoursDraw2, min_line_length );
-  std::cout << "cd2 len:" << contoursDraw2.size() << std::endl;
+  // std::cout << "\n\ncd2 len:" << contoursDraw2.size() << "\n\ncd2 itself: " << Mat(contoursDraw2) << ", \n\nlen_contours_contoursDraw2: " << Mat(len_contours_contoursDraw2) << std::endl;
+
+  // after split contours
+  // cv::drawContours(l444, contoursDraw2, -1, cv::Scalar(0,255,0),1);
+  // cv::imwrite( "./img_pre/long444.jpg", l444);
 
   Mat_<float> angles, angles0, angles1;
   Mat_<double> angle_centers;
@@ -236,6 +261,8 @@ static void deal_with_geometry_when_not_enough_90d_angles(
   std::vector< std::vector<cv::Point> > contours_l1;
   double len_sum0=0.0, len_sum1=0.0;
   std::vector<double> len_contours0, len_contours1;
+
+  /*separate / divide into 2 groups with approximate 90 degree alignment */
   for(int j=0; j<labels.rows; ++j){
 
     if(labels(j,0)==0){
@@ -249,9 +276,11 @@ static void deal_with_geometry_when_not_enough_90d_angles(
       len_sum1+=len_contours_contoursDraw2[j];
       len_contours1.push_back(len_contours_contoursDraw2[j]);
     }
-  } /*separate / divide into 2 groups with approximate 90 degree alignment */
+  }
 
-  std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
+  // std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
+
+  std::cout << "\n~~~ \n len_contours0, len_contours1:" << Mat(len_contours0) << ',' << Mat(len_contours1) << std::endl;
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
@@ -420,7 +449,6 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
-// DONE - make dynamic here - currently assumes those are the vertical lines...
 Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0, std::vector < std::vector<cv::Point> > contours_l1,
                            Mat_<float> angles0, Mat_<float> angles1
@@ -428,11 +456,12 @@ Mat coord_clusters_munge ( Size size,
   Mat l0, l1;
 
   // if file exists - load from it - else create from zeros existing one...
-  if(file_exists("./img_pre/long5.jpg"))
-    l0 = imread("./img_pre/long5.jpg");
-  else
-    l0 = Mat::zeros( size, CV_8UC3 );
-
+  if(contours_l0.size()>0){
+    if(file_exists("./img_pre/long5.jpg"))
+      l0 = imread("./img_pre/long5.jpg");
+    else
+      l0 = Mat::zeros( size, CV_8UC3 );
+  }
   // the second one is optional
   if(contours_l1.size()>0){
 
@@ -442,18 +471,21 @@ Mat coord_clusters_munge ( Size size,
       l1 = Mat::zeros( size, CV_8UC3 );
   }
 
-  cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);
+  if(contours_l0.size()>0)
+    cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);
   // the second one is optional
   if(contours_l1.size()>0)
     cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
 
   std::vector<cv::Point> points0, points1 /*points1 is optional*/;
-  for(int i=0; i<(int)contours_l0.size();++i){
-    if ( contours_l0[i][0].x==0 || contours_l0[i][1].x==0 ) continue;
-    points0.push_back(contours_l0[i][0]);
-    points0.push_back(contours_l0[i][1]);
-    // std::cout << "c0 len: " << arcLength(contours_l0[i], true) << std::endl;
- }
+  if(contours_l0.size()>0){
+    for(int i=0; i<(int)contours_l0.size();++i){
+      if ( contours_l0[i][0].x==0 || contours_l0[i][1].x==0 ) continue;
+      points0.push_back(contours_l0[i][0]);
+      points0.push_back(contours_l0[i][1]);
+      // std::cout << "c0 len: " << arcLength(contours_l0[i], true) << std::endl;
+    }
+  }
 
   // the second one is optional
   if(contours_l1.size()>0){
@@ -465,15 +497,16 @@ Mat coord_clusters_munge ( Size size,
     }
   }
 
-  // std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1  << std::endl;
+  // std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1 << ", co, c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()  << std::endl;
 
-  Rect r0 = cv::boundingRect(points0);
-
-  if(points0.size()>0){
-    get_closest_diagonal(r0, angles0, points0, l0);
-    // rectangle ( l0,r0,cv::Scalar(0,255,0) );
+  if ( contours_l0.size()>0 ) {
+    Rect r0 = cv::boundingRect(points0);
+    if(points0.size()>0){
+      get_closest_diagonal(r0, angles0, points0, l0);
+      // rectangle ( l0,r0,cv::Scalar(0,255,0) );
+    }
+    cv::imwrite( "./img_pre/long5.jpg", l0);
   }
-  cv::imwrite( "./img_pre/long5.jpg", l0);
 
   // the second one is optional
   if ( contours_l1.size()>0 ) {
@@ -540,18 +573,20 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   for ( int j=0; j<labels.rows; ++j ) {
     if(labels(j,0)==0){
       contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
-      // len_contours0.push_back(len_contours[j]);
-      len_contours0.push_back( arcLength(contours[j],true));
+      len_contours0.push_back(len_contours[j]);
+      // len_contours0.push_back( arcLength(contours[j],true));
     }else if(labels(j,0)==1){
       contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
-      // len_contours1.push_back(len_contours[j]);
-      len_contours1.push_back(arcLength(contours[j],true));
+      len_contours1.push_back(len_contours[j]);
+      // len_contours1.push_back(arcLength(contours[j],true));
     }
   }
 
+  // std::cout << "\n\n ~~~ c0, c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << std::endl;
+
   // go on from here - check for size > 1 maybe..., declare fn below...
-  if( (int)contours_l0.size()>1) reduce_noise_short_lines( contours_l0, angles0, len_contours0);
-  if( (int)contours_l1.size()>1) reduce_noise_short_lines( contours_l1, angles1, len_contours1);
+  if( (int)contours_l0.size()>0) reduce_noise_short_lines( contours_l0, angles0, len_contours0);
+  if( (int)contours_l1.size()>0) reduce_noise_short_lines( contours_l1, angles1, len_contours1);
 
   return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1 );
 }
@@ -562,20 +597,23 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
   cv::Scalar mean, stdev;
   cv::meanStdDev(m, mean, stdev);
 
-
   std::vector < std::vector<cv::Point> > contours2;
   Mat_<float> angles2;
   std::vector<double>::iterator biggest = std::max_element(len_contours.begin(), len_contours.end());
   double d_stdev = stdev[0] / (*biggest / stdev[0]);
 
   std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << ", contours.size: " << contours.size() << ", angles.size: " << angles.size() << std::endl << std::endl;
-
+  float len_total = 0;
   for(int i=0; i<(int)len_contours.size(); ++i){
     if(len_contours[i]>=d_stdev){
       contours2.push_back(contours[i]);
       angles2.push_back(angles(0,i));
+      len_total+=len_contours[i];
     }
   }
+
+  if ( len_total < MIN_LINE_LENGTH_CONSIDERED_SIDE )
+    contours2.clear();
 
   contours = contours2; angles = angles2; /*TODO - go on from here */
 }
