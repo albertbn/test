@@ -60,15 +60,15 @@ void longest_closed()
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
-  Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
+  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
+  // Mat mat = imread( "./pics/4.jpg"); /*DONE - yep!, good enough for me with lines algo */
+  // Mat mat = imread( "./pics/3.jpg"); /*yep*/
 
-  // Mat mat = imread( "./pics/heb.jpg");
-  // Mat mat = imread( "./pics/heb2.jpg");
-  // Mat mat = imread( "./pics/heb_new.jpg");
-  // Mat mat = imread( "./pics/pers.jpg");
-  // Mat mat = imread( "./pics/3.jpg");
-  // Mat mat = imread( "./pics/4.jpg"); /*TODO*/
-  // Mat mat = imread( "./pics/5.jpg");
+  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
+  Mat mat = imread( "./pics/5.jpg");
   // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
   // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash */
@@ -166,10 +166,11 @@ void longest_closed()
      _angle90_count += get_angle_approx90_count( contours_long[i], clong );
    }
 
-   // std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+   std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
-   if ( _angle90_count<2 ) {
+   if ( _angle90_count<4 ) {
 
+     // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
      deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
    }
 
@@ -404,18 +405,14 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing ) {
   angle90_count && (diag = get_longest_side_poly ( circles ));
 
   if ( angle90_count ) {
-
-    // std::cout << "diag is: " << diag << std::endl;
-
     if(diag>100){
       filter_points_if_needed(circles, approx);
-      int clen = circles.size();
+      angle90_count = circles.size();
       // std::cout << "OK, drawing circles... " << clen << std::endl;
-      for ( int j=0; j<clen; ++j ) {
+      for ( int j=0; j<angle90_count; ++j ) {
         cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
       }
     }
-
   }
 
   return angle90_count;
