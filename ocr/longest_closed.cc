@@ -54,6 +54,10 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
+  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
@@ -63,24 +67,21 @@ void longest_closed()
   // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
   // Mat mat = imread( "./pics/4.jpg"); /*DONE - yep!, good enough for me with lines algo */
   // Mat mat = imread( "./pics/3.jpg"); /*yep*/
-
-  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
-  // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
-  Mat mat = imread( "./pics/5.jpg");
-  // Mat mat = imread( "./pics/6.jpg"); /*skewed horizontal - detects 2 points - rest should complete*/
-  // Mat mat = imread( "./pics/8.jpg"); /*almost good whole receipt - finds 3 out of 4 points - one of the angle shapes is omitted - think of algorithm variants - closed line/shape could be of several parts...*/
-  // Mat mat = imread( "./pics/9.jpg"); /* flash */
-  // Mat mat = imread( "./pics/10.jpg");
-  // Mat mat = imread( "./pics/11.jpg"); /*example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  // Mat mat = imread( "./pics/5.jpg"); /*yep*/
+  // Mat mat = imread( "./pics/6.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/8.jpg"); /*yep!*/
   // Yep. but for me for now it's perfect ;)
-  // Mat mat = imread( "./pics/12.jpg"); /*skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case*/
-  // Mat mat = imread( "./pics/13.jpg"); /*closed - worked well for 2 corners - rest are at the end of stage - TODO - algo here...*/
-  // Mat mat = imread( "./pics/14.jpg"); /*same as above*/
-  // Mat mat = imread( "./pics/15.jpg"); /*should have detected closed - ?? maybe not completely closed.. */
-  // Mat mat = imread( "./pics/16.jpg"); /*2 points - rest at the end of stage...*/
-  // Mat mat = imread( "./pics/17.jpg");/*same - 2 points....*/
+  // Mat mat = imread( "./pics/12.jpg"); /* yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
+  // Mat mat = imread( "./pics/13.jpg"); /*yep! closed - worked well for 2 corners - rest are at the end of stage*/
+  // Mat mat = imread( "./pics/14.jpg"); /*yep! same as above*/
+  // Mat mat = imread( "./pics/15.jpg"); /*yep! should have detected closed - ?? maybe not completely closed.. */
+  // Mat mat = imread( "./pics/16.jpg"); /*yep! 2 points - rest at the end of stage...*/
+  // Mat mat = imread( "./pics/17.jpg");/*yep! same - 2 points....*/
+
+  // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
+  // Mat mat = imread( "./pics/9.jpg"); /* flash - yep! with a little work with fitLine angle and double line...  */
+  // Mat mat = imread( "./pics/10.jpg");
+  Mat mat = imread( "./pics/11.jpg"); /* TODO example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -125,9 +126,9 @@ void longest_closed()
 
    // DONE? - go on from checking if the >10000 is a single len
    double len;
-   std::vector<double> len_contours_contoursDraw2;
+   std::vector<double> len_contours_contoursDraw2, len_contours_closed;
    std::vector< std::vector<cv::Point> > contours_f1;
-   std::vector< std::vector<cv::Point> > contours_long;
+   std::vector< std::vector<cv::Point> > contours_long, contours_medium;
    std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
    std::vector<std::vector<cv::Point> > contoursDraw2;
    Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
@@ -152,7 +153,14 @@ void longest_closed()
      if(len>0){
        // std::cout << "closed line len...: " << len << std::endl;
        contours_f1.push_back(contours[i]);
-       if(len>min_closed_line_len) contours_long.push_back(contoursDraw[i]);
+       if(len>min_closed_line_len) {
+         contours_long.push_back(contoursDraw[i]);
+         len_contours_closed.push_back(len);
+       }
+       else if(len>(min_closed_line_len/5)){
+         contours_medium.push_back(contoursDraw[i]);
+         len_contours_closed.push_back(len);
+       }
      }
    }
 
@@ -168,10 +176,17 @@ void longest_closed()
 
    std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
-   if ( _angle90_count<4 ) {
+   if ( _angle90_count<4 || _angle90_count>4 ) {
 
      // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
-     deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
+     if ( contours_long.size() || contours_medium.size() ){
+       for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
+
+       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
+     }
+     else{
+       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
+     }
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
