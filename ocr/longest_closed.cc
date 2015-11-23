@@ -32,7 +32,7 @@ bool file_exists ( const std::string& name ) {
   return (stat (name.c_str(), &buffer) == 0);
 }
 // c/c++ dummy declaration
-int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing );
+int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& points4 );
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
 Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours );
 // not in use
@@ -49,6 +49,70 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           std::vector<double> len_contours_contoursDraw2,
                                                           double min_line_length);
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
+
+cv::Point center(0,0);
+
+// shall we yep? - sort corners
+void sortCorners(std::vector<cv::Point>& corners,
+                 cv::Point center)
+{
+	std::vector<cv::Point> top, bot;
+
+	for (int i = 0; i < (int)corners.size(); i++)
+	{
+		if (corners[i].y < center.y)
+			top.push_back(corners[i]);
+		else
+			bot.push_back(corners[i]);
+	}
+        std::cout << "top, bot, corn, center: " << top << ',' << bot << ',' << corners << ',' << center << std::endl;
+
+	corners.clear();
+
+
+	if (top.size() == 2 && bot.size() == 2){
+		cv::Point tl = top[0].x > top[1].x ? top[1] : top[0];
+		cv::Point tr = top[0].x > top[1].x ? top[0] : top[1];
+		cv::Point bl = bot[0].x > bot[1].x ? bot[1] : bot[0];
+		cv::Point br = bot[0].x > bot[1].x ? bot[0] : bot[1];
+
+
+		corners.push_back(tl);
+		corners.push_back(tr);
+		corners.push_back(br);
+		corners.push_back(bl);
+	}
+}
+
+void corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4*/ ){
+
+  // Get mass center
+  for ( int i = 0; i < (int)corners.size(); ++i )
+    center += corners[i];
+  center *= ( 1. / corners.size() );
+
+  std::cout << "corners, center: " << corners << ',' << center << std::endl;
+
+  sortCorners ( corners, center );
+
+  if ( !corners.size() ) {
+    std::cout << "The corners were not sorted correctly!" << corners << std::endl;
+    return;
+  }
+
+  Mat m;
+  if(file_exists("./img_pre/long7.jpg"))
+      m = imread("./img_pre/long7.jpg");
+    else
+      m = Mat::zeros( mat_size, CV_8UC3 );
+
+  // Draw lines
+  for (int i = 0; i < (int)corners.size()-1; ++i){
+    cv::line(m, corners[i], corners[i+1], CV_RGB(0,255,0));
+  }
+
+  cv::imwrite( "./img_pre/long7.jpg", m);
+}
 
 double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
@@ -87,6 +151,7 @@ void longest_closed()
    remove("./img_pre/long4.jpg");
    remove("./img_pre/long5.jpg");
    remove("./img_pre/long6.jpg");
+   remove("./img_pre/long7.jpg");
    remove("./img_pre/long44.jpg");
    remove("./img_pre/long444.jpg");
 
@@ -131,14 +196,14 @@ void longest_closed()
    std::vector< std::vector<cv::Point> > contours_long, contours_medium;
    std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
    std::vector<std::vector<cv::Point> > contoursDraw2;
-   Mat poly = Mat::zeros( mat.size(), CV_8UC3 );
+   Mat poly = Mat::zeros ( mat.size(), CV_8UC3 ) ;
 
    double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(mat.size().width, mat.size().height)/13.0; /*TODO - here - check this chap*/
    MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
    int min_closed_line_len = (mat.size().width + mat.size().height);
 
    // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
-   for (int i=0; i < (int)contours.size(); i++){
+   for ( int i=0; i < (int)contours.size(); i++ ) {
 
      len = cv::arcLength(contours[i], true);
      if(len < min_line_length) {
@@ -168,17 +233,17 @@ void longest_closed()
    Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
    cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
-   int _angle90_count=0;
+   int _angle90_count=0; std::vector<cv::Point> points4;
    // count the ~90 degree angles...
    for ( int i=0; i<(int)contours_long.size(); ++i ) {
-     _angle90_count += get_angle_approx90_count( contours_long[i], clong );
+     _angle90_count += get_angle_approx90_count ( contours_long[i], clong, points4/*ref*/ );
    }
 
    // TODO - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
 
    std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
-   if ( _angle90_count<4 || _angle90_count>4 ) {
+   if ( _angle90_count!=4 ) {
 
      // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
      if ( contours_long.size() || contours_medium.size() ){
@@ -186,9 +251,13 @@ void longest_closed()
 
        deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
      }
-     else{
+     else {
        deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
      }
+   }
+   // a 4 point chap - validate this folk
+   else {
+     corners_magick_do ( mat.size(), points4 );
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
@@ -386,7 +455,7 @@ void filter_points_if_needed (   std::vector<cv::Point> &circles, std::vector<cv
 }
 
 // returns the angle90 count as well as draws circles... love u emacs
-int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing ) {
+int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& circles /*points4*/  ) {
 
   // Number of vertices of polygonal curve
   int vtc = approx.size();
@@ -397,7 +466,6 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing ) {
   // std::vector<double> cos;
   double ang, ang_deg;
   int angle90_count = 0;
-  std::vector<cv::Point> circles;
 
   int j_mid;
   for ( int j = 1; j < vtc+1; j++ ) {

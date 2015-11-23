@@ -133,7 +133,7 @@ int main()
 	center *= (1. / corners.size());
 
 	sortCorners(corners, center);
-	if (corners.size() == 0){
+	if ( corners.size() == 0 ) {
 		std::cout << "The corners were not sorted correctly!" << std::endl;
 		return -1;
 	}
