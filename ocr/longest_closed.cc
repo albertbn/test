@@ -53,38 +53,44 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 cv::Point center(0,0);
 
 // shall we yep? - sort corners
-void sortCorners(std::vector<cv::Point>& corners,
-                 cv::Point center)
-{
-	std::vector<cv::Point> top, bot;
+//1==OK t==2, b==2, 0 - not rect
+bool sortCorners(std::vector<cv::Point>& corners, cv::Point center) {
 
-	for (int i = 0; i < (int)corners.size(); i++)
-	{
-		if (corners[i].y < center.y)
-			top.push_back(corners[i]);
-		else
-			bot.push_back(corners[i]);
-	}
-        std::cout << "top, bot, corn, center: " << top << ',' << bot << ',' << corners << ',' << center << std::endl;
+  bool ret = false;
+  std::vector<cv::Point> top, bot;
 
-	corners.clear();
+  for (int i = 0; i < (int)corners.size(); i++)
+    {
+      if (corners[i].y < center.y)
+        top.push_back(corners[i]);
+      else
+        bot.push_back(corners[i]);
+    }
+  std::cout << "top, bot, corn, center: " << top << ',' << bot << ',' << corners << ',' << center << std::endl;
+
+  if ( top.size() == 2 && bot.size() == 2 ) {
+
+    corners.clear();
+    ret = true;
+
+    cv::Point tl = top[0].x > top[1].x ? top[1] : top[0];
+    cv::Point tr = top[0].x > top[1].x ? top[0] : top[1];
+    cv::Point bl = bot[0].x > bot[1].x ? bot[1] : bot[0];
+    cv::Point br = bot[0].x > bot[1].x ? bot[0] : bot[1];
 
 
-	if (top.size() == 2 && bot.size() == 2){
-		cv::Point tl = top[0].x > top[1].x ? top[1] : top[0];
-		cv::Point tr = top[0].x > top[1].x ? top[0] : top[1];
-		cv::Point bl = bot[0].x > bot[1].x ? bot[1] : bot[0];
-		cv::Point br = bot[0].x > bot[1].x ? bot[0] : bot[1];
+    corners.push_back(tl);
+    corners.push_back(tr);
+    corners.push_back(br);
+    corners.push_back(bl);
+  }
 
-
-		corners.push_back(tl);
-		corners.push_back(tr);
-		corners.push_back(br);
-		corners.push_back(bl);
-	}
+  return ret;
 }
 
-void corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4*/ ){
+bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4*/ ){
+
+  bool are4pointsfine = false;
 
   // Get mass center
   for ( int i = 0; i < (int)corners.size(); ++i )
@@ -93,11 +99,11 @@ void corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
 
   std::cout << "corners, center: " << corners << ',' << center << std::endl;
 
-  sortCorners ( corners, center );
+ are4pointsfine = sortCorners ( corners, center );
 
-  if ( !corners.size() ) {
+  if ( !are4pointsfine ) {
     std::cout << "The corners were not sorted correctly!" << corners << std::endl;
-    return;
+    // return;
   }
 
   Mat m;
@@ -110,8 +116,14 @@ void corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
   for (int i = 0; i < (int)corners.size()-1; ++i){
     cv::line(m, corners[i], corners[i+1], CV_RGB(0,255,0));
   }
+  cv::line(m, corners[corners.size()-1], corners[0], CV_RGB(0,255,0));
+
+
+  cv::circle ( m, center, 50, cv::Scalar(50,0,255) );
 
   cv::imwrite( "./img_pre/long7.jpg", m);
+
+  return are4pointsfine;
 }
 
 double MIN_LINE_LENGTH_CONSIDERED_SIDE;
@@ -120,7 +132,7 @@ void longest_closed()
 {
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
@@ -145,7 +157,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
   // Mat mat = imread( "./pics/9.jpg"); /* flash - yep! with a little work with fitLine angle and double line...  */
   // Mat mat = imread( "./pics/10.jpg");
-  Mat mat = imread( "./pics/11.jpg"); /* TODO example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  // Mat mat = imread( "./pics/11.jpg"); /* yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
 
    // cleanup some images...
    remove("./img_pre/long4.jpg");
@@ -243,7 +255,7 @@ void longest_closed()
 
    std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
-   if ( _angle90_count!=4 ) {
+   if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
 
      // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
      if ( contours_long.size() || contours_medium.size() ){
@@ -254,10 +266,6 @@ void longest_closed()
      else {
        deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
      }
-   }
-   // a 4 point chap - validate this folk
-   else {
-     corners_magick_do ( mat.size(), points4 );
    }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
