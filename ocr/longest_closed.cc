@@ -25,7 +25,6 @@ using namespace cv;
 using namespace std;
 
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-longest_closed-of-paper-sheet-in-photo
-
 bool file_exists ( const std::string& name ) {
 
   struct stat buffer;
@@ -66,7 +65,7 @@ bool sortCorners(std::vector<cv::Point>& corners, cv::Point center) {
       else
         bot.push_back(corners[i]);
     }
-  std::cout << "top, bot, corn, center: " << top << ',' << bot << ',' << corners << ',' << center << std::endl;
+  //std::cout << "top, bot, corn, center: " << top << ',' << bot << ',' << corners << ',' << center << std::endl;
 
   if ( top.size() == 2 && bot.size() == 2 ) {
 
@@ -97,12 +96,12 @@ bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
     center += corners[i];
   center *= ( 1. / corners.size() );
 
-  std::cout << "corners, center: " << corners << ',' << center << std::endl;
+  //std::cout << "corners, center: " << corners << ',' << center << std::endl;
 
  are4pointsfine = sortCorners ( corners, center );
 
   if ( !are4pointsfine ) {
-    std::cout << "The corners were not sorted correctly!" << corners << std::endl;
+    //std::cout << "The corners were not sorted correctly!" << corners << std::endl;
     // return;
   }
 
@@ -130,9 +129,9 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
-  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
@@ -253,7 +252,7 @@ void longest_closed()
 
    // TODO - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
 
-   std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+   //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
    if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
 
@@ -375,7 +374,7 @@ static void deal_with_geometry_when_not_enough_90d_angles(
 
   // std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
 
-  std::cout << "\n~~~ \n len_contours0, len_contours1:" << Mat(len_contours0) << ',' << Mat(len_contours1) << std::endl;
+  //std::cout << "\n~~~ \n len_contours0, len_contours1:" << Mat(len_contours0) << ',' << Mat(len_contours1) << std::endl;
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
@@ -514,7 +513,7 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
 // the  fit line chap here man...
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  // std::cout << "avg angles: " << mean(angles) << std::endl;
+  std::cout << "\n§§§§§§§\navg angles: " << mean(angles) << std::endl;
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -528,13 +527,13 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 
   float x0, y0, x1, y1;
 
-  x0 = x - vx*(4*pic.cols);
-  y0 = y - vy*(4*pic.rows);
+  x0 = x - vx*(2*pic.cols);
+  y0 = y - vy*(2*pic.rows);
 
-  x1 = x + vx*(4*pic.cols);
-  y1 = y + vy*(4*pic.rows);
+  x1 = x + vx*(2*pic.cols);
+  y1 = y + vy*(2*pic.rows);
 
-  // std::cout << "vec4f: " << line_result << ',' << "points: " << points << "line points" << Point(x0,y0)  << ',' << Point(x1,y1) << ',' << pic.cols << ',' << pic.rows  <<  std::endl;
+  std::cout << "\nvec4f: " << line_result << ',' << "\npoints: " << points << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << ",\ncols, rows: " << pic.cols << ',' << pic.rows  <<  std::endl;
 
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
@@ -692,7 +691,7 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
   std::vector<double>::iterator biggest = std::max_element(len_contours.begin(), len_contours.end());
   double d_stdev = stdev[0] / (*biggest / stdev[0]);
 
-  std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << ", contours.size: " << contours.size() << ", angles.size: " << angles.size() << std::endl << std::endl;
+  //std::cout << "d_stdev: " << d_stdev << ", len_contours: " << m << ", mean: " << mean << ',' << "stdev: " << stdev << ", contours.size: " << contours.size() << ", angles.size: " << angles.size() << std::endl << std::endl;
   float len_total = 0;
   for(int i=0; i<(int)len_contours.size(); ++i){
     if(len_contours[i]>=d_stdev){
