@@ -168,6 +168,8 @@ int main()
 
 	cv::imshow("image", dst);
 	cv::imshow("quadrilateral", quad);
+        cv::imwrite( "./pics/pers2.jpg", quad);
+
 	cv::waitKey();
 	return 0;
 }

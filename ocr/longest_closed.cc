@@ -51,6 +51,8 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
 cv::Point center(0,0);
 
+void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 );
+
 // shall we yep? - sort corners
 //1==OK t==2, b==2, 0 - not rect
 bool sortCorners(std::vector<cv::Point>& corners, cv::Point center) {
@@ -129,9 +131,9 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
-  Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
@@ -163,6 +165,7 @@ void longest_closed()
    remove("./img_pre/long5.jpg");
    remove("./img_pre/long6.jpg");
    remove("./img_pre/long7.jpg");
+   remove("./img_pre/long8.jpg");
    remove("./img_pre/long44.jpg");
    remove("./img_pre/long444.jpg");
 
@@ -250,8 +253,7 @@ void longest_closed()
      _angle90_count += get_angle_approx90_count ( contours_long[i], clong, points4/*ref*/ );
    }
 
-   // TODO - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
-
+   // DONE, yep! - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
    //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
    // OK, this is the dotted line connection and expansion algorithm
    if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
@@ -266,6 +268,9 @@ void longest_closed()
        deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
      }
    }
+   else {
+     final_magic_crop_rotate (  mat, points4 );
+   }
 
    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
@@ -273,6 +278,42 @@ void longest_closed()
    cv::imwrite( "./img_pre/long2.jpg", drawing);
    cv::imwrite( "./img_pre/long3.jpg", poly);
    cv::imwrite( "./img_pre/long4.jpg", clong);
+}
+
+void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
+
+  Mat mb;
+  if(file_exists("./img_pre/long7.jpg"))
+    mb = imread("./img_pre/long7.jpg");
+  else
+    mb = Mat::zeros( mat.size(), CV_8UC3 );
+
+  std::vector<cv::Point2f> points4f;
+  // this here is probably closest to the size of the original invoice... well, let's try... tension :)
+  cv::RotatedRect rect_minAreaRect = minAreaRect(points4);
+
+  RNG rng(12345);
+  Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+  Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
+
+  for ( int i=0; i<(int)points4.size(/*4*/); ++i){
+    points4f.push_back(points4[i]);
+    line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 );
+  }
+
+  cv::Mat quad = cv::Mat::zeros(rect_minAreaRect.size.width, rect_minAreaRect.size.height, CV_8UC3);
+
+  std::vector<cv::Point2f> quad_pts;
+  quad_pts.push_back(cv::Point2f(0, 0));
+  quad_pts.push_back(cv::Point2f(quad.cols, 0));
+  quad_pts.push_back(cv::Point2f(quad.cols, quad.rows));
+  quad_pts.push_back(cv::Point2f(0, quad.rows));
+
+  cv::Mat transmtx = cv::getPerspectiveTransform ( points4f, quad_pts );
+  cv::warpPerspective ( mat, quad, transmtx, quad.size() );
+
+  cv::imwrite( "./img_pre/long7.jpg", mb);
+  cv::imwrite( "./img_pre/long8.jpg", quad);
 }
 
 // splits contours to dotted lines, no matter if closed or not - should get just a collection of 2 point straight vanilla lines
@@ -535,6 +576,7 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 
   std::cout << "\nvec4f: " << line_result << ',' << "\npoints: " << points << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << ",\ncols, rows: " << pic.cols << ',' << pic.rows  <<  std::endl;
 
+  // TODO - go on from intersect and gathering 4 points, yep!
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
