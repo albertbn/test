@@ -55,6 +55,7 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 );
 
+//credits: http://answers.opencv.org/question/9511/how-to-find-the-intersection-point-of-two-lines/
 bool intersection(Point2f o1, Point2f p1, Point2f o2, Point2f p2, Point2f &r){
 
     Point2f x = o2 - o1;
@@ -91,13 +92,23 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     lines4intersect.push_back ( cv::Vec4i(0,size_mat.height,0,1) ); /* bl-tl */
   }
 
+  // credits: http://stackoverflow.com/questions/17235987/check-if-a-cvpoint-is-inside-a-cvmat
+  cv::Rect rect(cv::Point(), Size(size_mat.width+1, size_mat.height+1));
+
   std::vector<cv::Point> corners; cv::Point pt;
   for ( int i = 0; i < (int)lines4intersect.size(); i++ ) {
 
     for ( int j = i+1; j < (int)lines4intersect.size(); j++ ) {
         pt = computeIntersect(lines4intersect[i], lines4intersect[j]);
-        if ( pt.x >= 0 && pt.y >= 0 && (pt.x || pt.y) )
+        if ( pt.x >= 0 && pt.y >= 0 &&
+             (pt.x || pt.y) &&
+             pt!=Point(size_mat.width,0) &&
+             pt!=Point(size_mat.width,size_mat.height) &&
+             pt!=Point(0,size_mat.height) &&
+             rect.contains(pt)
+             ){
           points4.push_back(pt);
+        }
       }
   }
 
@@ -199,11 +210,11 @@ void longest_closed()
   // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
-  Mat mat = imread( "./pics/tj2.jpg");
+  // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
-  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
+  Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
   // Mat mat = imread( "./pics/4.jpg"); /*DONE - yep!, good enough for me with lines algo */
   // Mat mat = imread( "./pics/3.jpg"); /*yep*/
@@ -336,7 +347,9 @@ void longest_closed()
     if ( lines4intersect.size()<4 ) {
       points4.clear();
       intersect_n_get_points ( points4 /*ref*/ );
+      corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/);
     }
+    final_magic_crop_rotate (  mat, points4 );
 
     std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
   }
@@ -375,7 +388,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
 
   float small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height), large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
 
-  cv::Mat quad = cv::Mat::zeros ( small, large, CV_8UC3 );
+  cv::Mat quad = cv::Mat::zeros ( rect_minAreaRect.size.width, rect_minAreaRect.size.height, CV_8UC3 );
 
   std::vector<cv::Point2f> quad_pts;
   quad_pts.push_back(cv::Point2f(0, 0));
