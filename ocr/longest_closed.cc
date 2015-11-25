@@ -24,6 +24,10 @@
 using namespace cv;
 using namespace std;
 
+std::vector<cv::Vec4i> lines4intersect;
+cv::Point center(0,0);
+Size size_mat;
+
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-longest_closed-of-paper-sheet-in-photo
 bool file_exists ( const std::string& name ) {
 
@@ -49,9 +53,68 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           double min_line_length);
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
 
-cv::Point center(0,0);
-
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 );
+
+bool intersection(Point2f o1, Point2f p1, Point2f o2, Point2f p2, Point2f &r){
+
+    Point2f x = o2 - o1;
+    Point2f d1 = p1 - o1;
+    Point2f d2 = p2 - o2;
+
+    float cross = d1.x*d2.y - d1.y*d2.x;
+    if (abs(cross) < /*EPS*/1e-8)
+        return false;
+
+    double t1 = (x.x * d2.y - x.y * d2.x)/cross;
+    r = o1 + d1 * t1;
+    return true;
+}
+
+// not everyday is Easter :) - check the intersect thing...
+cv::Point computeIntersect ( cv::Vec4i a, cv::Vec4i b ) {
+
+  Point2f r;
+  int x1 = a[0], y1 = a[1], x2 = a[2], y2 = a[3], x3 = b[0], y3 = b[1], x4 = b[2], y4 = b[3];
+  intersection(Point2f(x1,y1), Point2f(x2,y2), Point2f(x3,y3), Point2f(x4,y4), r);
+
+  // std::cout << "intersection: " << r << std::endl;
+  return Point(r.x, r.y);
+}
+
+void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
+
+  if ( lines4intersect.size()<4 ) {
+    // add 4 border lines of the pic
+    lines4intersect.push_back ( cv::Vec4i(0,0,size_mat.width-1,0) ); /* tl-tr */
+    lines4intersect.push_back ( cv::Vec4i(size_mat.width,0,size_mat.width,size_mat.height-1) ); /* tr-br */
+    lines4intersect.push_back ( cv::Vec4i(size_mat.width,size_mat.height,1,size_mat.height) ); /* br-bl */
+    lines4intersect.push_back ( cv::Vec4i(0,size_mat.height,0,1) ); /* bl-tl */
+  }
+
+  std::vector<cv::Point> corners; cv::Point pt;
+  for ( int i = 0; i < (int)lines4intersect.size(); i++ ) {
+
+    for ( int j = i+1; j < (int)lines4intersect.size(); j++ ) {
+        pt = computeIntersect(lines4intersect[i], lines4intersect[j]);
+        if ( pt.x >= 0 && pt.y >= 0 && (pt.x || pt.y) )
+          points4.push_back(pt);
+      }
+  }
+
+  Mat mb;
+  if ( file_exists("./img_pre/long7.jpg") )
+    mb = imread ( "./img_pre/long7.jpg" );
+  else
+    mb = Mat::zeros ( size_mat, CV_8UC3 );
+
+  cv::Vec4i lline;
+  for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
+    lline = lines4intersect[i];
+    line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
+  }
+
+  cv::imwrite ( "./img_pre/long7.jpg", mb ) ;
+}
 
 // shall we yep? - sort corners
 //1==OK t==2, b==2, 0 - not rect
@@ -133,10 +196,10 @@ void longest_closed()
 {
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
-  // Mat mat = imread( "./pics/tj2.jpg");
+  Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
@@ -160,130 +223,139 @@ void longest_closed()
   // Mat mat = imread( "./pics/10.jpg");
   // Mat mat = imread( "./pics/11.jpg"); /* yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
 
-   // cleanup some images...
-   remove("./img_pre/long4.jpg");
-   remove("./img_pre/long5.jpg");
-   remove("./img_pre/long6.jpg");
-   remove("./img_pre/long7.jpg");
-   remove("./img_pre/long8.jpg");
-   remove("./img_pre/long44.jpg");
-   remove("./img_pre/long444.jpg");
+  // cleanup some images...
+  remove("./img_pre/long4.jpg");
+  remove("./img_pre/long5.jpg");
+  remove("./img_pre/long6.jpg");
+  remove("./img_pre/long7.jpg");
+  remove("./img_pre/long8.jpg");
+  remove("./img_pre/long44.jpg");
+  remove("./img_pre/long444.jpg");
 
-   cv::cvtColor(mat, mat, CV_BGR2GRAY);
+  size_mat = mat.size();
 
-   // std::cout << mat << std::endl;
+  cv::cvtColor(mat, mat, CV_BGR2GRAY);
 
-   /// Apply Histogram Equalization - not clear - sometimes is good, sometimes not???
-   // equalizeHist ( mat, mat );
+  // std::cout << mat << std::endl;
 
-   // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
-   // clahe->setClipLimit(1);
-   // clahe->setTilesGridSize( Size(150,150) );
-   // clahe->apply(mat,mat);
+  /// Apply Histogram Equalization - not clear - sometimes is good, sometimes not???
+  // equalizeHist ( mat, mat );
 
-   // cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
-   // blur(mat, mat, Size(20,20));
-   cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(19,19));
-   cv::Mat dilated;
-   cv::dilate(mat, dilated, kernel);
+  // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+  // clahe->setClipLimit(1);
+  // clahe->setTilesGridSize( Size(150,150) );
+  // clahe->apply(mat,mat);
 
-   blur(dilated, dilated, Size(10,10));
+  // cv::GaussianBlur(mat, mat, cv::Size(3,3), 0);
+  // blur(mat, mat, Size(20,20));
+  cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(19,19));
+  cv::Mat dilated;
+  cv::dilate(mat, dilated, kernel);
 
-   cv::imwrite( "./img_pre/long0.jpg", dilated );
+  blur(dilated, dilated, Size(10,10));
 
-   cv::Mat edges;
-   cv::Canny(dilated, edges, 40, 1);
-   blur(edges, edges, Size(10,10));
+  cv::imwrite( "./img_pre/long0.jpg", dilated );
 
-   cv::imwrite( "./img_pre/long1.jpg", edges);
+  cv::Mat edges;
+  cv::Canny(dilated, edges, 40, 1);
+  blur(edges, edges, Size(10,10));
 
-   std::vector< std::vector<cv::Point> > contours;
-   // cv::findContours(edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
-   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
+  cv::imwrite( "./img_pre/long1.jpg", edges);
 
-   // std::cout << "contours count: " <<  contours.size()  << std::endl;
+  std::vector< std::vector<cv::Point> > contours;
+  // cv::findContours(edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+  cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
 
-   // DONE? - go on from checking if the >10000 is a single len
-   double len;
-   std::vector<double> len_contours_contoursDraw2, len_contours_closed;
-   std::vector< std::vector<cv::Point> > contours_f1;
-   std::vector< std::vector<cv::Point> > contours_long, contours_medium;
-   std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
-   std::vector<std::vector<cv::Point> > contoursDraw2;
-   Mat poly = Mat::zeros ( mat.size(), CV_8UC3 ) ;
+  // std::cout << "contours count: " <<  contours.size()  << std::endl;
 
-   double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(mat.size().width, mat.size().height)/13.0; /*TODO - here - check this chap*/
-   MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
-   int min_closed_line_len = (mat.size().width + mat.size().height);
+  // DONE? - go on from checking if the >10000 is a single len
+  double len;
+  std::vector<double> len_contours_contoursDraw2, len_contours_closed;
+  std::vector< std::vector<cv::Point> > contours_f1;
+  std::vector< std::vector<cv::Point> > contours_long, contours_medium;
+  std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
+  std::vector<std::vector<cv::Point> > contoursDraw2;
+  Mat poly = Mat::zeros ( mat.size(), CV_8UC3 ) ;
 
-   // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
-   for ( int i=0; i < (int)contours.size(); i++ ) {
+  double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(mat.size().width, mat.size().height)/13.0; /*TODO - here - check this chap*/
+  MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
+  int min_closed_line_len = (mat.size().width + mat.size().height);
 
-     len = cv::arcLength(contours[i], true);
-     if(len < min_line_length) {
-       // std::cout << "length smaller than min_line_length...: " << len << ',' << min_line_length << std::endl;
-       continue;
-     }
-     len_contours_contoursDraw2.push_back(len);
+  // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
+  for ( int i=0; i < (int)contours.size(); i++ ) {
 
-     cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
-     contoursDraw2.push_back(contoursDraw[i]);
+    len = cv::arcLength(contours[i], true);
+    if(len < min_line_length) {
+      // std::cout << "length smaller than min_line_length...: " << len << ',' << min_line_length << std::endl;
+      continue;
+    }
+    len_contours_contoursDraw2.push_back(len);
 
-     if(len>0){
-       // std::cout << "closed line len...: " << len << std::endl;
-       contours_f1.push_back(contours[i]);
-       if(len>min_closed_line_len) {
-         contours_long.push_back(contoursDraw[i]);
-         len_contours_closed.push_back(len);
-       }
-       else if(len>(min_closed_line_len/5)){
-         contours_medium.push_back(contoursDraw[i]);
-         len_contours_closed.push_back(len);
-       }
-     }
-   }
+    cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
+    contoursDraw2.push_back(contoursDraw[i]);
 
-   Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
-   Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
-   cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
+    if(len>0){
+      // std::cout << "closed line len...: " << len << std::endl;
+      contours_f1.push_back(contours[i]);
+      if(len>min_closed_line_len) {
+        contours_long.push_back(contoursDraw[i]);
+        len_contours_closed.push_back(len);
+      }
+      else if(len>(min_closed_line_len/5)){
+        contours_medium.push_back(contoursDraw[i]);
+        len_contours_closed.push_back(len);
+      }
+    }
+  }
 
-   int _angle90_count=0; std::vector<cv::Point> points4;
-   // count the ~90 degree angles...
-   for ( int i=0; i<(int)contours_long.size(); ++i ) {
-     _angle90_count += get_angle_approx90_count ( contours_long[i], clong, points4/*ref*/ );
-   }
+  Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
+  Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
+  cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
-   // DONE, yep! - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
-   //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
-   // OK, this is the dotted line connection and expansion algorithm
-   if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
+  int _angle90_count=0; std::vector<cv::Point> points4;
+  // count the ~90 degree angles...
+  for ( int i=0; i<(int)contours_long.size(); ++i ) {
+    _angle90_count += get_angle_approx90_count ( contours_long[i], clong, points4/*ref*/ );
+  }
 
-     // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
-     if ( contours_long.size() || contours_medium.size() ){
-       for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
+  // DONE, yep! - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
+  //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+  // OK, this is the dotted line connection and expansion algorithm
+  if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
 
-       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
-     }
-     else {
-       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
-     }
-   }
-   else {
-     final_magic_crop_rotate (  mat, points4 );
-   }
+    // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
+    if ( contours_long.size() || contours_medium.size() ){
+      for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
 
-   cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
-   cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
+      deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
+    }
+    else {
+      deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
+    }
 
-   cv::imwrite( "./img_pre/long2.jpg", drawing);
-   cv::imwrite( "./img_pre/long3.jpg", poly);
-   cv::imwrite( "./img_pre/long4.jpg", clong);
+    if ( lines4intersect.size()<4 ) {
+      points4.clear();
+      intersect_n_get_points ( points4 /*ref*/ );
+    }
+
+    std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
+  }
+  else {
+    final_magic_crop_rotate (  mat, points4 );
+  }
+
+  cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
+  cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
+
+  cv::imwrite( "./img_pre/long2.jpg", drawing);
+  cv::imwrite( "./img_pre/long3.jpg", poly);
+  cv::imwrite( "./img_pre/long4.jpg", clong);
 }
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
 
   Mat mb;
-  if(file_exists("./img_pre/long7.jpg"))
+  if ( file_exists("./img_pre/long7.jpg") )
     mb = imread("./img_pre/long7.jpg");
   else
     mb = Mat::zeros( mat.size(), CV_8UC3 );
@@ -301,7 +373,9 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
     line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 );
   }
 
-  cv::Mat quad = cv::Mat::zeros(rect_minAreaRect.size.width, rect_minAreaRect.size.height, CV_8UC3);
+  float small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height), large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
+
+  cv::Mat quad = cv::Mat::zeros ( small, large, CV_8UC3 );
 
   std::vector<cv::Point2f> quad_pts;
   quad_pts.push_back(cv::Point2f(0, 0));
@@ -554,7 +628,7 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
 // the  fit line chap here man...
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  std::cout << "\n§§§§§§§\navg angles: " << mean(angles) << std::endl;
+  std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << std::endl;
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -574,10 +648,13 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   x1 = x + vx*(2*pic.cols);
   y1 = y + vy*(2*pic.rows);
 
-  std::cout << "\nvec4f: " << line_result << ',' << "\npoints: " << points << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << ",\ncols, rows: " << pic.cols << ',' << pic.rows  <<  std::endl;
+  std::cout << "\nvec4f: " << line_result << ',' << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << std::endl;
 
-  // TODO - go on from intersect and gathering 4 points, yep!
+  // going on from intersect and gathering 4 points, yep!
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
+
+  // global chap - fill it with lines
+  lines4intersect.push_back ( cv::Vec4i(x0,y0,x1,y1) );
 }
 
 Mat coord_clusters_munge ( Size size,
