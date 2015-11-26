@@ -371,6 +371,7 @@ void longest_closed()
 }
 
 // custom sort function for points closest to mass center
+// credits: http://answers.opencv.org/question/14188/calc-eucliadian-distance-between-two-single-point/ - check performance vs: sqrt(a.x*a.x + a.y*a.y + a.z*a.z), yep!
 struct less_custom_sort_points {
 
     inline bool operator() (const Point& struct1, const Point& struct2)
