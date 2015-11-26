@@ -205,34 +205,38 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
+  // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
+  // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
+  // Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
+  // Mat mat = imread( "./pics/5.jpg"); /*TODO - same closest 2 center*/
+  // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
+
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
+  // Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
+  // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
+  // Mat mat = imread( "./pics/14.jpg"); /*TODO - c2c - yep! same as above*/
+  // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
+  // Mat mat = imread( "./pics/16.jpg"); /*TODO - c2c - yep! 2 points - rest at the end of stage...*/
+  // Mat mat = imread( "./pics/17.jpg");/*TODO - c2c - yep! same - 2 points....*/
+  // Mat mat = imread( "./pics/9.jpg"); /*TODO - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
+  // Mat mat = imread( "./pics/10.jpg"); /*TODO - c2c - yep!*/
+
+  // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
+
+  //---------------
 
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
   // Mat mat = imread( "./pics/tj22.jpg");
-  // Mat mat = imread( "./pics/1.jpg"); /*bug with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
-  // Mat mat = imread( "./pics/2.jpg"); /*dotted single side or receipt*/
-  Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
-  // Mat mat = imread( "./pics/18.jpg"); /*disaster with lines algorithm!!! TODO - go on from here - see what messed it up - was good - then do 7 - where is the vert line gone?*/
-  // Mat mat = imread( "./pics/4.jpg"); /*DONE - yep!, good enough for me with lines algo */
+  // Mat mat = imread( "./pics/1.jpg"); /*bug solved with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
+  // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread( "./pics/3.jpg"); /*yep*/
-  // Mat mat = imread( "./pics/5.jpg"); /*yep*/
-  // Mat mat = imread( "./pics/6.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/8.jpg"); /*yep!*/
   // Yep. but for me for now it's perfect ;)
-  // Mat mat = imread( "./pics/12.jpg"); /* yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
-  // Mat mat = imread( "./pics/13.jpg"); /*yep! closed - worked well for 2 corners - rest are at the end of stage*/
-  // Mat mat = imread( "./pics/14.jpg"); /*yep! same as above*/
-  // Mat mat = imread( "./pics/15.jpg"); /*yep! should have detected closed - ?? maybe not completely closed.. */
-  // Mat mat = imread( "./pics/16.jpg"); /*yep! 2 points - rest at the end of stage...*/
-  // Mat mat = imread( "./pics/17.jpg");/*yep! same - 2 points....*/
 
   // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
-  // Mat mat = imread( "./pics/9.jpg"); /* flash - yep! with a little work with fitLine angle and double line...  */
-  // Mat mat = imread( "./pics/10.jpg");
-  // Mat mat = imread( "./pics/11.jpg"); /* yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
 
   // cleanup some images...
   remove("./img_pre/long4.jpg");
@@ -386,9 +390,11 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
     line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 );
   }
 
-  float small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height), large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
-
-  cv::Mat quad = cv::Mat::zeros ( rect_minAreaRect.size.width, rect_minAreaRect.size.height, CV_8UC3 );
+  bool is_mat_width = size_mat.width>size_mat.height; /*is width larger*/
+  int small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
+  int large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
+  !is_mat_width && (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
+  cv::Mat quad = cv::Mat::zeros ( small, large, CV_8UC3 );
 
   std::vector<cv::Point2f> quad_pts;
   quad_pts.push_back(cv::Point2f(0, 0));
