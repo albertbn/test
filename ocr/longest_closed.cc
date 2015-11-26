@@ -53,7 +53,7 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           double min_line_length);
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
 
-void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 );
+void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 );
 
 //credits: http://answers.opencv.org/question/9511/how-to-find-the-intersection-point-of-two-lines/
 bool intersection(Point2f o1, Point2f p1, Point2f o2, Point2f p2, Point2f &r){
@@ -205,15 +205,14 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
+  // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
-  // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
+
+  Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
   // Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
   // Mat mat = imread( "./pics/5.jpg"); /*TODO - same closest 2 center*/
   // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
 
-  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
-  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep? - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
   // Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
   // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
   // Mat mat = imread( "./pics/14.jpg"); /*TODO - c2c - yep! same as above*/
@@ -226,6 +225,9 @@ void longest_closed()
   // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
 
   //---------------
+  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
+  // Mat mat = imread( "./pics/heb_new.jpg"); /*yep indeed - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
   // Mat mat = imread( "./pics/tj.jpg");
   // Mat mat = imread( "./pics/tj2.jpg");
@@ -236,7 +238,6 @@ void longest_closed()
   // Yep. but for me for now it's perfect ;)
 
   // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
-  Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
 
   // cleanup some images...
   remove("./img_pre/long4.jpg");
@@ -353,12 +354,12 @@ void longest_closed()
       intersect_n_get_points ( points4 /*ref*/ );
       corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/);
     }
-    final_magic_crop_rotate (  mat, points4 );
+    final_magic_crop_rotate (  mat, points4 /*ref*/ );
 
     std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
   }
   else {
-    final_magic_crop_rotate (  mat, points4 );
+    final_magic_crop_rotate (  mat, points4 /*ref*/ );
   }
 
   cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
@@ -369,7 +370,67 @@ void longest_closed()
   cv::imwrite( "./img_pre/long4.jpg", clong);
 }
 
-void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
+// custom sort function for points closest to mass center
+struct less_custom_sort_points {
+
+    inline bool operator() (const Point& struct1, const Point& struct2)
+    {
+        return ( norm(center-struct1) < norm(center-struct2));
+    }
+};
+
+void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
+
+  std::vector<cv::Point2f> points4f; /*need to convert to Point2f for kmeans */
+  for ( int i=0; i<(int)points4.size(); ++i ) {
+    points4f.push_back(Point2f(points4[i].x, points4[i].y));
+  }
+
+  int clusterCount = 2;
+  int attempts = 1;
+  Mat llabels, centers;
+  kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+  // std::cout << "\n\n clustered points: \n\n labels: " << llabels << "\ncenters: " << centers << "\npoints4f: " << points4f << std::endl;
+
+  std::vector<int> labels = llabels;
+  std::vector<cv::Point> points40, points41;
+  for ( int i=0; i<(int)labels.size(); ++i ) {
+    if(labels[i])
+      points41.push_back(points4[i]);
+    else
+      points40.push_back(points4[i]);
+  }
+
+  if ( points41.size()>2 ) {
+    std::sort(points41.begin(), points41.end(), less_custom_sort_points());
+  }
+
+  if ( points40.size()>2 ) {
+    std::sort(points40.begin(), points40.end(), less_custom_sort_points());
+  }
+
+  points4.clear(); /*clear and re-push closest points...*/
+
+  int to = 2; points40.size()<2 && (to=3);
+  for ( int i=0; i<(int)points41.size() && i<to; ++i ){
+    points4.push_back(points41[i]);
+  }
+
+  to>2 && (to=1);
+  for ( int i=0; i<(int)points40.size() && i<to; ++i ){
+    points4.push_back(points40[i]);
+  }
+
+  corners_magick_do(size_mat, points4 /*ref*/);
+
+  std::cout << "p40, p41, p4: " << points40 << points41 << points4 << std::endl;
+}
+
+void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
+
+  if ( points4.size()>4 ){
+    sort_points_closest_2center(points4);
+  }
 
   Mat mb;
   if ( file_exists("./img_pre/long7.jpg") )
@@ -402,8 +463,13 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point> points4 ) {
   quad_pts.push_back(cv::Point2f(quad.cols, quad.rows));
   quad_pts.push_back(cv::Point2f(0, quad.rows));
 
-  cv::Mat transmtx = cv::getPerspectiveTransform ( points4f, quad_pts );
-  cv::warpPerspective ( mat, quad, transmtx, quad.size() );
+  if ( points4f.size()==4 ) {
+    cv::Mat transmtx = cv::getPerspectiveTransform ( points4f, quad_pts );
+    cv::warpPerspective ( mat, quad, transmtx, quad.size() );
+  }
+  else{
+    std::cout << "checking points4f... " << points4f << std::endl;
+  }
 
   cv::imwrite( "./img_pre/long7.jpg", mb);
   cv::imwrite( "./img_pre/long8.jpg", quad);
