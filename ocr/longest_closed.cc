@@ -208,8 +208,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
 
-  Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
-  // Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
+  Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
   // Mat mat = imread( "./pics/5.jpg"); /*TODO - same closest 2 center*/
   // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
 
@@ -225,6 +224,8 @@ void longest_closed()
   // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
 
   //---------------
+  // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
+
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb_new.jpg"); /*yep indeed - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
@@ -382,6 +383,12 @@ struct less_custom_sort_points {
 
 void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
 
+  // Get mass center for whole Mat/Stage
+  Point center_mat(0,0);
+  center_mat += Point(0,0); center_mat += Point(size_mat.width,0); center_mat += Point(size_mat.width, size_mat.height); center_mat += Point(0,size_mat.height);
+  center_mat *= ( 1. / 4 );
+  center = center_mat;
+
   std::vector<cv::Point2f> points4f; /*need to convert to Point2f for kmeans */
   for ( int i=0; i<(int)points4.size(); ++i ) {
     points4f.push_back(Point2f(points4[i].x, points4[i].y));
@@ -447,9 +454,10 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
   Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
   Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
 
-  for ( int i=0; i<(int)points4.size(/*4*/); ++i){
+  for ( int i=0; i<(int)points4.size(/*4*/); ++i ) {
     points4f.push_back(points4[i]);
     line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 );
+    cv::circle ( mb, points4[i], 50, cv::Scalar(50,0,255) );
   }
 
   bool is_mat_width = size_mat.width>size_mat.height; /*is width larger*/
