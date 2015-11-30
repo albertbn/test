@@ -167,17 +167,18 @@ bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
 
   bool are4pointsfine = false;
 
+  center = Point(0,0); /*yep, also stoned solving :) yep!*/
   // Get mass center
   for ( int i = 0; i < (int)corners.size(); ++i )
     center += corners[i];
   center *= ( 1. / corners.size() );
 
-  //std::cout << "corners, center: " << corners << ',' << center << std::endl;
+  std::cout << "corners, center: " << corners << ',' << center << std::endl;
 
  are4pointsfine = sortCorners ( corners, center );
 
   if ( !are4pointsfine ) {
-    //std::cout << "The corners were not sorted correctly!" << corners << std::endl;
+    std::cout << "The corners were not sorted correctly!" << std::endl;
     // return;
   }
 
@@ -419,6 +420,8 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
 
   points4.clear(); /*clear and re-push closest points...*/
 
+  // TODO - go on from here - implement additional logic for point on border... - then farthest...
+
   int to = 2; points40.size()<2 && (to=3);
   for ( int i=0; i<(int)points41.size() && i<to; ++i ){
     points4.push_back(points41[i]);
@@ -431,15 +434,14 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
 
   corners_magick_do(size_mat, points4 /*ref*/);
 
-  std::cout << "p40, p41, p4: " << points40 << points41 << points4 << std::endl;
+  // std::cout << "p40, p41, p4: " << points40 << points41 << points4 << std::endl;
 }
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
   if ( points4.size()>4 ){
     sort_points_closest_2center(points4);
-    Point pfirst = points4[0]; points4.erase(points4.begin());
-    points4.push_back(pfirst);
+    // Point pfirst = points4[0]; points4.erase(points4.begin()); // points4.push_back(pfirst);
   }
 
   Mat mb;
@@ -724,7 +726,7 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
 // the  fit line chap here man...
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << std::endl;
+  // std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << std::endl;
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -744,7 +746,7 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   x1 = x + vx*(2*pic.cols);
   y1 = y + vy*(2*pic.rows);
 
-  std::cout << "\nvec4f: " << line_result << ',' << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << std::endl;
+  // std::cout << "\nvec4f: " << line_result << ',' << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << std::endl;
 
   // going on from intersect and gathering 4 points, yep!
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
