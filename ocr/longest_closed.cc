@@ -438,6 +438,8 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
   if ( points4.size()>4 ){
     sort_points_closest_2center(points4);
+    Point pfirst = points4[0]; points4.erase(points4.begin());
+    points4.push_back(pfirst);
   }
 
   Mat mb;
