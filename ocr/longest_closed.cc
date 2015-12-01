@@ -54,6 +54,7 @@ static void deal_with_geometry_when_not_enough_90d_angles(
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours);
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 );
+void additional_logic_closest2center ( std::vector<cv::Point>& points4, std::vector<cv::Point>& points40, std::vector<cv::Point>& points41, int tl_br_index );
 
 //credits: http://answers.opencv.org/question/9511/how-to-find-the-intersection-point-of-two-lines/
 bool intersection(Point2f o1, Point2f p1, Point2f o2, Point2f p2, Point2f &r){
@@ -209,22 +210,21 @@ void longest_closed()
   // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
 
-  Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
-  // Mat mat = imread( "./pics/5.jpg"); /*TODO - same closest 2 center*/
-  // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
-
+  Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
   // Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
-  // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
-  // Mat mat = imread( "./pics/14.jpg"); /*TODO - c2c - yep! same as above*/
   // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
-  // Mat mat = imread( "./pics/16.jpg"); /*TODO - c2c - yep! 2 points - rest at the end of stage...*/
-  // Mat mat = imread( "./pics/17.jpg");/*TODO - c2c - yep! same - 2 points....*/
-  // Mat mat = imread( "./pics/9.jpg"); /*TODO - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
-  // Mat mat = imread( "./pics/10.jpg"); /*TODO - c2c - yep!*/
 
-  // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
+  // Mat mat = imread( "./pics/9.jpg"); /*TODO - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
+  // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - c2c - yep!*/
 
   //---------------
+  // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
+  // Mat mat = imread( "./pics/17.jpg");/*TODO - c2c - yep! same - 2 points....*/
+  // Mat mat = imread( "./pics/16.jpg"); /*TODO - c2c - yep! 2 points - rest at the end of stage...*/
+  // Mat mat = imread( "./pics/14.jpg"); /*TODO - c2c - yep! same as above*/
+  // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
+  // Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
+  // Mat mat = imread ( "./pics/5.jpg" ) ; /*TODO - same closest 2 center*/
   // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
 
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
@@ -236,7 +236,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug solved with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
-  // Mat mat = imread( "./pics/3.jpg"); /*yep*/
+  // Mat mat = imread ( "./pics/3.jpg" ); /*yep*/
   // Yep. but for me for now it's perfect ;)
 
   // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
@@ -399,7 +399,6 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   int attempts = 1;
   Mat llabels, centers;
   kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-  // std::cout << "\n\n clustered points: \n\n labels: " << llabels << "\ncenters: " << centers << "\npoints4f: " << points4f << std::endl;
 
   std::vector<int> labels = llabels;
   std::vector<cv::Point> points40, points41;
@@ -434,7 +433,51 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
 
   corners_magick_do(size_mat, points4 /*ref*/);
 
+  // additional logic to choose further point
+  for ( int i=0; i<(int)points4.size(); ++i ) {
+    additional_logic_closest2center ( points4, points40, points41, i );
+  }
   // std::cout << "p40, p41, p4: " << points40 << points41 << points4 << std::endl;
+}
+
+void additional_logic_closest2center ( std::vector<cv::Point>& points4, std::vector<cv::Point>& points40, std::vector<cv::Point>& points41, int tl_br_index ) {
+
+  std::vector<cv::Point> points_where_2search;
+  Point ppoint;
+  bool point_found = false;
+  int point_index;
+
+  // this folk here makes the 4 points more precise,
+  // especially implements the logic that if sitting on one of the stage borders - the farthest should be used
+
+  ppoint = points4[tl_br_index]; point_found = false; point_index = -1;
+  point_found = std::find(points40.begin(), points40.end(), ppoint) != points40.end();
+  if ( point_found ) {
+    points_where_2search = points40;
+  }
+  else {
+    point_found = std::find(points41.begin(), points41.end(), ppoint) != points41.end();
+    if(point_found) points_where_2search = points41;
+
+  }
+  if ( point_found ) {
+    for ( int i=0; i<(int)points_where_2search.size(); ++i ) {
+
+      if ( point_index<0 && ppoint==points_where_2search[i] ) {
+        point_index = i;
+      }
+      else {
+        // tl, tr
+        if ( tl_br_index<2 ) {
+          if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y<ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
+        }
+        //br, bl
+        else {
+          if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y>ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
+        }
+      }
+    }
+  }
 }
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
