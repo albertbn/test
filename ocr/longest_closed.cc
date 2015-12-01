@@ -210,14 +210,15 @@ void longest_closed()
   // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
 
-  Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
-  // Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
-  // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
+  Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
 
   // Mat mat = imread( "./pics/9.jpg"); /*TODO - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
-  // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - c2c - yep!*/
+
+  // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - seen better - c2c - yep!*/
 
   //---------------
+  // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
+  // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
   // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
   // Mat mat = imread( "./pics/17.jpg");/*TODO - c2c - yep! same - 2 points....*/
   // Mat mat = imread( "./pics/16.jpg"); /*TODO - c2c - yep! 2 points - rest at the end of stage...*/
@@ -382,6 +383,40 @@ struct less_custom_sort_points {
     }
 };
 
+void sort_points_closest_2center8 ( std::vector<cv::Point>& points4x ) {
+
+  std::vector<cv::Point> points80, points81;
+  std::vector<cv::Point2f> points4f; /*need to convert to Point2f for kmeans */
+  for ( int i=0; i<(int)points4x.size(); ++i ) {
+    points4f.push_back(Point2f(points4x[i].x, points4x[i].y));
+  }
+
+  int clusterCount = 2;
+  int attempts = 1;
+  Mat llabels, centers;
+  kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+
+  std::vector<int> labels = llabels;
+  for ( int i=0; i<(int)labels.size(); ++i ) {
+    if(labels[i])
+      points81.push_back(points4x[i]);
+    else
+      points80.push_back(points4x[i]);
+  }
+
+  std::sort(points81.begin(), points81.end(), less_custom_sort_points());
+  std::sort(points80.begin(), points80.end(), less_custom_sort_points());
+
+  // add the first essential ones
+  points4x.clear();
+  points4x.push_back(points80[0]);
+  points4x.push_back(points81[0]);
+
+  // the  fill in the rest - they'll be later used for the border farthest algorithm
+  for ( int i=1;   i<(int)points81.size(); ++i ) points4x.push_back(points81[i]);
+  for ( int i=1;   i<(int)points80.size(); ++i ) points4x.push_back(points80[i]);
+}
+
 void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
 
   // Get mass center for whole Mat/Stage
@@ -410,13 +445,8 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
       points40.push_back(points4[i]);
   }
 
-  if ( points41.size()>2 ) {
-    std::sort(points41.begin(), points41.end(), less_custom_sort_points());
-  }
-
-  if ( points40.size()>2 ) {
-    std::sort(points40.begin(), points40.end(), less_custom_sort_points());
-  }
+  sort_points_closest_2center8(points41/*ref*/);
+  sort_points_closest_2center8(points40/*ref*/);
 
   std::cout << "sort points: \ncenter: " << center << "\nlabels: " << llabels << "\npoints41: " << points41 << "\npoints40: " << points40 << std::endl;
 
