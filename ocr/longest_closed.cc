@@ -174,9 +174,9 @@ bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
     center += corners[i];
   center *= ( 1. / corners.size() );
 
-  std::cout << "corners, center: " << corners << ',' << center << std::endl;
+  // std::cout << "corners, center: " << corners << ',' << center << std::endl;
 
- are4pointsfine = sortCorners ( corners, center );
+  are4pointsfine = sortCorners ( corners, center );
 
   if ( !are4pointsfine ) {
     std::cout << "The corners were not sorted correctly!" << std::endl;
@@ -400,6 +400,7 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   Mat llabels, centers;
   kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
+
   std::vector<int> labels = llabels;
   std::vector<cv::Point> points40, points41;
   for ( int i=0; i<(int)labels.size(); ++i ) {
@@ -417,10 +418,11 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
     std::sort(points40.begin(), points40.end(), less_custom_sort_points());
   }
 
+  std::cout << "sort points: \ncenter: " << center << "\nlabels: " << llabels << "\npoints41: " << points41 << "\npoints40: " << points40 << std::endl;
+
   points4.clear(); /*clear and re-push closest points...*/
 
   // TODO - go on from here - implement additional logic for point on border... - then farthest...
-
   int to = 2; points40.size()<2 && (to=3);
   for ( int i=0; i<(int)points41.size() && i<to; ++i ){
     points4.push_back(points41[i]);
@@ -430,6 +432,8 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   for ( int i=0; i<(int)points40.size() && i<to; ++i ){
     points4.push_back(points40[i]);
   }
+
+  std::cout << "\npoints4: " << points4 << std::endl;
 
   corners_magick_do(size_mat, points4 /*ref*/);
 
@@ -460,21 +464,21 @@ void additional_logic_closest2center ( std::vector<cv::Point>& points4, std::vec
     if(point_found) points_where_2search = points41;
 
   }
-  if ( point_found ) {
-    for ( int i=0; i<(int)points_where_2search.size(); ++i ) {
+  if ( !(point_found && points_where_2search.size()>2 /*!*/) ) return;
 
-      if ( point_index<0 && ppoint==points_where_2search[i] ) {
-        point_index = i;
+  for ( int i=0; i<(int)points_where_2search.size(); ++i ) {
+
+    if ( point_index<0 && ppoint==points_where_2search[i] ) {
+      point_index = i;
+    }
+    else {
+      // tl, tr
+      if ( tl_br_index<2 ) {
+        if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y<ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
       }
+      //br, bl
       else {
-        // tl, tr
-        if ( tl_br_index<2 ) {
-          if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y<ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
-        }
-        //br, bl
-        else {
-          if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y>ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
-        }
+        if ( points_where_2search[i].x==ppoint.x && points_where_2search[i].y>ppoint.y ) ppoint = points4[tl_br_index] = points_where_2search[i];
       }
     }
   }
@@ -482,16 +486,19 @@ void additional_logic_closest2center ( std::vector<cv::Point>& points4, std::vec
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
-  if ( points4.size()>4 ){
-    sort_points_closest_2center(points4);
-    // Point pfirst = points4[0]; points4.erase(points4.begin()); // points4.push_back(pfirst);
-  }
-
   Mat mb;
   if ( file_exists("./img_pre/long7.jpg") )
     mb = imread("./img_pre/long7.jpg");
   else
     mb = Mat::zeros( mat.size(), CV_8UC3 );
+
+  if ( points4.size()>4 ) { /*for sor points - draw all circles*/
+    for ( int i=0; i<(int)points4.size(); ++i ) {
+      cv::circle ( mb, points4[i], 50, cv::Scalar(150,55,70) );
+    }
+    sort_points_closest_2center(points4);
+    // Point pfirst = points4[0]; points4.erase(points4.begin()); // points4.push_back(pfirst);
+  }
 
   std::vector<cv::Point2f> points4f;
   // this here is probably closest to the size of the original invoice... well, let's try... tension :)
