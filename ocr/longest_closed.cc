@@ -120,6 +120,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     mb = Mat::zeros ( size_mat, CV_8UC3 );
 
   cv::Vec4i lline;
+  std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
   for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
     lline = lines4intersect[i];
     line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
@@ -207,16 +208,14 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
-  // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
+  Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
 
-  Mat mat = imread( "./pics/8.jpg"); /*TODO - same c2c - yep!*/
-
-  // Mat mat = imread( "./pics/9.jpg"); /*TODO - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
-
-  // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - seen better - c2c - yep!*/
+  // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - seen better - c2c - yep!*/ ??? part of paper... TARGET company
 
   //---------------
+  // Mat mat = imread( "./pics/9.jpg"); /*yep - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
+  // Mat mat = imread( "./pics/8.jpg"); /*yep - same c2c - yep!*/
   // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
   // Mat mat = imread( "./pics/6.jpg"); /*TODO - same c2c yep!*/
   // Mat mat = imread( "./pics/12.jpg"); /* TODO - lines skewed... yep! skewed in middle of receipt \/\/ - no 90 degree, lines dotted lines algorithm not relevant for this case  */
@@ -342,21 +341,22 @@ void longest_closed()
   // OK, this is the dotted line connection and expansion algorithm
   if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
 
-    // TODO - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
+    // DONE - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
     if ( contours_long.size() || contours_medium.size() ){
+      // std::cout << "contours long || medium" << std::endl;
       for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
-
       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
     }
     else {
       deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
     }
 
-    if ( lines4intersect.size()<4 ) {
+    // if ( lines4intersect.size()<4 ) {
+    // std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
       points4.clear();
       intersect_n_get_points ( points4 /*ref*/ );
       corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/);
-    }
+    // }
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
 
     std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
@@ -613,31 +613,8 @@ static void deal_with_geometry_when_not_enough_90d_angles(
                                                           std::vector<double> len_contours_contoursDraw2,
                                                           double min_line_length
                                                           ){
-
-  // std::cout << "dwgwne9a: cd2: " << contoursDraw2.size() << std::endl;
-
-  // Mat l44, l444;
-  // if(file_exists("./img_pre/long44.jpg"))
-  //   l44 = imread("./img_pre/long44.jpg");
-  // else
-  //   l44 = Mat::zeros( mat_size, CV_8UC3 );
-
-  // if(file_exists("./img_pre/long444.jpg"))
-  //   l444 = imread("./img_pre/long444.jpg");
-  // else
-  //   l444 = Mat::zeros( mat_size, CV_8UC3 );
-
-  // // before split contours
-  // cv::drawContours(l44, contoursDraw2, -1, cv::Scalar(0,255,0),1);
-  // cv::imwrite( "./img_pre/long44.jpg", l44);
-
   // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
   split_contours_2_dotted_lines ( /*ref*/contoursDraw2, /*ref*/len_contours_contoursDraw2, min_line_length );
-  // std::cout << "\n\ncd2 len:" << contoursDraw2.size() << "\n\ncd2 itself: " << Mat(contoursDraw2) << ", \n\nlen_contours_contoursDraw2: " << Mat(len_contours_contoursDraw2) << std::endl;
-
-  // after split contours
-  // cv::drawContours(l444, contoursDraw2, -1, cv::Scalar(0,255,0),1);
-  // cv::imwrite( "./img_pre/long444.jpg", l444);
 
   Mat_<float> angles, angles0, angles1;
   Mat_<double> angle_centers;
@@ -664,10 +641,6 @@ static void deal_with_geometry_when_not_enough_90d_angles(
       len_contours1.push_back(len_contours_contoursDraw2[j]);
     }
   }
-
-  // std::cout << "angle_centers: " << angle_centers << "\n angles0: " << angles0 << ',' << "angles1: " << angles1 << "c0 and c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << "\nlen_sum0, len_sum1: " << len_sum0 << ',' << len_sum1 << "\nmin_line_length*5: " << min_line_length*5 << std::endl;
-
-  //std::cout << "\n~~~ \n len_contours0, len_contours1:" << Mat(len_contours0) << ',' << Mat(len_contours1) << std::endl;
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
@@ -806,8 +779,6 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
 // the  fit line chap here man...
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  // std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << std::endl;
-
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
   Vec4f line_result;
@@ -817,6 +788,9 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   float vy = line_result[1];
   float x = line_result[2];
   float y = line_result[3];
+
+  // TODO - go on from here...
+  std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << "\npoint of line: " << Point(x,y) << std::endl;
 
   float x0, y0, x1, y1;
 
@@ -830,7 +804,6 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
 
   // going on from intersect and gathering 4 points, yep!
   cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
-
   // global chap - fill it with lines
   lines4intersect.push_back ( cv::Vec4i(x0,y0,x1,y1) );
 }
@@ -883,13 +856,10 @@ Mat coord_clusters_munge ( Size size,
     }
   }
 
-  // std::cout << "points0:" << points0  << std::endl;  std::cout << "points1:" << points1 << ", co, c1 sizes: " << contours_l0.size() << ',' << contours_l1.size()  << std::endl;
-
   if ( contours_l0.size()>0 ) {
     Rect r0 = cv::boundingRect(points0);
     if(points0.size()>0){
       get_closest_diagonal(r0, angles0, points0, l0);
-      // rectangle ( l0,r0,cv::Scalar(0,255,0) );
     }
     cv::imwrite( "./img_pre/long5.jpg", l0);
   }
@@ -899,7 +869,6 @@ Mat coord_clusters_munge ( Size size,
     Rect r1 = cv::boundingRect(points1);
     if(points1.size()>0){
       get_closest_diagonal(r1, angles1, points1, l1);
-      // rectangle ( l1,r1,cv::Scalar(0,255,0) );
     }
     cv::imwrite( "./img_pre/long6.jpg", l1);
   }
@@ -967,8 +936,6 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
       // len_contours1.push_back(arcLength(contours[j],true));
     }
   }
-
-  // std::cout << "\n\n ~~~ c0, c1 sizes: " << contours_l0.size() << ',' << contours_l1.size() << std::endl;
 
   // go on from here - check for size > 1 maybe..., declare fn below...
   if( (int)contours_l0.size()>0) reduce_noise_short_lines( contours_l0, angles0, len_contours0);
