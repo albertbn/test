@@ -25,6 +25,8 @@ using namespace cv;
 using namespace std;
 
 std::vector<cv::Vec4i> lines4intersect;
+std::vector<bool> lines4intersect_is_vert;
+std::vector<Point> p_from_line_vector;
 cv::Point center(0,0);
 Size size_mat;
 
@@ -55,6 +57,13 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 );
 void additional_logic_closest2center ( std::vector<cv::Point>& points4, std::vector<cv::Point>& points40, std::vector<cv::Point>& points41, int tl_br_index );
+
+bool lines4intersect_validate(bool is_vert, Point p_from_line, Vec4i vec4i);
+
+bool is_vertical ( float angle ) {
+  /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
+  return angle > 45.0 && angle < 135.0;
+}
 
 //credits: http://answers.opencv.org/question/9511/how-to-find-the-intersection-point-of-two-lines/
 bool intersection(Point2f o1, Point2f p1, Point2f o2, Point2f p2, Point2f &r){
@@ -789,8 +798,9 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   float x = line_result[2];
   float y = line_result[3];
 
-  // TODO - go on from here...
-  std::cout << "\n§§§§§§§\navg angles: " << mean(angles)[0] << "\npoint of line: " << Point(x,y) << std::endl;
+  float angle_avg = mean(angles)[0];
+  // DONE - go on from here...
+  std::cout << "\n§§§§§§§\navg angles: " << angle_avg << "\npoint of line: " << Point(x,y) << std::endl;
 
   float x0, y0, x1, y1;
 
@@ -803,9 +813,45 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   // std::cout << "\nvec4f: " << line_result << ',' << ",\nline points: " << Point(x0,y0)  << ',' << Point(x1,y1) << std::endl;
 
   // going on from intersect and gathering 4 points, yep!
-  cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
   // global chap - fill it with lines
-  lines4intersect.push_back ( cv::Vec4i(x0,y0,x1,y1) );
+  // lines4intersect.push_back ( cv::Vec4i(x0,y0,x1,y1) );
+  if ( lines4intersect_validate( is_vertical(angle_avg), Point(x,y), Vec4i(x0,y0,x1,y1) ) ) {
+  }
+  cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
+}
+
+// TODO - find the place where farthest logic is and refine the logic - if on border of stage and point is NOT the corner... yep!
+bool lines4intersect_validate ( bool is_vert, Point p_from_line, Vec4i vec4i ) {
+
+  if ( !lines4intersect_is_vert.size() ) {
+    lines4intersect.push_back(vec4i); /*add line*/
+    p_from_line_vector.push_back(p_from_line); /*add point from line*/
+    lines4intersect_is_vert.push_back(is_vert); /*add bool is vert*/
+    return false;
+  }
+
+  int min_deviation = is_vert ? size_mat.width : size_mat.height;
+  std::cout << "min dev: " << min_deviation << std::endl;
+  min_deviation = min_deviation/5; /*this is the minimum distance needed between lines with same direction*/
+  int x_or_y, x_or_y2;
+  for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
+
+    if ( lines4intersect_is_vert[i]==is_vert) { /*found it*/
+      x_or_y = is_vert ? p_from_line_vector[i].x : p_from_line_vector[i].y;
+      x_or_y2 = is_vert ? p_from_line.x : p_from_line.y;
+
+      if ( abs(x_or_y-x_or_y2)<min_deviation ) {
+        std::cout << "busting: " << x_or_y << ',' << x_or_y2 << ',' << min_deviation << std::endl;
+        return false;
+      }
+      break;
+    }
+  }
+
+  lines4intersect.push_back(vec4i); /*add line*/
+  p_from_line_vector.push_back(p_from_line); /*add point from line*/
+  lines4intersect_is_vert.push_back(is_vert); /*add bool is vert*/
+  return true;
 }
 
 Mat coord_clusters_munge ( Size size,
@@ -891,7 +937,7 @@ double get_max_deviation(Size size, double angle_center, bool is_vert){
 // TODO - go on from here - think whether to clean noise before or after grouping... - maybe after for now?
 Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours ){
 
-  bool is_vert = angle_center > 45.0 && angle_center < 135.0; /*between 45 degrees trough 90 degrees to 135 degrees is considered vertical*/
+  bool is_vert = is_vertical(angle_center);
   std::vector<cv::Point2f> points;
   for(int i=0; i<(int)contours.size(); ++i){
 
