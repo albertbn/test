@@ -94,12 +94,16 @@ cv::Point computeIntersect ( cv::Vec4i a, cv::Vec4i b ) {
 
 void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
 
+  int ver=0, hor=0;
+  for ( int i=0; i<(int)lines4intersect_is_vert.size(); ++i ) {
+    (lines4intersect_is_vert[i] && ++ver) || ++hor;
+  } /*! yep! */
   if ( lines4intersect.size()<4 ) {
     // add 4 border lines of the pic
-    lines4intersect.push_back ( cv::Vec4i(0,0,size_mat.width-1,0) ); /* tl-tr */
-    lines4intersect.push_back ( cv::Vec4i(size_mat.width,0,size_mat.width,size_mat.height-1) ); /* tr-br */
-    lines4intersect.push_back ( cv::Vec4i(size_mat.width,size_mat.height,1,size_mat.height) ); /* br-bl */
-    lines4intersect.push_back ( cv::Vec4i(0,size_mat.height,0,1) ); /* bl-tl */
+    if(hor<2) lines4intersect.push_back ( cv::Vec4i(0,0,size_mat.width-5) ); /* tl-tr (hor) */
+    if(ver<2) lines4intersect.push_back ( cv::Vec4i(size_mat.width,0,size_mat.width,size_mat.height-5) ); /* tr-br (ver) */
+    if(hor<2) lines4intersect.push_back ( cv::Vec4i(size_mat.width,size_mat.height,5,size_mat.height) ); /* br-bl (hor) */
+    if(ver<2) lines4intersect.push_back ( cv::Vec4i(0,size_mat.height,0,5) ); /* bl-tl (ver) */
   }
 
   // credits: http://stackoverflow.com/questions/17235987/check-if-a-cvpoint-is-inside-a-cvmat
@@ -129,7 +133,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     mb = Mat::zeros ( size_mat, CV_8UC3 );
 
   cv::Vec4i lline;
-  std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
+  // std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
   for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
     lline = lines4intersect[i];
     line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
@@ -189,7 +193,7 @@ bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4
   are4pointsfine = sortCorners ( corners, center );
 
   if ( !are4pointsfine ) {
-    std::cout << "The corners were not sorted correctly!" << std::endl;
+    // std::cout << "The corners were not sorted correctly!" << std::endl;
     // return;
   }
 
@@ -217,12 +221,14 @@ double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 // start here
 void longest_closed()
 {
-  Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/2.jpg"); /*TODO - for single line, skip - dotted single side or receipt*/
 
   // Mat mat = imread ( "./pics/10.jpg" ); /*TODO - seen better - c2c - yep!*/ ??? part of paper... TARGET company
 
   //---------------
+  // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
+  // Mat mat = imread( "./pics/4.jpg"); /* yep! - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
+  // Mat mat = imread( "./pics/11.jpg"); /* :) TODO - yep! example of longest shape detecting ~90 degree in the middle of a line (broken, tared paper?)*/
   // Mat mat = imread( "./pics/9.jpg"); /*yep - c2c -yep! flash - yep! with a little work with fitLine angle and double line...  */
   // Mat mat = imread( "./pics/8.jpg"); /*yep - same c2c - yep!*/
   // Mat mat = imread( "./pics/15.jpg"); /*TODO - c2c - yep! should have detected closed - ?? maybe not completely closed.. */
@@ -232,9 +238,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/16.jpg"); /*TODO - c2c - yep! 2 points - rest at the end of stage...*/
   // Mat mat = imread( "./pics/14.jpg"); /*TODO - c2c - yep! same as above*/
   // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
-  // Mat mat = imread( "./pics/4.jpg"); /*TODO - implement the smallest/closest to center points when we have 3 lines (corners are more than 4) */
   // Mat mat = imread ( "./pics/5.jpg" ) ; /*TODO - same closest 2 center*/
-  // Mat mat = imread( "./pics/18.jpg"); /*TODO - calc quad from perspective... - learn, yep!*/
 
   // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
@@ -247,8 +251,7 @@ void longest_closed()
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread ( "./pics/3.jpg" ); /*yep*/
   // Yep. but for me for now it's perfect ;)
-
-  // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :)*/
+  Mat mat = imread( "./pics/pers.jpg"); /*kidding? :) actually a good training to make the right un-perspective / straighten size, yep!*/
 
   // cleanup some images...
   remove("./img_pre/long4.jpg");
@@ -368,7 +371,7 @@ void longest_closed()
     // }
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
 
-    std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
+    // std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
   }
   else {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
@@ -416,6 +419,8 @@ void sort_points_closest_2center8 ( std::vector<cv::Point>& points4x ) {
   std::sort(points81.begin(), points81.end(), less_custom_sort_points());
   std::sort(points80.begin(), points80.end(), less_custom_sort_points());
 
+  std::cout << "points81: " << points81 << "\npoints80: " << points80 << std::endl;
+
   // add the first essential ones
   points4x.clear();
   points4x.push_back(points80[0]);
@@ -444,7 +449,6 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   Mat llabels, centers;
   kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
-
   std::vector<int> labels = llabels;
   std::vector<cv::Point> points40, points41;
   for ( int i=0; i<(int)labels.size(); ++i ) {
@@ -457,7 +461,7 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   sort_points_closest_2center8(points41/*ref*/);
   sort_points_closest_2center8(points40/*ref*/);
 
-  std::cout << "sort points: \ncenter: " << center << "\nlabels: " << llabels << "\npoints41: " << points41 << "\npoints40: " << points40 << std::endl;
+  // std::cout << "sort points: \ncenter: " << center << "\nlabels: " << llabels << "\npoints41: " << points41 << "\npoints40: " << points40 << std::endl;
 
   points4.clear(); /*clear and re-push closest points...*/
 
@@ -472,7 +476,7 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
     points4.push_back(points40[i]);
   }
 
-  std::cout << "\npoints4: " << points4 << std::endl;
+  // std::cout << "\npoints4: " << points4 << std::endl;
 
   corners_magick_do(size_mat, points4 /*ref*/);
 
@@ -570,7 +574,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
   }
   else{
-    std::cout << "checking points4f... " << points4f << std::endl;
+    // std::cout << "checking points4f... " << points4f << std::endl;
   }
 
   cv::imwrite( "./img_pre/long7.jpg", mb);
@@ -816,8 +820,8 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   // global chap - fill it with lines
   // lines4intersect.push_back ( cv::Vec4i(x0,y0,x1,y1) );
   if ( lines4intersect_validate( is_vertical(angle_avg), Point(x,y), Vec4i(x0,y0,x1,y1) ) ) {
+    cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
   }
-  cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA );
 }
 
 // TODO - find the place where farthest logic is and refine the logic - if on border of stage and point is NOT the corner... yep!
@@ -827,11 +831,11 @@ bool lines4intersect_validate ( bool is_vert, Point p_from_line, Vec4i vec4i ) {
     lines4intersect.push_back(vec4i); /*add line*/
     p_from_line_vector.push_back(p_from_line); /*add point from line*/
     lines4intersect_is_vert.push_back(is_vert); /*add bool is vert*/
-    return false;
+    return true;
   }
 
   int min_deviation = is_vert ? size_mat.width : size_mat.height;
-  std::cout << "min dev: " << min_deviation << std::endl;
+  // std::cout << "min dev: " << min_deviation << std::endl;
   min_deviation = min_deviation/5; /*this is the minimum distance needed between lines with same direction*/
   int x_or_y, x_or_y2;
   for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
@@ -841,7 +845,7 @@ bool lines4intersect_validate ( bool is_vert, Point p_from_line, Vec4i vec4i ) {
       x_or_y2 = is_vert ? p_from_line.x : p_from_line.y;
 
       if ( abs(x_or_y-x_or_y2)<min_deviation ) {
-        std::cout << "busting: " << x_or_y << ',' << x_or_y2 << ',' << min_deviation << std::endl;
+        // std::cout << "busting: " << x_or_y << ',' << x_or_y2 << ',' << min_deviation << std::endl;
         return false;
       }
       break;
