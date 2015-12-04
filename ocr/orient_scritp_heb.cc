@@ -16,8 +16,8 @@
 
 int main()
 {
-  const char* inputfile = "./img_pre/long9.jpg";
-  // const char* inputfile = "./img_pre/long8.jpg";
+  // const char* inputfile = "./img_pre/long9.jpg";
+  const char* inputfile = "./img_pre/long8.jpg";
   // const char* inputfile = "./img_pre/heb2.jpg";
   // const char* inputfile = "./img_pre/heb_rot.jpg";
   // const char* inputfile = "./img_pre/heb_rot_tc.jpg";
@@ -77,7 +77,8 @@ int main()
          "Deskew angle: %.4f\n",
          orientation, direction, order, deskew_angle);
 
-  if( orientation == 3 ){
+  // if( orientation == 3 ){
+  if( 1==1 ){
 
     image = pixRotate90( image, 1 );
     printf("ok, orientations is 3\n=======\n");
