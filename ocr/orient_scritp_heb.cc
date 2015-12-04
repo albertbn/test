@@ -16,10 +16,12 @@
 
 int main()
 {
+  const char* inputfile = "./img_pre/long9.jpg";
+  // const char* inputfile = "./img_pre/long8.jpg";
   // const char* inputfile = "./img_pre/heb2.jpg";
   // const char* inputfile = "./img_pre/heb_rot.jpg";
   // const char* inputfile = "./img_pre/heb_rot_tc.jpg";
-  const char* inputfile = "./img_pre/heb.ocv.jpg"; /*working*/
+  // const char* inputfile = "./img_pre/heb.ocv.jpg"; /*working*/
   // const char* inputfile = "./img_pre/heb.ocv.working.jpg"; /*working*/
   // const char* inputfile = "./pics/heb.jpg";
   char *outText = NULL;
@@ -34,7 +36,7 @@ int main()
 
   // turn of dictionaries -> only possible during init
   GenericVector<STRING> vars_vec;
-  // vars_vec.push_back("load_system_dawg");
+  vars_vec.push_back("load_system_dawg");
   // vars_vec.push_back("load_freq_dawg");
   // vars_vec.push_back("load_punc_dawg");
   // vars_vec.push_back("load_number_dawg");
@@ -44,7 +46,7 @@ int main()
   // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
-  // vars_values.push_back("F");
+  vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");

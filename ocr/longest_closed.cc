@@ -240,18 +240,18 @@ void longest_closed()
   // Mat mat = imread( "./pics/13.jpg"); /*TODO -  c2c yep! closed - worked well for 2 corners - rest are at the end of stage*/
   // Mat mat = imread ( "./pics/5.jpg" ) ; /*TODO - same closest 2 center*/
 
-  // Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
+  Mat mat = imread( "./pics/heb.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb2.jpg"); /*yep!*/
   // Mat mat = imread( "./pics/heb_new.jpg"); /*yep indeed - check also if closed when 4 * 90 deg found - also if form is a satisfying rectangular?*/
 
-  // Mat mat = imread( "./pics/tj.jpg");
-  // Mat mat = imread( "./pics/tj2.jpg");
+  // Mat mat = imread( "./pics/tj.jpg"); /*hor*/
+  // Mat mat = imread( "./pics/tj2.jpg"); /*ver*/
   // Mat mat = imread( "./pics/tj22.jpg");
   // Mat mat = imread( "./pics/1.jpg"); /*bug solved with line clusters - hot short dotted lines GOON from here - 1 small line missing... check*/
   // Mat mat = imread( "./pics/7.jpg"); /*horizontal - dotted line - obvious imperfection with dotted line clustering algorithm TODO - maybe clear noise by avg longest...   */
   // Mat mat = imread ( "./pics/3.jpg" ); /*yep*/
   // Yep. but for me for now it's perfect ;)
-  Mat mat = imread( "./pics/pers.jpg"); /*kidding? :) actually a good training to make the right un-perspective / straighten size, yep!*/
+  // Mat mat = imread( "./pics/pers.jpg"); /*kidding? :) actually a good training to make the right un-perspective / straighten size, yep!*/
 
   // cleanup some images...
   remove("./img_pre/long4.jpg");

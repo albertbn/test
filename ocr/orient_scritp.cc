@@ -17,7 +17,9 @@
 int main()
 {
   // const char* inputfile = "./pics/tj.jpg";
-  const char* inputfile = "./img_pre/tj2.jpg";
+  // const char* inputfile = "./img_pre/tj2.jpg";
+  // const char* inputfile = "./img_pre/long8.jpg";
+  const char* inputfile = "./img_pre/long9.jpg";
   char *outText = NULL;
   // const char* inputfile = "./pics/tj2.jpg";
   tesseract::Orientation orientation;
@@ -88,14 +90,13 @@ int main()
 
   api->SetPageSegMode(tesseract::PSM_AUTO);
 
-
   // Check if change of init parameters was successful
   STRING var_value;
   api->GetVariableAsString("load_system_dawg", &var_value);
   printf("Variable 'load_system_dawg' is set to '%s'\n", var_value.string());
 
   outText = api->GetUTF8Text();
-  printf("OCR output:\n%s", outText);
+  printf("OCR output:\n\n===========\n\n%s", outText);
 
   // Destroy used object and release memory
   api->End();
