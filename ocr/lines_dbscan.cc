@@ -248,50 +248,67 @@ cv::Scalar HSVtoRGBcvScalar(int H, int S, int V) {
     return cv::Scalar(bB,bG,bR); // R component
 }
 
+std::vector<cv::Rect> detectLetters(cv::Mat img)
+{
+    std::vector<cv::Rect> boundRect;
+    cv::Mat img_gray, img_sobel, img_threshold, element;
+    cvtColor(img, img_gray, CV_BGR2GRAY);
+
+    cv::Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
+
+    cv::threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
+
+    element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
+    cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
+
+    std::vector< std::vector< cv::Point> > contours;
+    cv::findContours(img_threshold, contours, 0, 1);
+    std::vector<std::vector<cv::Point> > contours_poly( contours.size() );
+    for( int i = 0; i < (int)contours.size(); i++ )
+        if (contours[i].size()>50)
+        {
+            cv::approxPolyDP( cv::Mat(contours[i]), contours_poly[i], 3, true );
+            cv::Rect appRect( boundingRect( cv::Mat(contours_poly[i]) ));
+                boundRect.push_back(appRect);
+        }
+    return boundRect;
+}
+
 int main ( int argc, char** argv ) {
 
   Mat im = imread( "./pics/9.jpg");
-  cv::cvtColor(im, im, CV_BGR2GRAY);
 
-  std::vector<std::vector<cv::Point> > contours;
-  std::vector<cv::Vec4i> hierarchy;
-  findContours(im.clone(), contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+  cv::imwrite ( "./img_pre/lines_dbscan00.jpg", im ) ;
 
-  std::cout << "contours: " << contours.size() << std::endl;
+  std::vector<Rect> boxes = detectLetters(im);
 
-  std::vector<Rect> boxes;
-  for(size_t i = 0; i < contours.size(); i++) {
-    Rect r = boundingRect(contours[i]);
-    boxes.push_back(r);
-  }
-
-  DbScan dbscan(boxes,20,2);
+  DbScan dbscan ( boxes,20,2 );
   dbscan.run();
   //done, perform display
 
   std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
 
-  // Mat grouped = Mat::zeros(im.size(),CV_8UC3);
-  // std::vector<Scalar> colors;
-  // RNG rng(3);
-  // for(int i=0;i<=dbscan.C;i++) {
-  //   colors.push_back(HSVtoRGBcvScalar(rng(255),255,255));
-  // }
+  Mat grouped = Mat::zeros(im.size(),CV_8UC3);
+  std::vector<Scalar> colors;
+  RNG rng(3);
+  for(int i=0;i<=dbscan.C;i++) {
+    colors.push_back(HSVtoRGBcvScalar(rng(255),255,255));
+  }
 
-  // for ( int i=0;i<(int)dbscan.data.size();i++ ) {
-  //   Scalar color;
-  //   if(dbscan.labels[i]==-1) {
-  //     color=Scalar(128,128,128);
-  //   }
-  //   else {
-  //     int label=dbscan.labels[i];
-  //     color=colors[label];
-  //   }
-  //   putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
-  //   drawContours(grouped,contours,i,color,-1);
-  // }
+  for ( int i=0;i<(int)dbscan.data.size();i++ ) {
+    Scalar color;
+    if(dbscan.labels[i]==-1) {
+      color=Scalar(128,128,128);
+    }
+    else {
+      int label=dbscan.labels[i];
+      color=colors[label];
+    }
+    putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
+    // drawContours(grouped,contours,i,color,-1);
+  }
 
-  // cv::imwrite ( "./img_pre/lines_dbscan0.jpg", grouped ) ;
+  cv::imwrite ( "./img_pre/lines_dbscan0.jpg", grouped ) ;
 
   return 0;
 }
