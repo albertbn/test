@@ -18,7 +18,7 @@ inline std::string to_string (const T& t) {
 class DbScan {
 public:
   std::map<int, int> labels;
-  std::vector<Point2d>& data;
+  std::vector<Rect>& data;
   int C;
   double eps;
   int mnpts;
@@ -26,8 +26,7 @@ public:
 
   //memoization table in case of complex dist functions
 #define DP(i,j) dp[(data.size()*i)+j]
-  DbScan ( std::vector<Point2d>& _data, double _eps, int _mnpts ) : data ( _data )
-  {
+  DbScan ( std::vector<Rect>& _data, double _eps, int _mnpts ) : data ( _data ) {
     C=-1;
     for ( int i=0;i<(int)data.size();i++ ) {
       labels[i]=-99;
@@ -87,75 +86,81 @@ public:
   }
 
   double dist2d(Point2d a,Point2d b) {
-    return sqrt(pow(a.x-b.x,2) + pow(a.y-b.y,2));
+    // return sqrt(pow(a.x-b.x,2) + pow(a.y-b.y,2));
+    return abs(a.x-b.x); /*TODO - by vertical or horizontal*/
   }
 
   double distanceFunc(int ai,int bi) {
+
     if(DP(ai,bi)!=-1)
       return DP(ai,bi);
 
-    double minDist = abs(data[ai].x-data[bi].x); /*Point2d*/
-    DP(ai,bi)=minDist;
-    DP(bi,ai)=minDist;
-    return DP(ai,bi);
+    Rect a = data[ai];
+    Rect b = data[bi];
 
-    // Rect a = data[ai];
-    // Rect b = data[bi];
+    // Point2d cena= Point2d(a.x+a.width/2, a.y+a.height/2);
+    // Point2d cenb = Point2d(b.x+b.width/2, b.y+b.height/2);
+    // double minDist = abs(data[ai].x-data[bi].x); /*Point2d*/
+    // double minDist = abs(data[ai].x-data[bi].x); /*TODO - by vertical or horizontal*/
+    // DP(ai,bi)=minDist;
+    // DP(bi,ai)=minDist;
+    // return DP(ai,bi);
 
     // Point2d cena= Point2d(a.x+a.width/2,
     // a.y+a.height/2);
-    // Point2d cenb = Point2d(b.x+b.width/2,
-    // b.y+b.height/2);
     // double dist = sqrt(pow(cena.x-cenb.x,2) + pow(cena.y-cenb.y,2));
     // DP(ai,bi)=dist;
     // DP(bi,ai)=dist;
 
-    // Point2d tla =Point2d(a.x,a.y);
-    // Point2d tra =Point2d(a.x+a.width,a.y);
-    // Point2d bla =Point2d(a.x,a.y+a.height);
-    // Point2d bra =Point2d(a.x+a.width,a.y+a.height);
+    Point2d tla =Point2d(a.x,a.y);
+    Point2d tra =Point2d(a.x+a.width,a.y);
+    Point2d bla =Point2d(a.x,a.y+a.height);
+    Point2d bra =Point2d(a.x+a.width,a.y+a.height);
 
-    // Point2d tlb =Point2d(b.x,b.y);
-    // Point2d trb =Point2d(b.x+b.width,b.y);
-    // Point2d blb =Point2d(b.x,b.y+b.height);
-    // Point2d brb =Point2d(b.x+b.width,b.y+b.height);
+    Point2d tlb =Point2d(b.x,b.y);
+    Point2d trb =Point2d(b.x+b.width,b.y);
+    Point2d blb =Point2d(b.x,b.y+b.height);
+    Point2d brb =Point2d(b.x+b.width,b.y+b.height);
 
-    // double minDist = 9999999;
+    double minDist = 9999999;
 
-    // minDist = min(minDist,dist2d(tla,tlb));
-    // minDist = min(minDist,dist2d(tla,trb));
-    // minDist = min(minDist,dist2d(tla,blb));
-    // minDist = min(minDist,dist2d(tla,brb));
+    minDist = min(minDist,dist2d(tla,tlb));
+    minDist = min(minDist,dist2d(tla,trb));
+    minDist = min(minDist,dist2d(tla,blb));
+    minDist = min(minDist,dist2d(tla,brb));
 
-    // minDist = min(minDist,dist2d(tra,tlb));
-    // minDist = min(minDist,dist2d(tra,trb));
-    // minDist = min(minDist,dist2d(tra,blb));
-    // minDist = min(minDist,dist2d(tra,brb));
+    minDist = min(minDist,dist2d(tra,tlb));
+    minDist = min(minDist,dist2d(tra,trb));
+    minDist = min(minDist,dist2d(tra,blb));
+    minDist = min(minDist,dist2d(tra,brb));
 
-    // minDist = min(minDist,dist2d(bla,tlb));
-    // minDist = min(minDist,dist2d(bla,trb));
-    // minDist = min(minDist,dist2d(bla,blb));
-    // minDist = min(minDist,dist2d(bla,brb));
+    minDist = min(minDist,dist2d(bla,tlb));
+    minDist = min(minDist,dist2d(bla,trb));
+    minDist = min(minDist,dist2d(bla,blb));
+    minDist = min(minDist,dist2d(bla,brb));
 
-    // minDist = min(minDist,dist2d(bra,tlb));
-    // minDist = min(minDist,dist2d(bra,trb));
-    // minDist = min(minDist,dist2d(bra,blb));
-    // minDist = min(minDist,dist2d(bra,brb));
+    minDist = min(minDist,dist2d(bra,tlb));
+    minDist = min(minDist,dist2d(bra,trb));
+    minDist = min(minDist,dist2d(bra,blb));
+    minDist = min(minDist,dist2d(bra,brb));
+
+    DP(ai,bi)=minDist;
+    DP(bi,ai)=minDist;
+    return DP(ai,bi);
   }
 
-  // std::vector<std::vector<Rect> > getGroups() {
-  //   std::vector<std::vector<Rect> > ret;
-  //   for(int i=0;i<=C;i++) {
-  //     ret.push_back(std::vector<Rect>());
-  //     for(int j=0;j<(int)data.size();j++) {
-  //       if(labels[j]==i) {
-  //         ret[ret.size()-1].push_back(data[j]);
-  //       }
-  //     }
-  //   }
-  //   return ret;
-  // }
-  
+  std::vector<std::vector<Rect> > getGroups() {
+    std::vector<std::vector<Rect> > ret;
+    for(int i=0;i<=C;i++) {
+      ret.push_back(std::vector<Rect>());
+      for(int j=0;j<(int)data.size();j++) {
+        if(labels[j]==i) {
+          ret[ret.size()-1].push_back(data[j]);
+        }
+      }
+    }
+    return ret;
+  }
 };
 
 cv::Scalar HSVtoRGBcvScalar(int H, int S, int V) {
@@ -300,18 +305,18 @@ int main ( int argc, char** argv ) {
 
   std::vector<Rect> boxes = detectLetters(im);
 
-  std::vector<Point2d> rect_points;
-  Rect a;
+  // std::vector<Point2d> rect_points;
+  // Rect a;
   for ( int i=0; i<(int)boxes.size(); ++i ) {
-    a = boxes[i];
-    Point2d cena= Point2d(a.x+a.width/2, a.y+a.height/2);
-    // TODO - x or y according to orientation
-    rect_points.push_back(cena);
+    // a = boxes[i];
+    // Point2d cena= Point2d(a.x+a.width/2, a.y+a.height/2);
+    // // TODO - x or y according to orientation
+    // rect_points.push_back(cena);
     cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   }
   cv::imwrite ( "./img_pre/lines_dbscan02.jpg", im ) ;
 
-  DbScan dbscan ( rect_points, 20, 2 );
+  DbScan dbscan ( boxes, 10, 2 );
   dbscan.run();
   //done, perform display, check emacs git
 
@@ -333,8 +338,26 @@ int main ( int argc, char** argv ) {
       color=colors[label];
     }
 
-    putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i], FONT_HERSHEY_COMPLEX,.5,color,1);
+    putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
+    // putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i], FONT_HERSHEY_COMPLEX,.5,color,1);
     // drawContours(grouped,contours,i,color,-1);
+  }
+
+  std::vector<std::vector<Rect> > ggroups = dbscan.getGroups();
+
+  Rect r0;
+  std::vector<cv::Point> points0;
+  for(int i=0; i<(int)ggroups.size(); ++i){
+    points0.clear();
+    for(int j=0; j<(int)ggroups[i].size(); ++j){
+      points0.push_back(ggroups[i][j].tl());
+      points0.push_back(ggroups[i][j].br());
+    }
+    r0 = cv::boundingRect(points0);
+    r0 = Rect(Point(r0.tl().x, 0), Point(r0.br().x, grouped.cols)); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
+    cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
+
+    // std::cout << "dbscan.groups: " << Mat(ggroups[i]) << std::endl;
   }
 
   cv::imwrite ( "./img_pre/lines_dbscan03.jpg", grouped ) ;
