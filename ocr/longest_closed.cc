@@ -561,7 +561,8 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
   int small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
   int large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
   !is_mat_width && (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
-  cv::Mat quad = cv::Mat::zeros ( small, large, CV_8UC3 );
+  // cv::Mat quad = cv::Mat::zeros ( small, large, CV_8UC3 );
+  cv::Mat quad = cv::Mat::zeros ( small, large, CV_8U );
 
   std::vector<cv::Point2f> quad_pts;
   quad_pts.push_back(cv::Point2f(0, 0));
