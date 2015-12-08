@@ -313,7 +313,7 @@ int main ( int argc, char** argv ) {
 
   DbScan dbscan ( rect_points, 20, 2 );
   dbscan.run();
-  //done, perform display
+  //done, perform display, check emacs git
 
   std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
 
