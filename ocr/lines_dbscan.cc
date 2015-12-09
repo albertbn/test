@@ -4,8 +4,11 @@
 #include "opencv2/opencv.hpp"
 #include <map>
 #include <sstream>
+#include <tesseract/baseapi.h>
 
 using namespace cv;
+
+void crop_b_tess ( Mat mat/*orig*/, Rect rect );
 
 template <class T>
 inline std::string to_string (const T& t) {
@@ -354,13 +357,25 @@ int main ( int argc, char** argv ) {
       points0.push_back(ggroups[i][j].br());
     }
     r0 = cv::boundingRect(points0);
-    r0 = Rect(Point(r0.tl().x, 0), Point(r0.br().x, grouped.cols)); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
+    r0 = Rect(Point(r0.tl().x, 0), Point(r0.br().x, grouped.rows)); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
+
+    if(i==9) crop_b_tess ( imread( "./img_pre/long8.jpg", 0), r0 );
 
     // std::cout << "dbscan.groups: " << Mat(ggroups[i]) << std::endl;
   }
 
+
   cv::imwrite ( "./img_pre/lines_dbscan03.jpg", grouped ) ;
 
   return 0;
+}
+
+void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
+
+  std::cout << "rect: " << rect << std::endl;
+
+  Mat cropped = mat(rect);
+  cv::imwrite( "./img_pre/lines_dbscan04.jpg", cropped);
+  // cv::imwrite( "./img_pre/lines_dbscan04.jpg", mat);
 }

@@ -12,7 +12,6 @@
 #include <tesseract/baseapi.h>
 #include "tesseract/strngs.h"
 #include "tesseract/genericvector.h"
-#include "tesseract/genericvector.h"
 
 int main()
 {
