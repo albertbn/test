@@ -1,6 +1,7 @@
 
 // g++ $(pkg-config --cflags --libs opencv lept tesseract) lines_dbscan.cc -o lines_dbscan && ./lines_dbscan
 
+// http://opencv-code.com/tutorials/how-to-integrate-tesseract-ocr-and-opencv/
 #include "opencv2/opencv.hpp"
 #include <map>
 #include <sstream>
@@ -299,18 +300,64 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
 }
 
 tesseract::TessBaseAPI tess;
+tesseract::Orientation orientation;
+tesseract::WritingDirection direction;
+tesseract::TextlineOrder order;
+float deskew_angle;
+// PAGE_UP(0),
+// PAGE_RIGHT(1),
+// PAGE_DOWN(2),
+// PAGE_LEFT(3);
+//1=CW, 2=CCW, 3=180
+
+// credits: http://stackoverflow.com/questions/15043152/rotate-opencv-matrix-by-90-180-270-degrees
+void rot90 ( cv::Mat &matImage, int rotflag ) {
+  //1=CW, 2=CCW, 3=180
+  if (rotflag == 1){
+    transpose(matImage, matImage);
+    flip(matImage, matImage,1); //transpose+flip(1)=CW
+  } else if (rotflag == 2) {
+    transpose(matImage, matImage);
+    flip(matImage, matImage,0); //transpose+flip(0)=CCW
+  } else if (rotflag ==3){
+    flip(matImage, matImage,-1);    //flip(-1)=180
+  } else if (rotflag != 0){ //if not 0,1,2,3:
+    std::cout  << "Unknown rotation flag(" << rotflag << ")" << std::endl;
+  }
+}
+
+void orientation_check (Mat& mat){
+
+  tesseract::PageIterator* it =  tess.AnalyseLayout();
+    it->Orientation(&orientation, &direction, &order, &deskew_angle);
+    printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
+         "Deskew angle: %.4f\n",
+         orientation, direction, order, deskew_angle);
+
+    if( orientation==3 ){
+      rot90(mat, 1);
+    } else if(orientation==2){
+      rot90(mat,3);
+    }else if(orientation==1){
+      rot90(mat,2);
+    }
+}
 
 int main ( int argc, char** argv ) {
 
   // init tess
   tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
-  tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+  // tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+  tess.SetPageSegMode(tesseract::PSM_AUTO_OSD);
 
   // Mat im = imread( "./img_pre/long8.jpg");
   Mat im = imread( "./img_pre/long8.jpg", 0);
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
 
+  tess.SetImage ( (uchar*)im.data, im.cols, im.rows, 1, im.cols );
+  orientation_check(im);
   cv::imwrite ( "./img_pre/lines_dbscan00.jpg", im ) ;
+  return 0;/*temp*/
 
   std::vector<Rect> boxes = detectLetters(im);
 
@@ -358,6 +405,7 @@ int main ( int argc, char** argv ) {
   std::vector<cv::Point> points0;
   Point tl, br;
   Mat orig = imread( "./img_pre/long8.jpg", 0  );
+  // here - rotate orig as needed
   for(int i=0; i<(int)ggroups.size(); ++i){
     points0.clear();
     for(int j=0; j<(int)ggroups[i].size(); ++j){
@@ -379,21 +427,6 @@ int main ( int argc, char** argv ) {
   cv::imwrite ( "./img_pre/lines_dbscan03.jpg", grouped ) ;
 
   return 0;
-}
-// credits: http://stackoverflow.com/questions/15043152/rotate-opencv-matrix-by-90-180-270-degrees
-void rot90(cv::Mat &matImage, int rotflag){
-  //1=CW, 2=CCW, 3=180
-  if (rotflag == 1){
-    transpose(matImage, matImage);
-    flip(matImage, matImage,1); //transpose+flip(1)=CW
-  } else if (rotflag == 2) {
-    transpose(matImage, matImage);
-    flip(matImage, matImage,0); //transpose+flip(0)=CCW
-  } else if (rotflag ==3){
-    flip(matImage, matImage,-1);    //flip(-1)=180
-  } else if (rotflag != 0){ //if not 0,1,2,3:
-    std::cout  << "Unknown rotation flag(" << rotflag << ")" << std::endl;
-  }
 }
 
 // credits: http://stackoverflow.com/questions/8267191/how-to-crop-a-cvmat-in-opencv (how to crop in opencv)
