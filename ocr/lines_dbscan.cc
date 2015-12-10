@@ -1,5 +1,5 @@
 
-// g++ $(pkg-config --cflags --libs opencv) lines_dbscan.cc -o lines_dbscan && ./lines_dbscan
+// g++ $(pkg-config --cflags --libs opencv lept tesseract) lines_dbscan.cc -o lines_dbscan && ./lines_dbscan
 
 #include "opencv2/opencv.hpp"
 #include <map>
@@ -298,7 +298,13 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
     return boundRect;
 }
 
+tesseract::TessBaseAPI tess;
+
 int main ( int argc, char** argv ) {
+
+  // init tess
+  tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
+  tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
 
   // Mat im = imread( "./img_pre/long8.jpg");
   Mat im = imread( "./img_pre/long8.jpg", 0);
@@ -350,6 +356,8 @@ int main ( int argc, char** argv ) {
 
   Rect r0;
   std::vector<cv::Point> points0;
+  Point tl, br;
+  Mat orig = imread( "./img_pre/long8.jpg", 0  );
   for(int i=0; i<(int)ggroups.size(); ++i){
     points0.clear();
     for(int j=0; j<(int)ggroups[i].size(); ++j){
@@ -357,25 +365,50 @@ int main ( int argc, char** argv ) {
       points0.push_back(ggroups[i][j].br());
     }
     r0 = cv::boundingRect(points0);
-    r0 = Rect(Point(r0.tl().x, 0), Point(r0.br().x, grouped.rows)); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
+    tl = r0.tl(); br = r0.br();
+    tl.y=70; br.y=grouped.rows-70; /*TODO - figure out how much to trim sides */
+    if(tl.x-10>=0)tl.x-=10;
+    if(br.x+10<=grouped.rows)br.x+=10;
+    r0 = Rect ( tl, br ); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
 
-    if(i==9) crop_b_tess ( imread( "./img_pre/long8.jpg", 0), r0 );
-
+    if(1==1) crop_b_tess ( orig, r0 );
     // std::cout << "dbscan.groups: " << Mat(ggroups[i]) << std::endl;
   }
-
 
   cv::imwrite ( "./img_pre/lines_dbscan03.jpg", grouped ) ;
 
   return 0;
 }
+// credits: http://stackoverflow.com/questions/15043152/rotate-opencv-matrix-by-90-180-270-degrees
+void rot90(cv::Mat &matImage, int rotflag){
+  //1=CW, 2=CCW, 3=180
+  if (rotflag == 1){
+    transpose(matImage, matImage);
+    flip(matImage, matImage,1); //transpose+flip(1)=CW
+  } else if (rotflag == 2) {
+    transpose(matImage, matImage);
+    flip(matImage, matImage,0); //transpose+flip(0)=CCW
+  } else if (rotflag ==3){
+    flip(matImage, matImage,-1);    //flip(-1)=180
+  } else if (rotflag != 0){ //if not 0,1,2,3:
+    std::cout  << "Unknown rotation flag(" << rotflag << ")" << std::endl;
+  }
+}
 
+// credits: http://stackoverflow.com/questions/8267191/how-to-crop-a-cvmat-in-opencv (how to crop in opencv)
 void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
 
-  std::cout << "rect: " << rect << std::endl;
-
+  // std::cout << "rect: " << rect << std::endl;
   Mat cropped = mat(rect);
-  cv::imwrite( "./img_pre/lines_dbscan04.jpg", cropped);
+  rot90(cropped,1);
+  // cv::imwrite( "./img_pre/lines_dbscan04.jpg", cropped);
   // cv::imwrite( "./img_pre/lines_dbscan04.jpg", mat);
+
+  // Pass it to Tesseract API
+  tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
+
+  // Get the text
+  char* out = tess.GetUTF8Text();
+  std::cout << out;
 }
