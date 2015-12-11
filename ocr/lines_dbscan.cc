@@ -91,7 +91,7 @@ public:
 
   double dist2d(Point2d a,Point2d b) {
     // return sqrt(pow(a.x-b.x,2) + pow(a.y-b.y,2));
-    return abs(a.x-b.x); /*TODO - by vertical or horizontal*/
+    return abs ( a.y-b.y ) ;
   }
 
   double distanceFunc(int ai,int bi) {
@@ -300,16 +300,18 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
 }
 
 tesseract::TessBaseAPI tess;
+tesseract::TessBaseAPI tess2;
 tesseract::Orientation orientation;
 tesseract::WritingDirection direction;
 tesseract::TextlineOrder order;
 float deskew_angle;
+
 // PAGE_UP(0),
 // PAGE_RIGHT(1),
 // PAGE_DOWN(2),
 // PAGE_LEFT(3);
 //1=CW, 2=CCW, 3=180
-
+// JAVA for tess stuff: https://github.com/tesseract4java/jtesseract/blob/master/src/main/java/de/vorb/tesseract/Orientation.java
 // credits: http://stackoverflow.com/questions/15043152/rotate-opencv-matrix-by-90-180-270-degrees
 void rot90 ( cv::Mat &matImage, int rotflag ) {
   //1=CW, 2=CCW, 3=180
@@ -326,7 +328,7 @@ void rot90 ( cv::Mat &matImage, int rotflag ) {
   }
 }
 
-void orientation_check (Mat& mat){
+void orientation_check ( Mat& mat ) {
 
   tesseract::PageIterator* it =  tess.AnalyseLayout();
     it->Orientation(&orientation, &direction, &order, &deskew_angle);
@@ -345,34 +347,26 @@ void orientation_check (Mat& mat){
 
 int main ( int argc, char** argv ) {
 
+  Mat im_orig = imread( "./img_pre/long8.jpg", 0);
+  rot90(im_orig,1);
   // init tess
-  tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
-  // tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
-  tess.SetPageSegMode(tesseract::PSM_AUTO_OSD);
+  // tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
+  // tess.SetPageSegMode(tesseract::PSM_AUTO_OSD);
+  // tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
+  // orientation_check(im_orig);
+  cv::imwrite ( "./img_pre/lines_dbscan00.jpg", im_orig ) ;
+  // return 0;/*temp*/
 
-  // Mat im = imread( "./img_pre/long8.jpg");
-  Mat im = imread( "./img_pre/long8.jpg", 0);
+  Mat im = im_orig.clone();
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
-
-  tess.SetImage ( (uchar*)im.data, im.cols, im.rows, 1, im.cols );
-  orientation_check(im);
-  cv::imwrite ( "./img_pre/lines_dbscan00.jpg", im ) ;
-  return 0;/*temp*/
-
   std::vector<Rect> boxes = detectLetters(im);
 
-  // std::vector<Point2d> rect_points;
-  // Rect a;
   for ( int i=0; i<(int)boxes.size(); ++i ) {
-    // a = boxes[i];
-    // Point2d cena= Point2d(a.x+a.width/2, a.y+a.height/2);
-    // // TODO - x or y according to orientation
-    // rect_points.push_back(cena);
     cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   }
   cv::imwrite ( "./img_pre/lines_dbscan02.jpg", im ) ;
 
-  DbScan dbscan ( boxes, 10, 2 );
+  DbScan dbscan ( boxes, 10, 2 ); /*HERE - expected tuning or calculating of the eps param*/
   dbscan.run();
   //done, perform display, check emacs git
 
@@ -395,18 +389,17 @@ int main ( int argc, char** argv ) {
     }
 
     putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
-    // putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i], FONT_HERSHEY_COMPLEX,.5,color,1);
-    // drawContours(grouped,contours,i,color,-1);
   }
 
-  std::vector<std::vector<Rect> > ggroups = dbscan.getGroups();
+  std::vector<std::vector<Rect> > ggroups = dbscan.getGroups(); /*get the grouped rects*/
 
   Rect r0;
   std::vector<cv::Point> points0;
   Point tl, br;
-  Mat orig = imread( "./img_pre/long8.jpg", 0  );
-  // here - rotate orig as needed
+  tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
+  // tess.SetPageSegMode(tesseract::PSM_AUTO);
   for(int i=0; i<(int)ggroups.size(); ++i){
+
     points0.clear();
     for(int j=0; j<(int)ggroups[i].size(); ++j){
       points0.push_back(ggroups[i][j].tl());
@@ -414,13 +407,13 @@ int main ( int argc, char** argv ) {
     }
     r0 = cv::boundingRect(points0);
     tl = r0.tl(); br = r0.br();
-    tl.y=70; br.y=grouped.rows-70; /*TODO - figure out how much to trim sides */
-    if(tl.x-10>=0)tl.x-=10;
-    if(br.x+10<=grouped.rows)br.x+=10;
-    r0 = Rect ( tl, br ); /*TODO - hor or vertical - use x for hor lying image, else y, also cols or rows*/
+    tl.x=70; br.x=grouped.cols-70; /*TODO - figure out how much to trim sides */
+    tl.y-10>=0 && (tl.y-=10);
+    br.y+10<=grouped.rows && (br.y+=10);
+    r0 = Rect ( tl, br );
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
 
-    if(1==1) crop_b_tess ( orig, r0 );
+    if(5==5) crop_b_tess ( im_orig, r0 );
     // std::cout << "dbscan.groups: " << Mat(ggroups[i]) << std::endl;
   }
 
@@ -434,12 +427,12 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
 
   // std::cout << "rect: " << rect << std::endl;
   Mat cropped = mat(rect);
-  rot90(cropped,1);
+  // rot90(cropped,1);
   // cv::imwrite( "./img_pre/lines_dbscan04.jpg", cropped);
-  // cv::imwrite( "./img_pre/lines_dbscan04.jpg", mat);
 
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
+  // tess.SetImage ( (uchar*)mat.data, mat.cols, mat.rows, 1, mat.cols );
 
   // Get the text
   char* out = tess.GetUTF8Text();
