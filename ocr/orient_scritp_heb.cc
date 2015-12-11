@@ -17,6 +17,8 @@ int main()
 {
   // const char* inputfile = "./img_pre/long9.jpg";
   const char* inputfile = "./img_pre/long8.jpg";
+  // const char* inputfile = "./img_pre/lines_dbscan04.jpg";
+  // const char* inputfile = "./img_pre/lines_dbscan040.jpg";
   // const char* inputfile = "./img_pre/heb2.jpg";
   // const char* inputfile = "./img_pre/heb_rot.jpg";
   // const char* inputfile = "./img_pre/heb_rot_tc.jpg";
