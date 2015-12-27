@@ -1,5 +1,9 @@
 
-//javac HelloJNI.java && java HelloJNI
+// javac HelloJNI.java && java HelloJNI
+
+// before that:
+// gcc  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o hello.so HelloJNI.c
+// g++  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o hello.so HelloJNI.cc -llept -ltesserac
 
 // set #JAVA_HOME
 // http://www.mkyong.com/java/how-to-set-java_home-environment-variable-on-mac-os-x/

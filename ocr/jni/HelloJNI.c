@@ -6,5 +6,5 @@
 JNIEXPORT void JNICALL Java_HelloJNI_sayHello
 (JNIEnv *env, jobject thisObj){
   printf("\n\nFuck the blacks\n\n");
-  return;
+  /* return; */
 }
