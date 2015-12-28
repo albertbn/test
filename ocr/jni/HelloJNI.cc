@@ -1,10 +1,11 @@
 
 // g++  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract
-// g++ -I"/usr/local/share"  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract
+// g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract
+// g++ -o HelloJNI HelloJNI.cc -llept -ltesseract && ./HelloJNI
 
 #include <jni.h>
-#include  <iostream>
 #include "HelloJNI.h"
+#include  <iostream>
 
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
@@ -14,6 +15,7 @@
 using namespace std;
 
 JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
+// int main ( ) {
   // printf("\n\nFuck the blacks\n\n");
   cout << "Hello World from C++!" << endl;
   /* return; */
@@ -82,4 +84,6 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
   api->End();
   delete [] outText;
   pixDestroy(&image);
+
+  // return 0;
 }
