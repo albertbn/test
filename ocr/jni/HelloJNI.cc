@@ -3,6 +3,9 @@
 // g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract
 // g++ -o HelloJNI HelloJNI.cc -llept -ltesseract && ./HelloJNI
 
+// tess source
+// https://fossies.org/dox/tesseract-ocr-3.02.02/baseapi_8cpp_source.html#l00213
+
 #include <jni.h>
 #include "HelloJNI.h"
 #include  <iostream>
