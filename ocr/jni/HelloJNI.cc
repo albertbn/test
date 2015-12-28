@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
   vars_values.push_back("F");
 
   api->Init("/usr/local/share/", "eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
-  cout << api->GetDatapath() << endl;
+  // cout << api->GetDatapath() << endl;
 
   api->SetVariable("language_model_penalty_non_dict_word", "0");
 
