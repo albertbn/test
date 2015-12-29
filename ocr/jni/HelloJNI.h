@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     HelloJNI
  * Method:    sayHello
- * Signature: ()V
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_HelloJNI_sayHello
-  (JNIEnv *, jobject);
+JNIEXPORT jstring JNICALL Java_HelloJNI_sayHello
+  (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
 }

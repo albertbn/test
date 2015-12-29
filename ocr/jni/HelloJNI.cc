@@ -1,6 +1,8 @@
 
-// g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract
+// g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o hello.so HelloJNI.cc -llept -ltesseract && javac HelloJNI.java && java HelloJNI
+
 // g++ -o HelloJNI HelloJNI.cc -llept -ltesseract && ./HelloJNI
+
 // javac HelloJNI.java && java HelloJNI
 
 // tess source
@@ -19,16 +21,11 @@
 
 using namespace std;
 
-JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
+JNIEXPORT jstring JNICALL Java_HelloJNI_sayHello (
+     JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
 // int main ( ) {
 
-  setenv ( "TESSDATA_PREFIX","/usr/local/Cellar/tesseract/3.04.00/share/",1 );
-  cout << getenv("TESSDATA_PREFIX") << endl;
-
-  // printf("\n\nFuck the blacks\n\n");
-  cout << "Hello World from C++!" << endl;
-  /* return; */
-
+  const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
   const char* inputfile = "../img_pre/long8.jpg";
 
   char *outText = NULL;
@@ -49,7 +46,7 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
 
   // api->Init("/usr/local/share/", "eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
   // api->Init("/usr/local/Cellar/tesseract/3.02.02/share/", "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
-  api->Init("/usr/local/Cellar/tesseract/3.04.00/share/", "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  api->Init(tessdata_path_pref, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
   // cout << api->GetDatapath() << endl;
 
   api->SetVariable("language_model_penalty_non_dict_word", "0");
@@ -105,4 +102,5 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
   pixDestroy(&image);
 
   // return 0;
+  (*env).ReleaseStringUTFChars(jtessdata_path_pref, tessdata_path_pref);
 }

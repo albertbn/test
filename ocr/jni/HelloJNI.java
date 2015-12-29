@@ -1,4 +1,7 @@
 
+// javac HelloJNI.java
+// javah HelloJNI --> creates HelloJNI.h
+
 // javac HelloJNI.java && java HelloJNI
 
 // before that:
@@ -34,9 +37,14 @@ public class HelloJNI {
         System.load(f.getAbsolutePath());
     }
 
-    private native void sayHello();
+    private native String sayHello ( String tessdata_path );
 
-    public static void main( String[] args ){
-        new HelloJNI().sayHello();
+    public static void main ( String[] args ) {
+        // andrew
+        // String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // mac
+        // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
+        String tessdata_path = "./";
+        String native_reply = new HelloJNI().sayHello(tessdata_path);
     }
 }
