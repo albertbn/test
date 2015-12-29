@@ -22,7 +22,7 @@ using namespace std;
 JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
 // int main ( ) {
 
-  setenv ( "TESSDATA_PREFIX","/usr/local/Cellar/tesseract/3.02.02/share/",1 );
+  setenv ( "TESSDATA_PREFIX","/usr/local/Cellar/tesseract/3.04.00/share/",1 );
   cout << getenv("TESSDATA_PREFIX") << endl;
 
   // printf("\n\nFuck the blacks\n\n");
@@ -47,10 +47,9 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
   GenericVector<STRING> vars_values;
   vars_values.push_back("F");
 
-
   // api->Init("/usr/local/share/", "eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
   // api->Init("/usr/local/Cellar/tesseract/3.02.02/share/", "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
-  api->Init("/usr/local/Cellar/tesseract/3.02.02/share/", "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  api->Init("/usr/local/Cellar/tesseract/3.04.00/share/", "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
   // cout << api->GetDatapath() << endl;
 
   api->SetVariable("language_model_penalty_non_dict_word", "0");
@@ -61,7 +60,7 @@ JNIEXPORT void JNICALL Java_HelloJNI_sayHello ( JNIEnv *env, jobject thisObj ) {
   // utf_string = env->GetStringUTFChars( fuck, &isCopy);
   // cout << utf_string << endl;
 
-  return;
+  // return;
 
   api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
   // api->SetPageSegMode(tesseract::PSM_SPARSE_TEXT_OSD);
