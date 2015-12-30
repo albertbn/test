@@ -1,0 +1,4 @@
+/Users/albert/test/ocr/evdroid/bin/evdroid-debug-unaligned.apk : \
+/Users/albert/test/ocr/evdroid/bin/evdroid.ap_ \
+/Users/albert/test/ocr/evdroid/bin/classes.dex \
+/Users/albert/dev/OpenCV-android-sdk/sdk/java/bin/classes.jar \
