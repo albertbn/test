@@ -1,13 +1,43 @@
-package diordve.bonebou;
 
-// javac HelloJNI.java
-// javah HelloJNI --> creates HelloJNI.h
+// javac preNocr.java
+// javah preNocr --> creates preNocr.h //this is done different from outside
 
-// javac HelloJNI.java && java HelloJNI
+// javac preNocr.java && java preNocr
 
 // before that:
-// gcc  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o hello.so HelloJNI.c
-// g++  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o hello.so HelloJNI.cc -llept -ltesserac
+// g++  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o preNocr.so preNocr.cc -llept -ltesserac
+
+package diordve.bonebou;
+
+import java.lang.*;
+import java.io.File;
+
+public class preNocr {
+
+    static {
+
+        // andrew
+        // System.loadLibrary("preNocr");
+
+        // TEST
+        File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
+        System.load(f.getAbsolutePath());
+    }
+
+    private native void doit ( String tessdata_path );
+
+    public static void main ( String[] args ) {
+
+        // andrew
+        // String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // mac
+        String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
+        // String tessdata_path = "./";
+        new preNocr().doit(tessdata_path);
+    }
+}
+
+// =================
 
 // set #JAVA_HOME
 // http://www.mkyong.com/java/how-to-set-java_home-environment-variable-on-mac-os-x/
@@ -23,29 +53,3 @@ package diordve.bonebou;
 // Rick C. Hodgin - thanks man, load the focking file
 
 //yep!
-
-import java.lang.*;
-import java.io.File;
-
-public class preNocr {
-
-    static {
-
-        // System.out.println(System.getProperty("java.library.path"));
-        File f;
-        f = new File("preNocr.so");
-        // System.loadLibrary("hello");
-        System.load(f.getAbsolutePath());
-    }
-
-    private native String sayHello ( String tessdata_path );
-
-    public static void main ( String[] args ) {
-        // andrew
-        // String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        // mac
-        // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
-        String tessdata_path = "./";
-        String native_reply = new HelloJNI().sayHello(tessdata_path);
-    }
-}
