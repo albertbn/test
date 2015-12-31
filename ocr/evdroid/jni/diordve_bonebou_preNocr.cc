@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   char tessdata_path_pref_str[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
   strcpy(tessdata_path_pref_str, tessdata_path_pref);
-  strcat(tessdata_path_pref_str,"long8.jpg");
+  strcat(tessdata_path_pref_str,"tessdata/long8.jpg");
   // const char* inputfile = tessdata_path_pref + "long8.jpg";
   const char* inputfile = tessdata_path_pref_str;
 
@@ -40,9 +40,12 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   tesseract::TextlineOrder order;
   float deskew_angle;
 
-  PIX *image = pixRead(inputfile);
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
   printf("Using tesseract c++ API: %s\n", api->Version());
+
+  return;
+  
+  PIX *image = pixRead(inputfile);
 
   GenericVector<STRING> vars_vec;
   vars_vec.push_back("load_system_dawg");

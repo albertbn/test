@@ -1,3 +1,4 @@
+
 package diordve.bonebou;
 
 import android.app.Activity;
@@ -11,5 +12,6 @@ public class MainActivity extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        preNocr.main(null);
     }
 }
