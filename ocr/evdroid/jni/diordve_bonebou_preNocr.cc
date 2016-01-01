@@ -14,10 +14,10 @@
 #include <jni.h>
 #include "diordve_bonebou_preNocr.h"
 
-#include <iostream>
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 
-// those 2 folks are just test for now
 #include <opencv2/core/core.hpp>
 #include <opencv2/objdetect.hpp>
 
@@ -44,10 +44,10 @@ using namespace std;
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
      JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
 // int main ( ) {
-  char tessdata_path_pref_str[128];
+  char tessdata_path_pref_str[128], dump[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
-  strcpy(tessdata_path_pref_str, tessdata_path_pref);
-  strcat(tessdata_path_pref_str,"/tessdata/long8.jpg");
+  strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.jpg");
+  strcpy(dump, tessdata_path_pref);  strcat(dump,"/tessdata/dump.txt");
   // const char* inputfile = tessdata_path_pref + "long8.jpg";
   const char* inputfile = tessdata_path_pref_str;
 
@@ -59,8 +59,6 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
   printf("Using tesseract c++ API: %s\n", api->Version());
-
-  return;
 
   PIX *image = pixRead ( inputfile );
 
@@ -79,12 +77,13 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   api->SetImage(image);
   api->Recognize(0);
 
+  return;
   tesseract::PageIterator* it =  api->AnalyseLayout();
   it->Orientation(&orientation, &direction, &order, &deskew_angle);
 
-  printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
-         "Deskew angle: %.4f\n",
-         orientation, direction, order, deskew_angle);
+  // printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
+  //        "Deskew angle: %.4f\n",
+  //        orientation, direction, order, deskew_angle);
 
   // if( orientation == 3 ){
   if( 1==1 ){
@@ -110,6 +109,11 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   outText = api->GetUTF8Text(NULL /*what the fock???*/);
   printf("OCR output:\n%s", outText);
+
+  ofstream outfile;
+  outfile.open ( dump, ios_base::app );
+  outfile << outText;
+  outfile.close();
 
   // Destroy used object and release memory
   api->End();

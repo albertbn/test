@@ -5,11 +5,26 @@ obj/local/armeabi-v7a/objs/preNocr/diordve_bonebou_preNocr.o: \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/cdefs_elf.h \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/android/api-level.h \
  jni/diordve_bonebou_preNocr.h \
- /Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/stdlib.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/string.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/malloc.h \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/alloca.h \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/strings.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/stdint.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/_types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/machine/_types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/posix_types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/stddef.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/compiler.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/asm/posix_types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/asm/types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/types.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/machine/kernel.h \
+ /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/sysmacros.h \
  /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/memory.h \
+ /Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream \
+ /Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core.hpp \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/cvdef.h \
@@ -35,7 +50,6 @@ obj/local/armeabi-v7a/objs/preNocr/diordve_bonebou_preNocr.o: \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/mat.inl.hpp \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/persistence.hpp \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/operations.hpp \
- /Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdio \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/cvstd.inl.hpp \
  /Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/complex \
  /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/utility.hpp \
@@ -104,15 +118,45 @@ obj/local/armeabi-v7a/objs/preNocr/diordve_bonebou_preNocr.o: \
 
 jni/diordve_bonebou_preNocr.h:
 
-/Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream:
-
 /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/stdlib.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/string.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/malloc.h:
 
 /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/alloca.h:
 
 /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/strings.h:
 
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/stdint.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/_types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/machine/_types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/posix_types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/stddef.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/compiler.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/asm/posix_types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/asm/types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/linux/types.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/machine/kernel.h:
+
+/Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/sys/sysmacros.h:
+
 /Users/albert/dev/android-ndk-r10e/platforms/android-8/arch-arm/usr/include/memory.h:
+
+/Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream:
+
+/Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream:
 
 /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp:
 
@@ -163,8 +207,6 @@ jni/diordve_bonebou_preNocr.h:
 /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/persistence.hpp:
 
 /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/operations.hpp:
-
-/Users/albert/dev/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdio:
 
 /Users/albert/dev/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/cvstd.inl.hpp:
 
