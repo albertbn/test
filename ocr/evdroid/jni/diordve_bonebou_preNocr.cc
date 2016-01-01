@@ -1,4 +1,3 @@
-
 // g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o preNocr.so diordve_bonebou_preNocr.cc -llept -ltesseract
 
 // from src
@@ -17,12 +16,30 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <leptonica/allheaders.h>
-#include <tesseract/baseapi.h>
-#include "tesseract/strngs.h"
-#include "tesseract/genericvector.h"
+
+// those 2 folks are just test for now
+#include <opencv2/core/core.hpp>
+#include <opencv2/objdetect.hpp>
+
+#include <allheaders.h>
+#include <baseapi.h>
+#include "strngs.h"
+#include "genericvector.h"
+
+// #include <leptonica/allheaders.h>
+// #include <tesseract/baseapi.h>
+// #include "tesseract/strngs.h"
+// #include "tesseract/genericvector.h"
 
 using namespace std;
+
+// JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
+//      JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
+
+//   cout << "fock u" << endl;
+//   PIX *image = pixRead("fock u");
+// }
+
 
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
      JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
@@ -30,7 +47,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   char tessdata_path_pref_str[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
   strcpy(tessdata_path_pref_str, tessdata_path_pref);
-  strcat(tessdata_path_pref_str,"tessdata/long8.jpg");
+  strcat(tessdata_path_pref_str,"/tessdata/long8.jpg");
   // const char* inputfile = tessdata_path_pref + "long8.jpg";
   const char* inputfile = tessdata_path_pref_str;
 
@@ -44,8 +61,8 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   printf("Using tesseract c++ API: %s\n", api->Version());
 
   return;
-  
-  PIX *image = pixRead(inputfile);
+
+  PIX *image = pixRead ( inputfile );
 
   GenericVector<STRING> vars_vec;
   vars_vec.push_back("load_system_dawg");
@@ -91,7 +108,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   api->GetVariableAsString("load_system_dawg", &var_value);
   printf("Variable 'load_system_dawg' is set to '%s'\n", var_value.string());
 
-  outText = api->GetUTF8Text();
+  outText = api->GetUTF8Text(NULL /*what the fock???*/);
   printf("OCR output:\n%s", outText);
 
   // Destroy used object and release memory

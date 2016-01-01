@@ -18,7 +18,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 #leptonica
 LEPTONICA_LOCAL := $(LOCAL_PATH)/com_googlecode_leptonica_android
-LEPTONICA_PATH := $(LOCAL_PATH)/src
+LEPTONICA_PATH := $(LEPTONICA_LOCAL)/src
 
 include $(CLEAR_VARS)
 

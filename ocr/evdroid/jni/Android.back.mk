@@ -14,10 +14,12 @@ LOCAL_EXPORT_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := libz
 
 include $(PREBUILT_SHARED_LIBRARY)
+# include $(BUILD_SHARED_LIBRARY)
 
 #leptonica
+# LEPTONICA_LIB_TYPE:=STATIC
 LEPTONICA_LOCAL := $(LOCAL_PATH)/com_googlecode_leptonica_android
-LEPTONICA_PATH := $(LOCAL_PATH)/src
+LEPTONICA_PATH := $(LEPTONICA_LOCAL)/src
 
 include $(CLEAR_VARS)
 
@@ -31,12 +33,14 @@ LOCAL_EXPORT_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES:= libpngt
 
 include $(PREBUILT_SHARED_LIBRARY)
+# include $(BUILD_SHARED_LIBRARY)
 
 #tesseract
 TESSERACT_LOCAL := $(LOCAL_PATH)/com_googlecode_tesseract_android
 TESSERACT_PATH := $(TESSERACT_LOCAL)/src
 
 include $(CLEAR_VARS)
+# TESSERACT_LIB_TYPE:=STATIC
 
 LOCAL_MODULE := libtess
 #LOCAL_SRC_FILES := ../libs/$(TARGET_ARCH_ABI)/libtess.so
@@ -57,10 +61,12 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(TESSERACT_PATH)/viewer \
   $(TESSERACT_PATH)/wordrec \
   $(LEPTONICA_PATH)/src \
+  $(TESSERACT_PATH)/src \
   $(TESSERACT_LOCAL)
 LOCAL_SHARED_LIBRARIES := liblept
 
 include $(PREBUILT_SHARED_LIBRARY)
+# include $(BUILD_SHARED_LIBRARY)
 
 #opencv
 include $(CLEAR_VARS)
@@ -69,9 +75,9 @@ OPENCV_PACKAGE_DIR:= ~/dev/OpenCV-android-sdk/sdk
 OPENCV_CAMERA_MODULES := off
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
-LOCAL_SRC_FILES  := DetectionBasedTracker_jni.cpp
+LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
-LOCAL_MODULE     := detection_based_tracker
+LOCAL_MODULE     := preNocr
 
 # -lz from libpngt, -ljnigraphics from libtess
 LOCAL_LDLIBS    += -llog -ldl -lz -ljnigraphics

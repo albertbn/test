@@ -1,0 +1,19 @@
+
+LOCAL_PATH := $(call my-dir)
+
+#opencv
+include $(CLEAR_VARS)
+OPENCV_LIB_TYPE:=STATIC
+OPENCV_PACKAGE_DIR:= ~/dev/OpenCV-android-sdk/sdk
+OPENCV_CAMERA_MODULES := off
+include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
+
+LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_MODULE     := preNocr
+
+# -lz from libpngt, -ljnigraphics from libtess
+LOCAL_LDLIBS    += -llog -ldl -lz -ljnigraphics
+LOCAL_SHARED_LIBRARIES += libtess liblept
+
+include $(BUILD_SHARED_LIBRARY)

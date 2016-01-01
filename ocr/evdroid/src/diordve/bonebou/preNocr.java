@@ -12,6 +12,8 @@ package diordve.bonebou;
 import java.lang.*;
 import java.io.File;
 
+import android.os.Environment;
+
 public class preNocr {
 
     static {
@@ -29,9 +31,9 @@ public class preNocr {
     public static void main ( String[] args ) {
 
         // andrew
-        // String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
         // mac
-        String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
+        // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
         // String tessdata_path = "./";
         new preNocr().doit(tessdata_path);
     }
