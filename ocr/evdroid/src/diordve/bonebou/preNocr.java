@@ -2,16 +2,17 @@
 // javac preNocr.java
 // javah preNocr --> creates preNocr.h //this is done different from outside
 
-// javac preNocr.java && java preNocr
+// from src
+// javac diordve/bonebou/preNocr.java && java diordve/bonebou/preNocr
 
-// before that:
-// g++  -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared -o preNocr.so preNocr.cc -llept -ltesserac
+// before that: see jni/diordve_bonebou_preNocr.cc
 
 package diordve.bonebou;
 
 import java.lang.*;
 import java.io.File;
 
+// REMARK for mac
 import android.os.Environment;
 
 public class preNocr {
@@ -19,20 +20,20 @@ public class preNocr {
     static {
 
         // andrew
-        System.loadLibrary("preNocr");
+        // System.loadLibrary("preNocr");
 
         // TEST
-        // File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
-        // System.load(f.getAbsolutePath());
+        File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
+        System.load(f.getAbsolutePath());
     }
 
     private native void doit ( String tessdata_path );
 
     public static void main ( String[] args ) {
 
-        // andrew
+        // andrew - REMARK for mac
         String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        // mac
+        // mac - UNMARK for mac
         // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
         // String tessdata_path = "./";
         new preNocr().doit(tessdata_path);
