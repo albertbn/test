@@ -30,9 +30,9 @@
 
 // REMARK for mac debug
 #include <allheaders.h>
-#include <baseapi.h>
-#include "strngs.h"
-#include "genericvector.h"
+#include <tesseract/baseapi.h>
+#include "tesseract/strngs.h"
+#include "tesseract/genericvector.h"
 
 // UNMARK for mac debug
 // #include <leptonica/allheaders.h>
