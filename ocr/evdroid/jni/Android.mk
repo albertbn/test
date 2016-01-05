@@ -7,7 +7,7 @@ LIBPNG_PATH := $(LOCAL_PATH)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE:= libpngt
-LOCAL_SRC_FILES := /Users/abentov/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/libpngt.so
+LOCAL_SRC_FILES := /Users/albert/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/libpngt.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(LIBPNG_LOCAL) \
   $(LIBPNG_PATH)
@@ -23,7 +23,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := liblept
 #LOCAL_SRC_FILES := ../libs/$(TARGET_ARCH_ABI)/liblept.so
-LOCAL_SRC_FILES := /Users/abentov/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/liblept.so
+LOCAL_SRC_FILES := /Users/albert/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/liblept.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(LEPTONICA_LOCAL) \
   $(LEPTONICA_PATH)/src \
@@ -40,7 +40,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := libtess
 #LOCAL_SRC_FILES := ../libs/$(TARGET_ARCH_ABI)/libtess.so
-LOCAL_SRC_FILES := /Users/abentov/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/libtess.so
+LOCAL_SRC_FILES := /Users/albert/dev/tess/tess-two/libs/$(TARGET_ARCH_ABI)/libtess.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(LOCAL_PATH) \
   $(TESSERACT_PATH)/api \

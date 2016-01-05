@@ -59,6 +59,7 @@ int main()
   // api->Init( NULL, "heb" );
   // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
   // for documentation see: http://tesseract-ocr.github.io/a01278.html#a04550a0ed1279562027bf2fc92c421ae
+
   api->Init(NULL, "heb", tesseract::OEM_DEFAULT ,
             NULL, 0, &vars_vec, &vars_values, false);
   // api->SetVariable("tessedit_char_whitelist",

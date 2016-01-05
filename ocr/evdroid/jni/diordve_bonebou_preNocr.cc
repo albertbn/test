@@ -42,20 +42,12 @@
 
 using namespace std;
 
-// JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
-//      JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
-
-//   cout << "fock u" << endl;
-//   PIX *image = pixRead("fock u");
-// }
-
-
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
      JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
 // int main ( ) {
   char tessdata_path_pref_str[128], dump[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
-  strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.jpg");
+  strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.png");
   strcpy(dump, tessdata_path_pref);  strcat(dump,"/tessdata/dump.txt");
   const char* inputfile = tessdata_path_pref_str;
 
@@ -68,7 +60,10 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
   LOGD("Using tesseract c++ API: %s ", api->Version());
 
-  PIX *image = pixRead ( inputfile );
+  PIX* image = pixRead ( inputfile );
+  LOGD ( "Lept Image path: %s\n", inputfile );
+  LOGD ( "Lept Image size (w,h) : %d, %d\n", image->w, image->h );
+  // return;
 
   GenericVector<STRING> vars_vec;
   vars_vec.push_back("load_system_dawg");
@@ -76,7 +71,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   GenericVector<STRING> vars_values;
   vars_values.push_back("F");
 
-  api->Init(tessdata_path_pref, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  api->Init ( tessdata_path_pref, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false );
 
   api->SetVariable("language_model_penalty_non_dict_word", "0");
 
@@ -84,38 +79,31 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   api->SetImage(image);
   api->Recognize(0);
 
-  // tesseract::PageIterator* it =  api->AnalyseLayout();
-  // it->Orientation(&orientation, &direction, &order, &deskew_angle);
+  tesseract::PageIterator* it =  api->AnalyseLayout();
+  it->Orientation(&orientation, &direction, &order, &deskew_angle);
 
-  // printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
-  //        "Deskew angle: %.4f\n",
-  //        orientation, direction, order, deskew_angle);
+  LOGD ( "Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n"    \
+         "Deskew angle: %.4f\n",
+         orientation, direction, order, deskew_angle );
 
-  // if( orientation == 3 ){
-  if ( 1==1 ) {
+  if ( orientation == 3 ) {
+  // if ( 1==1 ) {
 
     image = pixRotate90( image, 1 );
     // printf("ok, orientations is 3\n=======\n");
     LOGD("ok, orientations is 3\n=======\n");
     api->SetImage(image);
+    api->Recognize(0);
 
-    // api->Recognize(0);
     // it =  api->AnalyseLayout();
     // it->Orientation(&orientation, &direction, &order, &deskew_angle);
   }
 
   api->SetPageSegMode ( tesseract::PSM_AUTO );
-  // api->SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
-
-
-  // Check if change of init parameters was successful
-  // STRING var_value;
-  // api->GetVariableAsString("load_system_dawg", &var_value);
-  // printf("Variable 'load_system_dawg' is set to '%s'\n", var_value.string());
 
   // outText = api->GetUTF8Text(NULL /*what the fock???*/);
   outText = api->GetUTF8Text();
-  LOGD ( "OCR output:\n%s", outText );
+  LOGD ( "OCR output: %s", outText );
 
   ofstream outfile;
   outfile.open ( dump, ios_base::app );

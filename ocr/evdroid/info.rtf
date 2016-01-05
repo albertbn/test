@@ -1,0 +1,86 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red234\green233\blue255;\red11\green86\blue1;\red245\green245\blue245;
+}
+\margl1440\margr1440\vieww19440\viewh12040\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf0 \CocoaLigature0 \
+5 jan 2016, yep! pu\
+\
+/Users/abentov/dev/tess/tess-two/jni/com_googlecode_leptonica_android/\
+\
+/Users/abentov/dev/tess/tess-two/jni/com_googlecode_tesseract_android/\
+\
+/Users/abentov/dev/tess/tess-two/jni/libpng/\
+\
+10. clear libs folder in evdroid\
+20. make sim links in /usr/local/share for com* and libpng\
+\
+
+\fs22 mkdir /usr/local/share/tess_droid\
+cd /usr/local/share/tess_droid\
+ln -s /Users/albert/dev/tess/tess-two/jni/com_googlecode_tesseract_android com_googlecode_tesseract_android\
+ln -s /Users/albert/dev/tess/tess-two/jni/com_googlecode_leptonica_android/ com_googlecode_leptonica_android\
+ln -s /Users/albert/dev/tess/tess-two/jni/libpng/  libpng\
+\
+cd /Users/albert/test/ocr/evdroid/jni\
+ln -s /usr/local/share/tess_droid/com_googlecode_tesseract_android com_googlecode_tesseract_android\
+ln -s /usr/local/share/tess_droid/com_googlecode_leptonica_android com_googlecode_leptonica_android\
+ln -s /usr/local/share/tess_droid/libpng libpng\
+
+\fs28 \
+30. then change simlinks to the above - done - see above\
+35. fix Android.mk paths\
+\
+40.\
+
+\fs22 cd
+\fs28  
+\fs22 /Users/albert/test/ocr/evdroid
+\fs28 \
+ndk-build -j9\
+ant debug\
+
+\fs22 cp bin/evdroid-debug.apk ~/Desktop/evdroid-jedi.apk
+\fs28 \
+\
+50. deploy to droid and test\
+
+\fs22 \
+60. check logs:\
+\
+cd /Users/albert/test/ocr/evdroid/logcat
+\fs28 \
+
+\fs22 rm *.log && adb logcat >> log.log
+\fs28 \
+
+\fs22 egrep '(evdroid)' log.log
+\fs28 \
+\
+good luck, yep!\
+\
+\
+/Library/Caches/Homebrew/tesseract--git/\
+\
+
+\fs22 \
+\pard\pardeftab720
+
+\f1\fs30 \cf0 \cb2 \expnd0\expndtw0\kerning0
+\CocoaLigature1 android create project --target 1 --name evdroid  --activity MainActivity --path evdroid --package diordve.bonebou\
+\
+\
+\pard\pardeftab720\sl360
+
+\f0\fs26 \cf3 \cb4 \expnd0\expndtw0\kerning0
+android create project --target 2 --name MyFirstApp \\\
+--path MyFirstApp --activity MyActivity \\\
+--package com.example.myfirstapp\
+\
+diordve/bonebou/preNocr\
+diordve.bonebou.preNocr\
+diordve_bonebou_preNocr\
+\
+===================}

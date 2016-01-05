@@ -20,11 +20,11 @@ public class preNocr {
     static {
 
         // andrew
-        // System.loadLibrary("preNocr");
+        System.loadLibrary("preNocr");
 
         // TEST
-        File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
-        System.load(f.getAbsolutePath());
+        // File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
+        // System.load(f.getAbsolutePath());
     }
 
     private native void doit ( String tessdata_path );
