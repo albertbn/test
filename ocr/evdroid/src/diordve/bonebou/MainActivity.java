@@ -6,43 +6,179 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.imageio.ImageIO;
+
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.widget.Toast;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.app.Activity;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+// preNocr.main( null );
 public class MainActivity extends Activity {
+
+    final String UPLOAD_URL = "https://app.adcore.com/errmail/",
+        IMG_TMP_PREF = "evdroid",
+        IMG_TMP_EXT = ".png",
+        IMG_DIR_PATH = "/tessdata/img/";
+
+    static final int REQUEST_CODE_MAX = 65534;
+    ImageView imgFavorite;
+    WebView wv;
+    Uri mImageUri;
+    MainActivity tthis = this;
+
+    File get_file_temp ( String part, String ext, int id ) throws Exception {
+
+        File dir = null, ffile;
+        try {
+            dir = new File ( Environment.getExternalStorageDirectory().getAbsolutePath()+ IMG_DIR_PATH );
+
+            if ( !dir.exists() ) dir.mkdir();
+
+            ffile = new File ( dir.getAbsolutePath()+"/"+part+id+ext );
+
+            return ffile;
+        }
+        catch ( Exception ex ) {
+            tthis.post_error( "Camera, MainActivity.java, get_file_temp: " + err_str(ex) );
+        }
+
+        //just an error case return, same as return null
+        return dir;
+    }
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        // preNocr.main(null);
-        // System.loadLibrary("preNocr");
+        setContentView(R.layout.activity_main);
 
-        // Context context = getApplicationContext();
-        // CharSequence text = Environment.getExternalStorageDirectory().getAbsolutePath();
-        // int duration = Toast.LENGTH_SHORT;
-
-        // File f = new File ( Environment.getExternalStorageDirectory() + "/tessdata" );
-        // if ( f.isDirectory() ) {
-        //     text = "yep, files is here man";
-        // }
-        // else{
-        //     text = "fuck, nothing there...";
-        // }
-
-        // Toast toast = Toast.makeText(context, text, duration);
-        // toast.show();
-        preNocr.main( null );
-    }
+        //2 july 2015 - change to 1==1 to test imediate err...
+        //http://www.acra.ch/
+        if(1==0) throw new NullPointerException("ffds");
 
         //============
+
+        this.imgFavorite = (ImageView)findViewById(R.id.imageView1);
+        this.imgFavorite.setBackgroundColor(Color.WHITE);
+
+        // calling:open()
+        this.imgFavorite.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    try {
+                        open();
+                    }
+                    catch(Exception ex){
+
+                        tthis.post_error( "Camera, MainActivity.java, imgFavorite.setOnClickListener: " + err_str(ex) );
+                    }
+                }
+            });
+    }
+
+    // gets a path to a random image, opens existing camera and inits activity
+    public void open ( ) {
+
+        Intent intent = new Intent ( android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        int img_id = 0;
+        File photo;
+
+        try {
+            Random randomGenerator = new Random();
+            // place where to store camera taken picture
+            img_id = randomGenerator.nextInt(REQUEST_CODE_MAX);
+            photo = this.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, img_id );
+        }
+        catch ( Exception ex ) {
+            show_msg("Can't create file to take picture! Please check SD card! Image shot is impossible!");
+            tthis.post_error( "Camera, MainActivity.java, Can't create file to take picture! Please check SD card!, open(): " + err_str(ex) );
+            return;
+        }
+
+        try {
+            mImageUri = Uri.fromFile ( photo );
+            intent.putExtra ( MediaStore.EXTRA_OUTPUT, mImageUri );
+            startActivityForResult ( intent,  img_id );
+        }
+        catch ( Exception ex ) {
+            tthis.post_error( "Camera, MainActivity.java, open() 2: "  + err_str(ex) );
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        try {
+            if( resultCode==RESULT_OK){
+
+                try {
+                    File ff = tthis.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, requestCode);
+                    File file = tthis.get_file_temp( IMG_TMP_PREF+1, IMG_TMP_EXT, requestCode);;
+                    ImageIO.write(ff, "png", file);
+
+                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
+                    // ff.delete();
+                }
+                catch (Exception ex) {
+                    tthis.post_error( "Camera, MainActivity.java, onActivityResult in: " + err_str(ex) );
+                }
+            }
+            else {
+                //nothing, take no action, no image came here...
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        catch ( Exception ex ) {
+            tthis.post_error( "Camera, MainActivity.java, onActivityResult out: " + err_str(ex) );
+        }
+    }
+
+    // ======================================
+    // ===========dish and home utils=========
+    // ======================================
+    // =======================
+
+    void show_msg ( String msg ) {
+
+        try {
+            Context context = getApplicationContext();
+            CharSequence text = msg;
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
+        catch(Exception ex){
+            tthis.post_error( "Camera, MainActivity.java, show_msg: " + err_str(ex) );
+        }
+    }
+
+    //============
     //main fn to send errors
     //============
     void post_error ( final String text ) {
@@ -86,5 +222,25 @@ public class MainActivity extends Activity {
         printWriter.flush();
 
         return writer.toString();
+    }
+
+    //=============defaults============
+    @Override
+    protected void onSaveInstanceState ( Bundle state ) {
+        super.onSaveInstanceState ( state );
+        state.putAll(state);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu ( Menu menu ) {
+
+        try {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            // getMenuInflater().inflate(R.menu.main, menu);
+        }
+        catch(Exception ex){
+            tthis.post_error( "Camera, MainActivity.java, imgFavorite.setOnClickListener: " + err_str(ex) );
+        }
+        return true;
     }
 }
