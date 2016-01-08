@@ -1,12 +1,11 @@
-
 package diordve.bonebou;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.imageio.ImageIO;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -34,12 +33,12 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-// preNocr.main( null );
 public class MainActivity extends Activity {
 
     final String UPLOAD_URL = "https://app.adcore.com/errmail/",
         IMG_TMP_PREF = "evdroid",
-        IMG_TMP_EXT = ".png",
+        IMG_TMP_EXT = ".jpg",
+        IMG_PNG_EXT = ".png",
         IMG_DIR_PATH = "/tessdata/img/";
 
     static final int REQUEST_CODE_MAX = 65534;
@@ -136,11 +135,15 @@ public class MainActivity extends Activity {
             if( resultCode==RESULT_OK){
 
                 try {
+                    // convert to png
                     File ff = tthis.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, requestCode);
-                    File file = tthis.get_file_temp( IMG_TMP_PREF+1, IMG_TMP_EXT, requestCode);;
-                    ImageIO.write(ff, "png", file);
+                    File ff_png = tthis.get_file_temp( IMG_TMP_PREF, IMG_PNG_EXT, requestCode);
+                    convert2png ( ff.getAbsolutePath(), ff_png.getAbsolutePath() );
+                    // call native c++ here
+                    preNocr.dodoit( ff_png.getAbsolutePath() );
 
-                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
+
+                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff_png ) );
                     // ff.delete();
                 }
                 catch (Exception ex) {
@@ -162,6 +165,28 @@ public class MainActivity extends Activity {
     // ===========dish and home utils=========
     // ======================================
     // =======================
+
+    void convert2png ( String path_jpg, String path_png ) {
+
+        try {
+            Bitmap bmp = BitmapFactory.decodeFile(path_jpg);
+            BitmapFactory.Options btmapOptions = new BitmapFactory.Options();
+            btmapOptions.inPreferredConfig = Bitmap.Config.RGB_565; /*check*/
+            bmp = BitmapFactory.decodeFile(path_jpg, btmapOptions);
+            File img_png = new File ( path_png );
+            FileOutputStream outStream;
+            img_png.createNewFile(); // need to create file as empty ---
+            outStream = new FileOutputStream(img_png);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+
+            outStream.flush();
+            outStream.close();
+            bmp.recycle();
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 
     void show_msg ( String msg ) {
 

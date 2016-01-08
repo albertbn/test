@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit
-  (JNIEnv *, jobject, jstring);
+(JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus
 }

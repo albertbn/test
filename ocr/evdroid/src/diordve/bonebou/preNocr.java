@@ -1,5 +1,6 @@
 
-// javac preNocr.java
+// from src
+// javac diordve/bonebou/preNocr.java
 // javah preNocr --> creates preNocr.h //this is done different from outside
 
 // from src
@@ -27,16 +28,26 @@ public class preNocr {
         // System.load(f.getAbsolutePath());
     }
 
-    private native void doit ( String tessdata_path );
+    private native void doit ( String tessdata_path, String img_path );
 
-    public static void main ( String[] args ) {
+    public static String dodoit ( String img_png_path ) {
 
         // andrew - REMARK for mac
         String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
         // mac - UNMARK for mac
         // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
         // String tessdata_path = "./";
-        new preNocr().doit(tessdata_path);
+        new preNocr().doit ( tessdata_path, img_png_path );
+        return "skywalker";
+    }
+    public static void main ( String[] args ) {
+
+        // andrew - REMARK for mac
+        // String tessdata_path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // mac - UNMARK for mac
+        // String tessdata_path = "/usr/local/Cellar/tesseract/3.04.00/share/";
+        // String tessdata_path = "./";
+        // new preNocr().doit(tessdata_path);
     }
 }
 

@@ -43,13 +43,14 @@
 using namespace std;
 
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
-     JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref ) {
+                                                          JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref, jstring jpng_path ) {
 // int main ( ) {
   char tessdata_path_pref_str[128], dump[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
-  strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.png");
+  // strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.png")
+                                                         ;
   strcpy(dump, tessdata_path_pref);  strcat(dump,"/tessdata/dump.txt");
-  const char* inputfile = tessdata_path_pref_str;
+  const char* inputfile = (*env).GetStringUTFChars(jpng_path, 0);
 
   char *outText = NULL;
   tesseract::Orientation orientation;
@@ -116,6 +117,5 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   pixDestroy(&image);
 
   (*env).ReleaseStringUTFChars(jtessdata_path_pref, tessdata_path_pref);
-  // return 0;
-  // return;
+  (*env).ReleaseStringUTFChars(jpng_path, inputfile);
 }
