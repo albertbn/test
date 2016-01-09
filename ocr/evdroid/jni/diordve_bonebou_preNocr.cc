@@ -47,10 +47,15 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 // int main ( ) {
   char tessdata_path_pref_str[128], dump[128];
   const char* tessdata_path_pref = (*env).GetStringUTFChars(jtessdata_path_pref, 0);
-  // strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8.png")
                                                          ;
   strcpy(dump, tessdata_path_pref);  strcat(dump,"/tessdata/dump.txt");
-  const char* inputfile = (*env).GetStringUTFChars(jpng_path, 0);
+
+  // PRE READY IMG
+  strcpy(tessdata_path_pref_str, tessdata_path_pref);  strcat(tessdata_path_pref_str,"/tessdata/long8_part.png"); /*long8.png is the whole invoice*/
+  const char* inputfile = tessdata_path_pref_str;
+
+ // REAL IMG
+  // const char* inputfile = (*env).GetStringUTFChars(jpng_path, 0);
 
   char *outText = NULL;
   tesseract::Orientation orientation;
@@ -76,39 +81,52 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   api->SetVariable("language_model_penalty_non_dict_word", "0");
 
-  api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
-  api->SetImage(image);
-  api->Recognize(0);
+  ofstream outfile;
+  outfile.open ( dump, ios_base::app );
+  api->SetPageSegMode(tesseract::PSM_AUTO);
 
-  tesseract::PageIterator* it =  api->AnalyseLayout();
-  it->Orientation(&orientation, &direction, &order, &deskew_angle);
+  int len = strlen(tessdata_path_pref_str); len-=10;
+  for ( int i=0; i<5; ++i ) {
 
-  LOGD ( "Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n"    \
-         "Deskew angle: %.4f\n",
-         orientation, direction, order, deskew_angle );
-
-  if ( orientation == 3 ) {
-  // if ( 1==1 ) {
-
-    image = pixRotate90( image, 1 );
-    // printf("ok, orientations is 3\n=======\n");
-    LOGD("ok, orientations is 3\n=======\n");
+    tessdata_path_pref_str[len] = i+48;
+    inputfile = tessdata_path_pref_str;
+    // outfile << inputfile;
+    image = pixRead ( inputfile );
+    // UNMARK for OSD
+    // api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
     api->SetImage(image);
     api->Recognize(0);
 
-    // it =  api->AnalyseLayout();
+    // ========= START UNMARK for osd =============
+    // tesseract::PageIterator* it =  api->AnalyseLayout();
     // it->Orientation(&orientation, &direction, &order, &deskew_angle);
+
+    // LOGD ( "Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n"    \
+    //        "Deskew angle: %.4f\n",
+    //        orientation, direction, order, deskew_angle );
+
+    // if ( orientation == 3 ) {
+    // // if ( 1==1 ) {
+
+    //   image = pixRotate90( image, 1 );
+    //   // printf("ok, orientations is 3\n=======\n");
+    //   LOGD("ok, orientations is 3\n=======\n");
+    //   api->SetImage(image);
+    //   api->Recognize(0);
+
+    //   // it =  api->AnalyseLayout();
+    //   // it->Orientation(&orientation, &direction, &order, &deskew_angle);
+    // }
+
+    // api->SetPageSegMode ( tesseract::PSM_AUTO );
+    // ========= END UNMARK for osd =============
+
+    // outText = api->GetUTF8Text(NULL /*what the fock???*/);
+    outText = api->GetUTF8Text();
+    LOGD ( "OCR output: %s", outText );
+
+    outfile << outText;
   }
-
-  api->SetPageSegMode ( tesseract::PSM_AUTO );
-
-  // outText = api->GetUTF8Text(NULL /*what the fock???*/);
-  outText = api->GetUTF8Text();
-  LOGD ( "OCR output: %s", outText );
-
-  ofstream outfile;
-  outfile.open ( dump, ios_base::app );
-  outfile << outText;
   outfile.close();
 
   // Destroy used object and release memory

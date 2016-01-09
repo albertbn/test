@@ -102,6 +102,12 @@ public class MainActivity extends Activity {
     // gets a path to a random image, opens existing camera and inits activity
     public void open ( ) {
 
+        if ( 1==1 ) {
+            preNocr.dodoit( "dummy testing hards..." );
+            show_msg("DONE doing OCR - see how fast???");
+            return;
+        }
+
         Intent intent = new Intent ( android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         int img_id = 0;
         File photo;
