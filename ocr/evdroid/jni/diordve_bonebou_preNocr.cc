@@ -29,16 +29,16 @@
 #include <opencv2/objdetect.hpp>
 
 // REMARK for mac debug
-#include <allheaders.h>
-#include <baseapi.h>
-#include "strngs.h"
-#include "genericvector.h"
+// #include <allheaders.h>
+// #include <baseapi.h>
+// #include "strngs.h"
+// #include "genericvector.h"
 
 // UNMARK for mac debug
-// #include <leptonica/allheaders.h>
-// #include <tesseract/baseapi.h>
-// #include "tesseract/strngs.h"
-// #include "tesseract/genericvector.h"
+#include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
+#include "tesseract/strngs.h"
+#include "tesseract/genericvector.h"
 
 using namespace std;
 
