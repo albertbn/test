@@ -24,7 +24,7 @@ public class preNocr {
         System.loadLibrary("preNocr");
 
         // TEST
-        // File f = new File("/Users/albert/test/ocr/evdroid/jni/preNocr.so");
+        // File f = new File("~/test/ocr/evdroid/jni/preNocr.so");
         // System.load(f.getAbsolutePath());
     }
 

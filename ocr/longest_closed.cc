@@ -31,7 +31,7 @@ cv::Point center(0,0);
 Size size_mat;
 
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-longest_closed-of-paper-sheet-in-photo
-bool file_exists ( const std::string& name ) {
+bool file_exists ( const string& name ) {
 
   struct stat buffer;
   return (stat (name.c_str(), &buffer) == 0);
