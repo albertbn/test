@@ -14,7 +14,15 @@ using namespace cv;
 using namespace std;
 
 double angle ( cv::Point pt1, cv::Point pt2, cv::Point pt0 );
+
+bool is_vertical ( float angle );
+
+float angle_2points ( cv::Point p1, cv::Point p2 );
+
 int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& points4 );
+
+Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
+
 
 #endif // __cplusplus
 #endif /*ANGLE_HPP*/

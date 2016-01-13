@@ -69,6 +69,7 @@ include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
 LOCAL_SRC_FILES  += util/angle.cc
+LOCAL_SRC_FILES  += util/close_center.cc
 LOCAL_SRC_FILES  += util/common.cc
 LOCAL_SRC_FILES  += util/point.cc
 LOCAL_SRC_FILES  += util/rect_poly.cc

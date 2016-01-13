@@ -25,8 +25,8 @@
 // #include <stdlib.h>
 // #include <fstream>
 
-// #include <opencv2/opencv.hpp>
-// #include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
 
 // REMARK for mac debug
 // #include <allheaders.h>
@@ -46,14 +46,23 @@
 #include <sys/stat.h>
 //====end_bonebou_includes=======
 
-// using namespace cv;
+using namespace cv;
 using namespace std;
+
+// std::vector<cv::Vec4i> lines4intersect;
+// std::vector<bool> lines4intersect_is_vert;
+// std::vector<Point> p_from_line_vector;
+// cv::Point center(0,0);
+// Size size_mat;
+// double MIN_LINE_LENGTH_CONSIDERED_SIDE;
+// go on from here
+// http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
 
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref, jstring jpng_path ) {
 
   if ( file_exists("fuck u pu") ) {
-    cout << "fuck u" << endl;
+    cout << "fuck u and the inds" << endl;
   }
   // Mat mat = imread( "fucku.tiff"); /*yep!*/
 }

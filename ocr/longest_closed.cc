@@ -40,8 +40,6 @@ bool file_exists ( const string& name ) {
 int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& points4 );
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
 Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours );
-// not in use
-Point2f get_mass_center(Point a, Point b);
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
 static float angle_2points ( cv::Point p1, cv::Point p2 );
 Mat coord_clusters_munge ( Size size,
@@ -144,7 +142,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
 
 // shall we yep? - sort corners
 //1==OK t==2, b==2, 0 - not rect
-bool sortCorners(std::vector<cv::Point>& corners, cv::Point center) {
+bool sortCorners ( std::vector<cv::Point>& corners, cv::Point center ) {
 
   bool ret = false;
   std::vector<cv::Point> top, bot;
@@ -178,7 +176,7 @@ bool sortCorners(std::vector<cv::Point>& corners, cv::Point center) {
   return ret;
 }
 
-bool corners_magick_do( Size mat_size, std::vector<cv::Point>& corners /*points4*/ ){
+bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points4*/ ) {
 
   bool are4pointsfine = false;
 
@@ -683,8 +681,7 @@ static float angle_2points ( cv::Point p1, cv::Point p2 ) {
   return ang;
 }
 
-static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
-{
+static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0) {
 	double dx1 = pt1.x - pt0.x;
 	double dy1 = pt1.y - pt0.y;
 	double dx2 = pt2.x - pt0.x;
@@ -702,7 +699,7 @@ double get_longest_side_poly ( std::vector<cv::Point> approx ) {
   return sqrt(rect.width*rect.width + rect.height*rect.height );
 }
 
-void filter_points_if_needed (   std::vector<cv::Point> &circles, std::vector<cv::Point> approx ){
+void filter_points_if_needed ( std::vector<cv::Point> &circles, std::vector<cv::Point> approx ){
 
   cv::RotatedRect rect_minAreaRect = minAreaRect(approx);
   double area1 = contourArea(approx), area_minAreaRect;
@@ -995,7 +992,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1 );
 }
 
-void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours){
+void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours ) {
 
   Mat m ( len_contours );
   cv::Scalar mean, stdev;
@@ -1020,11 +1017,6 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
     contours2.clear();
 
   contours = contours2; angles = angles2; /*TODO - go on from here */
-}
-
-Point2f get_mass_center(Point a, Point b){
-
-  return Point2f( (int)((a.x+b.x)/2), (int)((a.y+b.y)/2) );
 }
 
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers ){
