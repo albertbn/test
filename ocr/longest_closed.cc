@@ -695,7 +695,7 @@ static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 }
 
 // get the diagonal of the bounding rectangle...
-double get_longest_side_poly( std::vector<cv::Point> approx ){
+double get_longest_side_poly ( std::vector<cv::Point> approx ) {
 
   Rect rect = boundingRect(approx);
 

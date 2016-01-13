@@ -15,6 +15,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit
 (JNIEnv *, jobject, jstring, jstring);
 
+
 #ifdef __cplusplus
 }
 #endif

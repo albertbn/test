@@ -1,12 +1,14 @@
 
-#ifndef ALL_HEADERS_H
-#define ALL_HEADERS_H
+/*! \file all_headers.hpp */
 
-#include <string>
-#include <stdbool.h>
+#ifndef ALL_HEADERS_HPP
+#define ALL_HEADERS_HPP
 
-using namespace std;
+#ifdef __cplusplus
 
-bool file_exists( const string& name);
+#ifndef SKIP_INCLUDES
+#include "util/common.hpp"
+#endif // SKIP_INCLUDES
 
-#endif
+#endif // __cplusplus
+#endif /*ALL_HEADERS_HPP*/

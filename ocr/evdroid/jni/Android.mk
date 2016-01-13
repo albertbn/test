@@ -68,6 +68,11 @@ OPENCV_CAMERA_MODULES := off
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
+LOCAL_SRC_FILES  += util/angle.cc
+LOCAL_SRC_FILES  += util/common.cc
+LOCAL_SRC_FILES  += util/point.cc
+LOCAL_SRC_FILES  += util/rect_poly.cc
+
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
 LOCAL_MODULE     := preNocr
 

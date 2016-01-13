@@ -15,10 +15,6 @@
 
 // TEMP
 #include <jni.h>
-#include "diordve_bonebou_preNocr.h"
-//====all_headers_inludes===========
-#include "all_headers.hpp"
-//====end_all_headers_inludes=======
 
 // REMARK for mac debug
 #include <android/log.h>
@@ -44,11 +40,22 @@
 // #include <tesseract/strngs.h>
 // #include <tesseract/genericvector.h>
 
+//====bonebou_includes===========
+#include "diordve_bonebou_preNocr.h"
+#include "all_headers.hpp"
+#include <sys/stat.h>
+//====end_bonebou_includes=======
 
+// using namespace cv;
 using namespace std;
 
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jtessdata_path_pref, jstring jpng_path ) {
 
-  // cout << file_exists ( "fuck u pu" ) << endl;
+  if ( file_exists("fuck u pu") ) {
+    cout << "fuck u" << endl;
+  }
+  // Mat mat = imread( "fucku.tiff"); /*yep!*/
 }
+
+
