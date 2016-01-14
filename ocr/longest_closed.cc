@@ -11,12 +11,12 @@
 // coord_clusters - TODO - make dynamic for vertical/horizontal - see what happens with 45 degree angles...
 // get_closest_diagonal for (temp) left/right or future up/down lines... TODO check what happens with rotated - 45 degree lines
 // WORK, work worrk ... and then go on, get intersection points, affine transform rotate, crop etc...
-// // may the force be with you
+// may the force be with you, new frame :)
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <math.h>
 #include <iostream>
 #include <sys/stat.h>
@@ -31,17 +31,22 @@ cv::Point center(0,0);
 Size size_mat;
 
 // http://stackoverflow.com/questions/6555629/algorithm-to-detect-longest_closed-of-paper-sheet-in-photo
+// common.cc
 bool file_exists ( const string& name ) {
 
   struct stat buffer;
   return (stat (name.c_str(), &buffer) == 0);
 }
-// c/c++ dummy declaration
+// angle.cc
 int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& points4 );
+// angle.cc
 Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers );
+// cluster.cc
 Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, Mat_<float> angles, double angle_center, std::vector<double> len_contours );
+// rect_poly.cc
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
 static float angle_2points ( cv::Point p1, cv::Point p2 );
+// cluster.cc
 Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0, std::vector < std::vector<cv::Point> > contours_l1,
                            Mat_<float> angles0, Mat_<float> angles1
@@ -581,7 +586,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 }
 
 // splits contours to dotted lines, no matter if closed or not - should get just a collection of 2 point straight vanilla lines
-static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contoursDraw2, std::vector<double> &len_contours_contoursDraw2, double min_line_length ){
+static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contoursDraw2, std::vector<double> &len_contours_contoursDraw2, double min_line_length ) {
 
   std::vector<std::vector<cv::Point> > contoursDraw3;
   std::vector<cv::Point> line_tmp;
@@ -619,12 +624,12 @@ static void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > 
   len_contours_contoursDraw2 = len_contours_contoursDraw3;
 }
 
-static void deal_with_geometry_when_not_enough_90d_angles(
+static void deal_with_geometry_when_not_enough_90d_angles (
                                                           Size mat_size,
                                                           std::vector<std::vector<cv::Point> > contoursDraw2,
                                                           std::vector<double> len_contours_contoursDraw2,
                                                           double min_line_length
-                                                          ){
+                                                          ) {
   // shall we work? - well :) maybe - c u next time :) suck Shawn, suck
   split_contours_2_dotted_lines ( /*ref*/contoursDraw2, /*ref*/len_contours_contoursDraw2, min_line_length );
 
