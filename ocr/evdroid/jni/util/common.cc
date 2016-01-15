@@ -50,10 +50,3 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
   contours = contours2; angles = angles2; /*TODO - go on from here */
 }
-
-string get_path_absolute ( const string& relative ) {
-
-  string path_sd_card_str ( path_sd_card );
-  return path_sd_card_str + relative;
-}
-

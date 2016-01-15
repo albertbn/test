@@ -14,13 +14,13 @@
 using namespace cv;
 using namespace std;
 
-static std::vector<cv::Vec4i> lines4intersect;
-static std::vector<bool> lines4intersect_is_vert;
-static std::vector<Point> p_from_line_vector;
-static cv::Point center(0,0);
-static Size size_mat;
-static double MIN_LINE_LENGTH_CONSIDERED_SIDE;
-static const char* path_sd_card;
+extern std::vector<cv::Vec4i> lines4intersect;
+extern std::vector<bool> lines4intersect_is_vert;
+extern std::vector<Point> p_from_line_vector;
+extern cv::Point center;
+extern Size size_mat;
+extern double MIN_LINE_LENGTH_CONSIDERED_SIDE;
+extern string path_sd_card;
 
 #endif // __cplusplus
 #endif /*STATIC_FIELDS*/

@@ -11,21 +11,22 @@
 using namespace cv;
 using namespace std;
 
+// LOGD ( "should have written 2 images 0,1, yep? " );
+
 // start here
 void longest_closed ( Mat& mat ) {
 
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 
-  return;
-
   // cleanup some images...
-  remove("./img_pre/long4.jpg");
-  remove("./img_pre/long5.jpg");
-  remove("./img_pre/long6.jpg");
-  remove("./img_pre/long7.jpg");
-  remove("./img_pre/long8.jpg");
-  remove("./img_pre/long44.jpg");
-  remove("./img_pre/long444.jpg");
+  LOGD ( "about to rm: %s", (path_sd_card+"/tessdata/long4.jpg").c_str() );
+  remove((path_sd_card+"/tessdata/long4.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long5.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long6.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long7.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long8.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long44.jpg").c_str());
+  remove((path_sd_card+"/tessdata/long444.jpg").c_str());
 
   size_mat = mat.size();
 
@@ -37,13 +38,15 @@ void longest_closed ( Mat& mat ) {
 
   blur ( dilated, dilated, Size(10,10) );
 
-  cv::imwrite( "./img_pre/long0.jpg", dilated );
+  cv::imwrite( path_sd_card+"/tessdata/long0.jpg", dilated );
 
   cv::Mat edges;
   cv::Canny(dilated, edges, 40, 1);
   blur(edges, edges, Size(10,10));
 
-  cv::imwrite( "./img_pre/long1.jpg", edges);
+  cv::imwrite( path_sd_card+"/tessdata/long1.jpg", edges);
+
+  return; /* optimistic :) yep! */
 
   std::vector< std::vector<cv::Point> > contours;
   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);

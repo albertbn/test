@@ -23,10 +23,10 @@
 #include <opencv2/core/core.hpp>
 
 // REMARK for mac debug
-#include <allheaders.h>
-#include <baseapi.h>
-#include "strngs.h"
-#include "genericvector.h"
+// #include <allheaders.h>
+// #include <baseapi.h>
+// #include "strngs.h"
+// #include "genericvector.h"
 
 // UNMARK for mac debug
 // #include <leptonica/allheaders.h>
@@ -49,7 +49,7 @@ std::vector<Point> p_from_line_vector;
 cv::Point center(0,0);
 Size size_mat;
 double MIN_LINE_LENGTH_CONSIDERED_SIDE;
-static const char* path_sd_card;
+string path_sd_card;
 
 // go on from here
 // http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
@@ -59,9 +59,11 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
 
-  Mat mat = imread ( get_path_absolute("/tessdata/long8.jpg") ); /*yep!*/
+  // LOGD ( "path: %s \n", get_path_absolute("/tessdata/long8.jpg") );
+
+  Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 
-  (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card);
+  // (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card.c_str());
 }
