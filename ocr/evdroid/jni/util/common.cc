@@ -50,3 +50,9 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
   contours = contours2; angles = angles2; /*TODO - go on from here */
 }
+
+string get_path_absolute ( const string& relative ) {
+
+  return tessdata_path_pref + relative;
+}
+

@@ -12,9 +12,11 @@ using namespace cv;
 using namespace std;
 
 // start here
-void longest_closed ( ) {
+void longest_closed ( Mat& mat ) {
 
-  Mat mat = imread( "./pics/heb.jpg" ); /*yep!*/
+  LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
+
+  return;
 
   // cleanup some images...
   remove("./img_pre/long4.jpg");

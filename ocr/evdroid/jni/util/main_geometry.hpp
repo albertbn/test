@@ -14,7 +14,7 @@
 using namespace cv;
 using namespace std;
 
-void longest_closed();
+void longest_closed ( Mat& mat );
 
 void deal_with_geometry_when_not_enough_90d_angles (
                                                           Size mat_size,

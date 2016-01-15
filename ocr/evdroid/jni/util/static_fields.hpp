@@ -19,8 +19,8 @@ static std::vector<bool> lines4intersect_is_vert;
 static std::vector<Point> p_from_line_vector;
 static cv::Point center(0,0);
 static Size size_mat;
-
 static double MIN_LINE_LENGTH_CONSIDERED_SIDE;
+static const char* tessdata_path_pref;
 
 #endif // __cplusplus
 #endif /*STATIC_FIELDS*/
