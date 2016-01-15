@@ -53,6 +53,7 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
 string get_path_absolute ( const string& relative ) {
 
-  return tessdata_path_pref + relative;
+  string path_sd_card_str ( path_sd_card );
+  return path_sd_card_str + relative;
 }
 

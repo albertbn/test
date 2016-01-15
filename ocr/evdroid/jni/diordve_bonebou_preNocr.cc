@@ -49,29 +49,19 @@ std::vector<Point> p_from_line_vector;
 cv::Point center(0,0);
 Size size_mat;
 double MIN_LINE_LENGTH_CONSIDERED_SIDE;
-const char* tessdata_path_pref;
+static const char* path_sd_card;
 
 // go on from here
 // http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
 
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
-    JNIEnv *env, jobject thisObj, jstring path_sd_card, jstring img_path ) {
+    JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
 
-  tessdata_path_pref = (*env).GetStringUTFChars(path_sd_card, 0);
-  char tessdata_path_pref_str[128], dump[128];
-  strcpy(dump, tessdata_path_pref);  strcat(dump,"/tessdata/dump.txt");
-  // PRE READY IMG
-  strcpy ( tessdata_path_pref_str, tessdata_path_pref );
-  // strcat ( tessdata_path_pref_str,"/tessdata/long8.jpg" ); /*long8.png is the whole invoice*/
-
-  // const char* inputfile = tessdata_path_pref_str;
+  path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
 
   Mat mat = imread ( get_path_absolute("/tessdata/long8.jpg") ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 
-  (*env).ReleaseStringUTFChars(path_sd_card, tessdata_path_pref);
-  // (*env).ReleaseStringUTFChars(img_path);
+  (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card);
 }
-
-
