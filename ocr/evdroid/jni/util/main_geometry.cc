@@ -19,14 +19,13 @@ void longest_closed ( Mat& mat ) {
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 
   // cleanup some images...
-  LOGD ( "about to rm: %s", (path_sd_card+"/tessdata/long4.jpg").c_str() );
-  remove((path_sd_card+"/tessdata/long4.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long5.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long6.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long7.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long8.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long44.jpg").c_str());
-  remove((path_sd_card+"/tessdata/long444.jpg").c_str());
+  remove((path_img+"/long4.jpg").c_str());
+  remove((path_img+"/long5.jpg").c_str());
+  remove((path_img+"/long6.jpg").c_str());
+  remove((path_img+"/long7.jpg").c_str());
+  remove((path_img+"/long8.jpg").c_str());
+  remove((path_img+"/long44.jpg").c_str());
+  remove((path_img+"/long444.jpg").c_str());
 
   size_mat = mat.size();
 
@@ -38,15 +37,15 @@ void longest_closed ( Mat& mat ) {
 
   blur ( dilated, dilated, Size(10,10) );
 
-  cv::imwrite( path_sd_card+"/tessdata/long0.jpg", dilated );
+  cv::imwrite( path_img+"/long0.jpg", dilated );
 
   cv::Mat edges;
   cv::Canny(dilated, edges, 40, 1);
   blur(edges, edges, Size(10,10));
 
-  cv::imwrite( path_sd_card+"/tessdata/long1.jpg", edges);
+  cv::imwrite( path_img+"/long1.jpg", edges);
 
-  return; /* optimistic :) yep! */
+  // return; /* optimistic :) yep! */
 
   std::vector< std::vector<cv::Point> > contours;
   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
@@ -131,9 +130,9 @@ void longest_closed ( Mat& mat ) {
   cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
   cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
 
-  cv::imwrite( "./img_pre/long2.jpg", drawing);
-  cv::imwrite( "./img_pre/long3.jpg", poly);
-  cv::imwrite( "./img_pre/long4.jpg", clong);
+  cv::imwrite( path_img + "/long2.jpg", drawing);
+  cv::imwrite( path_img + "/long3.jpg", poly);
+  cv::imwrite( path_img + "/long4.jpg", clong);
 }
 
 void deal_with_geometry_when_not_enough_90d_angles (
@@ -226,8 +225,8 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
   Mat mb;
-  if ( file_exists("./img_pre/long7.jpg") )
-    mb = imread ( "./img_pre/long7.jpg" );
+  if ( file_exists(path_img + "/long7.jpg") )
+    mb = imread ( path_img + "/long7.jpg" );
   else
     mb = Mat::zeros ( mat.size(), CV_8UC3 );
 
@@ -273,6 +272,6 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     // std::cout << "checking points4f... " << points4f << std::endl;
   }
 
-  cv::imwrite( "./img_pre/long7.jpg", mb);
-  cv::imwrite( "./img_pre/long8.jpg", quad);
+  cv::imwrite ( path_img + "/long7.jpg", mb );
+  cv::imwrite ( path_img + "/long8.jpg", quad );
 }

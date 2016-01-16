@@ -133,8 +133,8 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
   }
 
   Mat mb;
-  if ( file_exists("./img_pre/long7.jpg") )
-    mb = imread ( "./img_pre/long7.jpg" );
+  if ( file_exists(path_img + "/long7.jpg") )
+    mb = imread ( path_img + "/long7.jpg" );
   else
     mb = Mat::zeros ( size_mat, CV_8UC3 );
 
@@ -145,7 +145,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
   }
 
-  cv::imwrite ( "./img_pre/long7.jpg", mb ) ;
+  cv::imwrite ( path_img + "/long7.jpg", mb ) ;
 }
 
 //1==OK t==2, b==2, 0 - not rect
@@ -199,8 +199,8 @@ bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points
   }
 
   Mat m;
-  if ( file_exists("./img_pre/long7.jpg") )
-    m = imread ( "./img_pre/long7.jpg" );
+  if ( file_exists(path_img + "/long7.jpg") )
+    m = imread ( path_img + "/long7.jpg" );
   else
     m = Mat::zeros ( mat_size, CV_8UC3 );
 
@@ -212,7 +212,7 @@ bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points
 
   cv::circle ( m, center, 50, cv::Scalar(50,0,255) );
 
-  cv::imwrite( "./img_pre/long7.jpg", m);
+  cv::imwrite( path_img + "/long7.jpg", m);
 
   return are4pointsfine;
 }

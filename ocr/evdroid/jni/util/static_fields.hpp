@@ -21,6 +21,7 @@ extern cv::Point center;
 extern Size size_mat;
 extern double MIN_LINE_LENGTH_CONSIDERED_SIDE;
 extern string path_sd_card;
+extern string path_img;
 
 #endif // __cplusplus
 #endif /*STATIC_FIELDS*/

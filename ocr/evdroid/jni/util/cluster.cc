@@ -5,6 +5,7 @@
 #include "cluster.hpp"
 #include "common.hpp"
 #include "rect_poly.hpp"
+#include "static_fields.hpp"
 
 using namespace cv;
 using namespace std;
@@ -74,16 +75,16 @@ Mat coord_clusters_munge ( Size size,
 
   // if file exists - load from it - else create from zeros existing one...
   if(contours_l0.size()>0){
-    if(file_exists("./img_pre/long5.jpg"))
-      l0 = imread("./img_pre/long5.jpg");
+    if(file_exists(path_img + "/long5.jpg"))
+      l0 = imread(path_img + "/long5.jpg");
     else
       l0 = Mat::zeros( size, CV_8UC3 );
   }
   // the second one is optional
   if(contours_l1.size()>0){
 
-    if(file_exists("./img_pre/long6.jpg"))
-      l1 = imread("./img_pre/long6.jpg");
+    if(file_exists(path_img + "/long6.jpg"))
+      l1 = imread(path_img + "/long6.jpg");
     else
       l1 = Mat::zeros( size, CV_8UC3 );
   }
@@ -117,7 +118,7 @@ Mat coord_clusters_munge ( Size size,
     if(points0.size()>0){
       get_closest_diagonal(r0, angles0, points0, l0);
     }
-    cv::imwrite( "./img_pre/long5.jpg", l0);
+    cv::imwrite( path_img + "/long5.jpg", l0);
   }
 
   // the second one is optional
@@ -126,7 +127,7 @@ Mat coord_clusters_munge ( Size size,
     if(points1.size()>0){
       get_closest_diagonal(r1, angles1, points1, l1);
     }
-    cv::imwrite( "./img_pre/long6.jpg", l1);
+    cv::imwrite( path_img + "/long6.jpg", l1);
   }
 
   return l0; /*dummy*/

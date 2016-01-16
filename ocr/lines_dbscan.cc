@@ -2,7 +2,7 @@
 // g++ $(pkg-config --cflags --libs opencv lept tesseract) lines_dbscan.cc -o lines_dbscan && ./lines_dbscan
 
 // http://opencv-code.com/tutorials/how-to-integrate-tesseract-ocr-and-opencv/
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include <map>
 #include <sstream>
 #include <tesseract/baseapi.h>
@@ -40,7 +40,8 @@ public:
     eps=_eps;
     mnpts=_mnpts;
   }
-  void run() {
+
+  void run ( ) {
     dp = new double[data.size()*data.size()];
     for ( int i=0;i<(int)data.size();i++ ) {
       for ( int j=0;j<(int)data.size();j++ ) {
@@ -64,7 +65,8 @@ public:
     }
     delete [] dp;
   }
-  void expandCluster(int p,std::vector<int> neighbours) {
+
+  void expandCluster ( int p,std::vector<int> neighbours ) {
     labels[p]=C;
     for(int i=0;i<(int)neighbours.size();i++) {
       if(!isVisited(neighbours[i])) {
@@ -81,7 +83,7 @@ public:
     return labels[i]!=-99;
   }
 
-  std::vector<int> regionQuery(int p) {
+  std::vector<int> regionQuery ( int p ) {
     std::vector<int> res;
     for(int i=0;i<(int)data.size();i++) {
       if(distanceFunc(p,i)<=eps) {
@@ -96,7 +98,7 @@ public:
     return abs ( a.y-b.y ) ;
   }
 
-  double distanceFunc(int ai,int bi) {
+  double distanceFunc ( int ai, int bi ) {
 
     if(DP(ai,bi)!=-1)
       return DP(ai,bi);
@@ -169,7 +171,7 @@ public:
   }
 };
 
-cv::Scalar HSVtoRGBcvScalar(int H, int S, int V) {
+cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
 
     int bH = H; // H component
     int bS = S; // S component
@@ -362,27 +364,9 @@ void init_ocr(){
 
   GenericVector<STRING> vars_vec;
   vars_vec.push_back("load_system_dawg");
-  // vars_vec.push_back("load_freq_dawg");
-  // vars_vec.push_back("load_punc_dawg");
-  // vars_vec.push_back("load_number_dawg");
-  // vars_vec.push_back("load_unambig_dawg");
-  // vars_vec.push_back("load_bigram_dawg");
-  // vars_vec.push_back("load_fixed_length_dawgs");
-  // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
   vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("pharma-words");
-
-  // api->Init( NULL, "heb" );
-  // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
-  // for documentation see: http://tesseract-ocr.github.io/a01278.html#a04550a0ed1279562027bf2fc92c421ae
 
   tess.Init(NULL, "heb", tesseract::OEM_DEFAULT);
   // tess.Init(NULL, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
@@ -473,16 +457,10 @@ int main ( int argc, char** argv ) {
   return 0;
 }
 
-// credits: http://stackoverflow.com/questions/8267191/how-to-crop-a-cvmat-in-opencv (how to crop in opencv)
 void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
 
-  // std::cout << "rect: " << rect << std::endl;
   Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
-  // Mat cropped = mat(rect); /*!!! price was on morning and not being calm while watching star wars with Liam*/
 
-  // cv::imwrite( "./img_pre/lines_dbscan04.jpg", cropped);
-
-  // std::cout << "\ncols: " << cropped.cols << "\nrows: " << cropped.rows << std::endl;
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
 

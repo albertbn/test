@@ -49,7 +49,8 @@ std::vector<Point> p_from_line_vector;
 cv::Point center(0,0);
 Size size_mat;
 double MIN_LINE_LENGTH_CONSIDERED_SIDE;
-string path_sd_card;
+string path_sd_card; /* doesn't end with / */
+string path_img; /* doesn't end with / */
 
 // go on from here
 // http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
@@ -58,6 +59,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
 
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
+  path_img = path_sd_card + "/tessdata/img";
 
   // LOGD ( "path: %s \n", get_path_absolute("/tessdata/long8.jpg") );
 

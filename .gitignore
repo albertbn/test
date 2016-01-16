@@ -1,3 +1,4 @@
+*.prop
 *.apk
 *.so
 *.o
