@@ -1,12 +1,14 @@
 
-// #include <opencv2/opencv.hpp>
-// #include <map>
-// #include <sstream>
-// #include <tesseract/baseapi.h>
+#ifdef ANDROID
 #include <baseapi.h>
-// #include <tesseract/genericvector.h>
 #include <genericvector.h>
+#else
+#include <tesseract/baseapi.h>
+#include <tesseract/genericvector.h>
+#endif // ANDROID
+
 #include "tess.hpp"
+#include "../static_fields.hpp"
 
 tesseract::TessBaseAPI tess;
 tesseract::Orientation orientation;
@@ -24,7 +26,7 @@ void init_ocr ( ) {
   GenericVector<STRING> vars_values;
   vars_values.push_back ( "F" );
 
-  tess.Init ( NULL, "heb", tesseract::OEM_DEFAULT );
+  tess.Init ( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT );
   // tess.Init(NULL, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
 
   tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
@@ -39,7 +41,8 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
 
   // Get the text
   char* out = tess.GetUTF8Text();
-  std::cout << out;
+  outfile << out;
+  // std::cout << out;
 }
 
 void rot90 ( cv::Mat &matImage, int rotflag ) {

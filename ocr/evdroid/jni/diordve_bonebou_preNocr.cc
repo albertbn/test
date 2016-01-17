@@ -11,28 +11,16 @@
 
 // tess source
 // https://fossies.org/dox/tesseract-ocr-3.02.02/baseapi_8cpp_source.html#l00213
+// http://stackoverflow.com/questions/2483978/best-way-to-implement-globally-scoped-data - c++ extern and static
+// http://p2p.wrox.com/c-programming/92954-c-class-example-separate-header-implementation-file.html - c++ class header and implement
 
 // TEMP
 #include <jni.h>
 
 #include <iostream>
-// #include <stdlib.h>
-// #include <fstream>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
-
-// REMARK for mac debug
-// #include <allheaders.h>
-// #include <baseapi.h>
-// #include "strngs.h"
-// #include "genericvector.h"
-
-// UNMARK for mac debug
-// #include <leptonica/allheaders.h>
-// #include <tesseract/baseapi.h>
-// #include <tesseract/strngs.h>
-// #include <tesseract/genericvector.h>
 
 //====bonebou_includes===========
 #include "diordve_bonebou_preNocr.h"
@@ -63,7 +51,9 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   // LOGD ( "path: %s \n", get_path_absolute("/tessdata/long8.jpg") );
 
-  Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
+  // Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
+  string img_path = (*env).GetStringUTFChars(jimg_path, 0);
+  Mat mat = imread ( img_path ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 

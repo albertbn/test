@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
     // gets a path to a random image, opens existing camera and inits activity
     public void open ( ) {
 
-        if ( 1==1 ) {
+        if ( 1==0 ) {
             preNocr.dodoit( "dummy testing hards..." );
             show_msg("DONE doing OCR - see how fast???");
             return;
@@ -143,13 +143,13 @@ public class MainActivity extends Activity {
                 try {
                     // convert to png
                     File ff = tthis.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, requestCode);
-                    File ff_png = tthis.get_file_temp( IMG_TMP_PREF, IMG_PNG_EXT, requestCode);
-                    convert2png ( ff.getAbsolutePath(), ff_png.getAbsolutePath() );
+                    // File ff_png = tthis.get_file_temp( IMG_TMP_PREF, IMG_PNG_EXT, requestCode);
+                    // convert2png ( ff.getAbsolutePath(), ff_png.getAbsolutePath() );
                     // call native c++ here
-                    preNocr.dodoit( ff_png.getAbsolutePath() );
+                    preNocr.dodoit( ff.getAbsolutePath() );
 
 
-                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff_png ) );
+                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
                     // ff.delete();
                 }
                 catch (Exception ex) {

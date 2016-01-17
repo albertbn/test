@@ -1,8 +1,13 @@
 
+#include <fstream>
+
 #include <opencv2/opencv.hpp>
 #include "db_scan.hpp"
 #include "tess.hpp"
 #include "main.hpp"
+#include "../static_fields.hpp"
+
+ofstream outfile;
 
 // using namespace cv;
 struct less_custom_sort_points {
@@ -25,21 +30,16 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
 
     std::vector<cv::Rect> boundRect;
     cv::Mat img_gray, img_sobel, img_threshold, element;
-    // cv::Mat img_sobel, img_threshold, element;
-    // cvtColor(img, img_gray, CV_BGR2GRAY);
-    // cvtColor(img, img_gray, CV_RGBA2GRAY);
     img_gray = img;
 
     cv::Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
-    // cv::Sobel(img_gray, img_sobel, CV_8UC3, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
 
     cv::threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
-    // img_threshold = img_sobel;
 
     element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
     cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
 
-    cv::imwrite ( "./img_pre/lines_dbscan1.jpg", img_threshold ) ;
+    cv::imwrite ( path_img + "/lines_dbscan1.jpg", img_threshold ) ;
 
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
@@ -156,14 +156,14 @@ cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
     return cv::Scalar(bB,bG,bR); // R component
 }
 
-void doit ( Mat& im_orig ) {
+void ocr_doit ( Mat& im_orig ) {
 
   // init tess
   init_ocr();
+
   tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
   orientation_check(im_orig);
-  cv::imwrite ( "./img_pre/lines_dbscan00.jpg", im_orig ) ;
-  // return 0;/*temp*/
+  cv::imwrite ( path_img + "/lines_dbscan00.jpg", im_orig ) ;
 
   Mat im = im_orig.clone();
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
@@ -172,13 +172,15 @@ void doit ( Mat& im_orig ) {
   for ( int i=0; i<(int)boxes.size(); ++i ) {
     cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   }
-  cv::imwrite ( "./img_pre/lines_dbscan02.jpg", im ) ;
+  cv::imwrite ( path_img + "/lines_dbscan02.jpg", im ) ;
 
   DbScan dbscan ( boxes, 10, 2 ); /*HERE - expected tuning or calculating of the eps param*/
   dbscan.run();
   //done, perform display, check emacs git
 
   std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
+
+  // return;
 
   std::vector<Scalar> colors;
   RNG rng(3);
@@ -226,12 +228,16 @@ void doit ( Mat& im_orig ) {
 
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
+
+  outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
 
     // std::cout << "rect: " << rect_lines[i] << std::endl;
     if(7==7) crop_b_tess ( im_orig, rect_lines[i] );
     // if(7==7 && rect_lines[i].height<1000) crop_b_tess ( im_orig, rect_lines[i] );
   }
+  outfile.close();
 
-  cv::imwrite ( "./img_pre/lines_dbscan03.jpg", grouped ) ;
+
+  cv::imwrite ( path_img +"/lines_dbscan03.jpg", grouped ) ;
 }

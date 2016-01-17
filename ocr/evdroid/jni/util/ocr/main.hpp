@@ -15,7 +15,7 @@
 using namespace cv;
 // using namespace std;
 
-void doit ( Mat& im_orig );
+void ocr_doit ( Mat& im_orig );
 std::vector<cv::Rect> detectLetters ( cv::Mat img );
 
 #endif // __cplusplus

@@ -8,6 +8,8 @@
 #include "point.hpp"
 #include "static_fields.hpp"
 
+#include "ocr/main.hpp"
+
 using namespace cv;
 using namespace std;
 
@@ -267,6 +269,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
   if ( points4f.size()==4 ) {
     cv::Mat transmtx = cv::getPerspectiveTransform ( points4f, quad_pts );
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
+    ocr_doit ( quad /* send by reference to OCR */ );
   }
   else{
     // std::cout << "checking points4f... " << points4f << std::endl;

@@ -1,3 +1,6 @@
+*.dex
+*.class
+*.ap_
 *.d
 *.prop
 *.apk
