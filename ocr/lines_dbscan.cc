@@ -6,7 +6,7 @@
 #include <map>
 #include <sstream>
 #include <tesseract/baseapi.h>
-#include "tesseract/genericvector.h"
+#include <tesseract/genericvector.h>
 
 using namespace cv;
 
