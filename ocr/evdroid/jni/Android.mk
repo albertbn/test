@@ -76,6 +76,10 @@ LOCAL_SRC_FILES  += util/main_geometry.cc
 LOCAL_SRC_FILES  += util/point.cc
 LOCAL_SRC_FILES  += util/rect_poly.cc
 
+LOCAL_SRC_FILES  += util/ocr/tess.cc
+LOCAL_SRC_FILES  += util/ocr/db_scan.cc
+LOCAL_SRC_FILES  += util/ocr/main.cc
+
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
 LOCAL_MODULE     := preNocr
 
