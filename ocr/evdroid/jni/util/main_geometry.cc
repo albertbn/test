@@ -21,36 +21,39 @@ void longest_closed ( Mat& mat ) {
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 
   // cleanup some images...
-  remove((path_img+"/long4.jpg").c_str());
-  remove((path_img+"/long5.jpg").c_str());
-  remove((path_img+"/long6.jpg").c_str());
-  remove((path_img+"/long7.jpg").c_str());
-  remove((path_img+"/long8.jpg").c_str());
-  remove((path_img+"/long44.jpg").c_str());
-  remove((path_img+"/long444.jpg").c_str());
+  // remove((path_img+"/long4.jpg").c_str());
+  // remove((path_img+"/long5.jpg").c_str());
+  // remove((path_img+"/long6.jpg").c_str());
+  // remove((path_img+"/long7.jpg").c_str());
+  // remove((path_img+"/long8.jpg").c_str());
+  // remove((path_img+"/long44.jpg").c_str());
+  // remove((path_img+"/long444.jpg").c_str());
 
   size_mat = mat.size();
 
-  cv::cvtColor(mat, mat, CV_BGR2GRAY);
+  cv::cvtColor ( mat, mat, CV_BGR2GRAY );
 
   cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(19,19));
   cv::Mat dilated;
   cv::dilate(mat, dilated, kernel);
+  kernel.release();
 
   blur ( dilated, dilated, Size(10,10) );
 
-  cv::imwrite( path_img+"/long0.jpg", dilated );
+  // cv::imwrite( path_img+"/long0.jpg", dilated ); /*boost performance*/
 
   cv::Mat edges;
   cv::Canny(dilated, edges, 40, 1);
+  dilated.release();
   blur(edges, edges, Size(10,10));
 
-  cv::imwrite( path_img+"/long1.jpg", edges);
+  // cv::imwrite( path_img+"/long1.jpg", edges); /*boost performance*/
 
   // return; /* optimistic :) yep! */
 
   std::vector< std::vector<cv::Point> > contours;
   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
+  edges.release();
 
   double len;
   std::vector<double> len_contours_contoursDraw2, len_contours_closed;
@@ -58,11 +61,11 @@ void longest_closed ( Mat& mat ) {
   std::vector< std::vector<cv::Point> > contours_long, contours_medium;
   std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
   std::vector<std::vector<cv::Point> > contoursDraw2;
-  Mat poly = Mat::zeros ( mat.size(), CV_8UC3 ) ;
+  // Mat poly = Mat::zeros ( size_mat, CV_8UC3 ) ; /*boost performance*/
 
-  double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(mat.size().width, mat.size().height)/13.0; /*TODO - here - check this chap*/
+  double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(size_mat.width, size_mat.height)/13.0; /*TODO - here - check this chap*/
   MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
-  int min_closed_line_len = (mat.size().width + mat.size().height);
+  int min_closed_line_len = (size_mat.width + size_mat.height);
 
   // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
   for ( int i=0; i < (int)contours.size(); i++ ) {
@@ -90,9 +93,9 @@ void longest_closed ( Mat& mat ) {
     }
   }
 
-  Mat drawing = Mat::zeros( mat.size(), CV_8UC3 );
-  Mat clong = Mat::zeros( mat.size(), CV_8UC3 );
-  cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
+  // Mat drawing = Mat::zeros( size_mat, CV_8UC3 ); /*boost performance*/
+  Mat clong = Mat::zeros( size_mat, CV_8UC3 ); clong.release(); /*boost performance*/
+  // cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
 
   int _angle90_count=0; std::vector<cv::Point> points4;
   // count the ~90 degree angles...
@@ -103,23 +106,23 @@ void longest_closed ( Mat& mat ) {
   // DONE, yep! - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
   //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
   // OK, this is the dotted line connection and expansion algorithm
-  if ( _angle90_count!=4 || !corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/) ) {
+  if ( _angle90_count!=4 || !corners_magick_do(size_mat, points4 /*a 4 point chap - validate this folk*/) ) {
 
     // DONE - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
     if ( contours_long.size() || contours_medium.size() ){
       // std::cout << "contours long || medium" << std::endl;
       for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
-      deal_with_geometry_when_not_enough_90d_angles( mat.size(), contours_medium, len_contours_closed, min_line_length);
+      deal_with_geometry_when_not_enough_90d_angles( size_mat, contours_medium, len_contours_closed, min_line_length);
     }
     else {
-      deal_with_geometry_when_not_enough_90d_angles( mat.size(), contoursDraw2, len_contours_contoursDraw2, min_line_length);
+      deal_with_geometry_when_not_enough_90d_angles( size_mat, contoursDraw2, len_contours_contoursDraw2, min_line_length);
     }
 
     // if ( lines4intersect.size()<4 ) {
     // std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
       points4.clear();
       intersect_n_get_points ( points4 /*ref*/ );
-      corners_magick_do(mat.size(), points4 /*a 4 point chap - validate this folk*/);
+      corners_magick_do( size_mat, points4 /*a 4 point chap - validate this folk*/);
     // }
     final_magic_crop_rotate ( mat, points4 /*ref*/ );
 
@@ -129,12 +132,13 @@ void longest_closed ( Mat& mat ) {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
   }
 
-  cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1);
-  cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1);
+  // cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+  // cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
 
-  cv::imwrite( path_img + "/long2.jpg", drawing);
-  cv::imwrite( path_img + "/long3.jpg", poly);
-  cv::imwrite( path_img + "/long4.jpg", clong);
+  // cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
+  // cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
+  // cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
+  mat.release();
 }
 
 void deal_with_geometry_when_not_enough_90d_angles (
@@ -226,31 +230,31 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
-  Mat mb;
-  if ( file_exists(path_img + "/long7.jpg") )
-    mb = imread ( path_img + "/long7.jpg" );
-  else
-    mb = Mat::zeros ( mat.size(), CV_8UC3 );
+  // Mat mb;
+  // if ( file_exists(path_img + "/long7.jpg") ) /*boost performance*/
+  //   mb = imread ( path_img + "/long7.jpg" ); /*boost performance*/
+  // else /*boost performance*/
+  //   mb = Mat::zeros ( mat.size(), CV_8UC3 ); /*boost performance*/
 
   if ( points4.size()>4 ) { /*for sor points - draw all circles*/
-    for ( int i=0; i<(int)points4.size(); ++i ) {
-      cv::circle ( mb, points4[i], 50, cv::Scalar(150,55,70) );
-    }
-    sort_points_closest_2center(points4);
+    // for ( int i=0; i<(int)points4.size(); ++i ) { /*boost performance*/
+    //   cv::circle ( mb, points4[i], 50, cv::Scalar(150,55,70) ); /*boost performance*/
+    // }
+    sort_points_closest_2center(points4); /*boost performance*/
   }
 
   std::vector<cv::Point2f> points4f;
   // this here is probably closest to the size of the original invoice... well, let's try... tension :)
   cv::RotatedRect rect_minAreaRect = minAreaRect(points4);
 
-  RNG rng(12345);
-  Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+  // RNG rng(12345); /*boost performance*/
+  // Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) ); /*boost performance*/
   Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
 
   for ( int i=0; i<(int)points4.size(/*4*/); ++i ) {
     points4f.push_back(points4[i]);
-    line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 );
-    cv::circle ( mb, points4[i], 50, cv::Scalar(50,0,255) );
+    // line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 ); /*boost performance*/
+    // cv::circle ( mb, points4[i], 50, cv::Scalar(50,0,255) ); /*boost performance*/
   }
 
   bool is_mat_width = size_mat.width>size_mat.height; /*is width larger*/
@@ -271,10 +275,10 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
     ocr_doit ( quad /* send by reference to OCR */ );
   }
-  else{
+  else {
     // std::cout << "checking points4f... " << points4f << std::endl;
   }
 
-  cv::imwrite ( path_img + "/long7.jpg", mb );
-  cv::imwrite ( path_img + "/long8.jpg", quad );
+  // cv::imwrite ( path_img + "/long7.jpg", mb ); /*boost performance*/
+  // cv::imwrite ( path_img + "/long8.jpg", quad );
 }

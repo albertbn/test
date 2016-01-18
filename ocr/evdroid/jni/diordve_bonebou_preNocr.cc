@@ -57,5 +57,7 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   longest_closed ( mat /*referral variable */ );
 
+  mat.release();
+
   // (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card.c_str());
 }

@@ -1,0 +1,8 @@
+
+10. remark imwrite
+
+20. don't cleanup images at start of main_geometry...
+
+30. check line distance
+
+40. heuristics according to width height in db scan
