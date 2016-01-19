@@ -8,6 +8,9 @@
 #include "../static_fields.hpp"
 
 ofstream outfile;
+int px_line_height = 2; /* TODO - dynamic */
+int px_expand_bound_line = 10; /* TODO - dynamic */
+int px_trim_sides = 70; /* TODO - figure out how much to trim sides */
 
 // using namespace cv;
 struct less_custom_sort_points {
@@ -43,7 +46,7 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
 
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
-    std::cout << "contours: " << contours.size() << std::endl;
+    // std::cout << "contours: " << contours.size() << std::endl;
 
     std::vector<std::vector<cv::Point> > contours_poly( contours.size() );
 
@@ -174,19 +177,17 @@ void ocr_doit ( Mat& im_orig ) {
   for ( int i=0; i<(int)boxes.size(); ++i ) {
     cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   }
-  // cv::imwrite ( path_img + "/lines_dbscan02.jpg", im ) ; /*boost performance*/
+  cv::imwrite ( path_img + "/lines_dbscan02.jpg", im ) ; /*boost performance*/
 
-  DbScan dbscan ( boxes, 10, 2 ); /*HERE - expected tuning or calculating of the eps param*/
+  DbScan dbscan ( boxes, px_line_height, 2 ); /*HERE - expected tuning or calculating of the eps param*/
   dbscan.run();
   //done, perform display, check emacs git
 
-  std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
-
-  // return;
+  // std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
 
   std::vector<Scalar> colors;
   RNG rng(3);
-  for(int i=0;i<=dbscan.C;i++) {
+  for ( int i=0;i<=dbscan.C;i++ ) {
     colors.push_back(HSVtoRGBcvScalar(rng(255),255,255));
   }
 
@@ -220,9 +221,10 @@ void ocr_doit ( Mat& im_orig ) {
     }
     r0 = cv::boundingRect(points0);
     tl = r0.tl(); br = r0.br();
-    tl.x=70; br.x=grouped.cols-70; /*TODO - figure out how much to trim sides */
-    tl.y-10>=0 && (tl.y-=10);
-    br.y+10<=grouped.rows && (br.y+=10);
+    tl.x=px_trim_sides; br.x=grouped.cols-px_trim_sides;
+    tl.y-(px_expand_bound_line)>=0 && (tl.y-=(px_expand_bound_line));
+    br.y-(px_expand_bound_line)>=0 && (br.y-=(px_expand_bound_line));
+    // br.y+px_expand_bound_line<=grouped.rows && (br.y+=px_expand_bound_line);
     r0 = Rect ( tl, br );
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
     rect_lines.push_back(r0);
@@ -236,9 +238,9 @@ void ocr_doit ( Mat& im_orig ) {
 
     // std::cout << "rect: " << rect_lines[i] << std::endl;
     if(7==7) crop_b_tess ( im_orig, rect_lines[i] );
-    // if(7==7 && rect_lines[i].height<1000) crop_b_tess ( im_orig, rect_lines[i] );
+    // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
   }
   outfile.close();
 
-  // cv::imwrite ( path_img +"/lines_dbscan03.jpg", grouped ) ; /*boost performance*/
+  cv::imwrite ( path_img +"/lines_dbscan03.jpg", grouped ) ; /*boost performance*/
 }

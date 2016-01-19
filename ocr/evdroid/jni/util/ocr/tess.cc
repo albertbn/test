@@ -27,7 +27,7 @@ void init_ocr ( ) {
   vars_values.push_back ( "F" );
 
   tess.Init ( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT );
-  // tess.Init(NULL, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  // tess.Init( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
 
   tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
