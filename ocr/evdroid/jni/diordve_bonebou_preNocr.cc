@@ -43,6 +43,7 @@ string path_img; /* doesn't end with / */
 // go on from here
 // http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
 
+#ifdef ANDROID
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
 
@@ -60,4 +61,10 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   mat.release();
 
   // (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card.c_str());
+}
+#endif // ANDROID
+
+int main(){
+
+  return 0;
 }

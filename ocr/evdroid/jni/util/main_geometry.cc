@@ -18,7 +18,10 @@ using namespace std;
 // start here
 void longest_closed ( Mat& mat ) {
 
+#ifdef ANDROID
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
+#endif // ANDROID
+
 
   // cleanup some images...
   // remove((path_img+"/long4.jpg").c_str());
