@@ -50,11 +50,12 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
   path_img = path_sd_card + "/tessdata/img";
 
-  // LOGD ( "path: %s \n", get_path_absolute("/tessdata/long8.jpg") );
+  LOGD ( "path: %s \n", (path_sd_card + "/tessdata/heb.jpg").c_str() );
 
-  // Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
-  string img_path = (*env).GetStringUTFChars(jimg_path, 0);
-  Mat mat = imread ( img_path ); /*yep!*/
+  // TEMP test
+  Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
+  // string img_path = (*env).GetStringUTFChars(jimg_path, 0);
+  // Mat mat = imread ( img_path ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 

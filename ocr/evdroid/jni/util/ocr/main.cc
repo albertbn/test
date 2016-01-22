@@ -169,6 +169,7 @@ void ocr_doit ( Mat& im_orig ) {
   if ( im_orig.cols>im_orig.rows )
     rot90(im_orig,1);
   // cv::imwrite ( path_img + "/lines_dbscan00.jpg", im_orig ) ; /*boost performance*/
+  // return;
 
   Mat im = im_orig.clone();
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
