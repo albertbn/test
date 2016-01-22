@@ -21,20 +21,46 @@ float deskew_angle;
 void init_ocr ( ) {
 
   GenericVector<STRING> vars_vec;
-  vars_vec.push_back ( "load_system_dawg" );
+  // vars_vec.push_back("load_system_dawg");
+  // vars_vec.push_back("load_freq_dawg");
+  // vars_vec.push_back("load_punc_dawg");
+  vars_vec.push_back("load_number_dawg");
+  // vars_vec.push_back("load_unambig_dawg");
+  // vars_vec.push_back("load_bigram_dawg");
+  // vars_vec.push_back("load_fixed_length_dawgs");
+  // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
-  vars_values.push_back ( "F" );
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("F");
+  // vars_values.push_back("pharma-words");
 
-  tess.Init ( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT );
-  // tess.Init( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+#ifdef ANDROID
+  // tess.Init ( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT );
+  tess.Init( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+#else
+  // tess.Init ( NULL, "heb", tesseract::OEM_DEFAULT ); /*regular exe computer*/
+  tess.Init( NULL, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+#endif // ANDROID
 
-  tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
+  // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 
-void crop_b_tess ( Mat mat/*orig*/, Rect rect ) {
+void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
 
   Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
+
+#ifndef ANDROID
+  // cv::imwrite ( path_img +"/db_scan_part"+icount+".jpg", cropped ) ; /*boost performance*/
+  cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
+#else
+  icount = 0;
+#endif // ANDROID
 
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );

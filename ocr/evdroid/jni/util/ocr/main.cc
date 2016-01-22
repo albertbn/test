@@ -8,7 +8,7 @@
 #include "../static_fields.hpp"
 
 ofstream outfile;
-int px_line_height = 2; /* TODO - dynamic */
+int px_line_height = 10; /* TODO - dynamic */
 int px_expand_bound_line = 10; /* TODO - dynamic */
 int px_trim_sides = 70; /* TODO - figure out how much to trim sides */
 
@@ -210,8 +210,10 @@ void ocr_doit ( Mat& im_orig ) {
   std::vector<Rect> rect_lines;
   std::vector<cv::Point> points0;
   Point tl, br;
-  tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+  // tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+  tess.SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
   // tess.SetPageSegMode(tesseract::PSM_AUTO);
+
   for ( int i=0; i<(int)ggroups.size(); ++i ) {
 
     points0.clear();
@@ -223,8 +225,8 @@ void ocr_doit ( Mat& im_orig ) {
     tl = r0.tl(); br = r0.br();
     tl.x=px_trim_sides; br.x=grouped.cols-px_trim_sides;
     tl.y-(px_expand_bound_line)>=0 && (tl.y-=(px_expand_bound_line));
-    br.y-(px_expand_bound_line)>=0 && (br.y-=(px_expand_bound_line));
-    // br.y+px_expand_bound_line<=grouped.rows && (br.y+=px_expand_bound_line);
+    // br.y-(px_expand_bound_line)>=0 && (br.y-=(px_expand_bound_line));
+    br.y+px_expand_bound_line<=grouped.rows && (br.y+=px_expand_bound_line);
     r0 = Rect ( tl, br );
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
     rect_lines.push_back(r0);
@@ -233,14 +235,25 @@ void ocr_doit ( Mat& im_orig ) {
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
 
+#ifdef ANDROID
+  remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
   outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
+#else
+  remove( (path_img + "/dump.txt").c_str() );
+  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
+#endif // ANDROID
+
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
 
     // std::cout << "rect: " << rect_lines[i] << std::endl;
-    if(7==7) crop_b_tess ( im_orig, rect_lines[i] );
+    if(7==7) crop_b_tess ( im_orig, rect_lines[i], i );
     // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
   }
   outfile.close();
+
+  for ( int i=0; i<(int)boxes.size(); ++i ) {
+    cv::rectangle(grouped,boxes[i],cv::Scalar(255,255,255),3,8,0);
+  }
 
   cv::imwrite ( path_img +"/lines_dbscan03.jpg", grouped ) ; /*boost performance*/
 }

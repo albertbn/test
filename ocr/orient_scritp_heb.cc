@@ -13,10 +13,11 @@
 #include "tesseract/strngs.h"
 #include "tesseract/genericvector.h"
 
-int main()
+int main(int argc, char** argv)
 {
   // const char* inputfile = "./img_pre/long9.jpg";
-  const char* inputfile = "./img_pre/long8.jpg";
+  // const char* inputfile = "./evdroid/jni/img/db_scan_part07.jpg";
+  // const char* inputfile = "./img_pre/long8.jpg";
   // const char* inputfile = "./img_pre/lines_dbscan04.jpg";
   // const char* inputfile = "./img_pre/lines_dbscan040.jpg";
   // const char* inputfile = "./img_pre/heb2.jpg";
@@ -31,30 +32,31 @@ int main()
   tesseract::TextlineOrder order;
   float deskew_angle;
 
-  PIX *image = pixRead(inputfile);
+  // PIX *image = pixRead(inputfile);
+  PIX *image = pixRead(argv[1]);
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
   printf("Using tesseract c++ API: %s\n", api->Version());
 
   // turn of dictionaries -> only possible during init
   GenericVector<STRING> vars_vec;
   vars_vec.push_back("load_system_dawg");
-  // vars_vec.push_back("load_freq_dawg");
-  // vars_vec.push_back("load_punc_dawg");
-  // vars_vec.push_back("load_number_dawg");
-  // vars_vec.push_back("load_unambig_dawg");
-  // vars_vec.push_back("load_bigram_dawg");
-  // vars_vec.push_back("load_fixed_length_dawgs");
-  // vars_vec.push_back("user_patterns_suffix");
+  vars_vec.push_back("load_freq_dawg");
+  vars_vec.push_back("load_punc_dawg");
+  vars_vec.push_back("load_number_dawg");
+  vars_vec.push_back("load_unambig_dawg");
+  vars_vec.push_back("load_bigram_dawg");
+  vars_vec.push_back("load_fixed_length_dawgs");
+  vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
   vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("pharma-words");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("pharma-words");
 
   // api->Init( NULL, "heb" );
   // credits: zdentop, thanks? http://pastebin.com/qxUPEQZm
@@ -67,30 +69,30 @@ int main()
   //                  "0123456789,®");
   api->SetVariable("language_model_penalty_non_dict_word", "0");
 
-  api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
-  // api->SetPageSegMode(tesseract::PSM_SPARSE_TEXT_OSD);
-  api->SetImage(image);
-  api->Recognize(0);
+  // api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
+  // // api->SetPageSegMode(tesseract::PSM_SPARSE_TEXT_OSD);
+  // api->SetImage(image);
+  // api->Recognize(0);
 
-  tesseract::PageIterator* it =  api->AnalyseLayout();
-  it->Orientation(&orientation, &direction, &order, &deskew_angle);
+  // tesseract::PageIterator* it =  api->AnalyseLayout();
+  // it->Orientation(&orientation, &direction, &order, &deskew_angle);
 
-  printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
-         "Deskew angle: %.4f\n",
-         orientation, direction, order, deskew_angle);
+  // printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
+  //        "Deskew angle: %.4f\n",
+  //        orientation, direction, order, deskew_angle);
 
   // if( orientation == 3 ){
-  if( 1==1 ){
+ //  if( 1==0 ){
 
-    image = pixRotate90( image, 1 );
-    printf("ok, orientations is 3\n=======\n");
+ //    image = pixRotate90( image, 1 );
+ //    printf("ok, orientations is 3\n=======\n");
 
-    api->SetImage(image);
+ //    api->SetImage(image);
 
-    api->Recognize(0);
-    it =  api->AnalyseLayout();
-    it->Orientation(&orientation, &direction, &order, &deskew_angle);
- }
+ //    api->Recognize(0);
+ //    it =  api->AnalyseLayout();
+ //    it->Orientation(&orientation, &direction, &order, &deskew_angle);
+ // }
 
   // if( deskew_angle !=0  ){
   //   int redsearch = 2;
@@ -99,9 +101,10 @@ int main()
   //   api->SetImage(image);
   // }
 
-  api->SetPageSegMode(tesseract::PSM_AUTO);
-  // api->SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
-
+  // api->SetPageSegMode(tesseract::PSM_AUTO);
+  api->SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
+  api->SetImage(image);
+  api->Recognize(0);
 
   // Check if change of init parameters was successful
   STRING var_value;

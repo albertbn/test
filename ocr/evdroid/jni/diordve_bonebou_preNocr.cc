@@ -64,7 +64,23 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 }
 #endif // ANDROID
 
-int main(){
+int main ( int argc, char** argv )
+{
+  if( argc < 2  ){
+    cout << "please pass an image" << endl;
+    return 1;
+  }
+
+  cout << "evdroid processing img.. " << argv[1] << endl;
+
+  path_sd_card.clear();
+  path_img = "./img";
+
+  Mat mat = imread ( argv[1] ); /*yep!*/
+
+  longest_closed ( mat /*referral variable */ );
+
+  mat.release();
 
   return 0;
 }

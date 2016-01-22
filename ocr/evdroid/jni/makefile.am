@@ -25,7 +25,7 @@ CFLAGS = -Wall -g $$(pkg-config --cflags --libs lept tesseract opencv)
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
 #   option, something like (this will link in libmylib.so and libm.so:
-# LIBS = 
+# LIBS =
 
 # define the C source files
 SRCS =  diordve_bonebou_preNocr.cc util/angle.cc util/close_center.cc util/cluster.cc util/common.cc util/main_geometry.cc util/point.cc util/rect_poly.cc util/ocr/db_scan.cc util/ocr/main.cc util/ocr/tess.cc
@@ -53,7 +53,7 @@ MAIN = evdroid
 .PHONY: depend clean
 
 all:    $(MAIN)
-	@echo  :: evdroid compiled :: may the force be with you!
+	@echo  :: evdroid compiled :: may the force be with you! :: ./evdroid ./img/orig/heb.jpg
 
 # $(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 $(MAIN): $(OBJS)
