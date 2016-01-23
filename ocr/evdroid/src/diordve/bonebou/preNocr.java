@@ -20,7 +20,12 @@ public class preNocr {
 
     static {
 
+        // credits for loading explicitly pngt, lept and tess... not clear how it worked on the galaxy (didn't work on nexus):
+        // http://stackoverflow.com/questions/31833308/tess-two-cant-find-libpng-so
         // andrew
+        System.loadLibrary("pngt");
+        System.loadLibrary("lept");
+        System.loadLibrary("tess");
         System.loadLibrary("preNocr");
 
         // TEST

@@ -22,7 +22,6 @@
 using namespace cv;
 using namespace std;
 
-extern ofstream outfile;
 extern tesseract::TessBaseAPI tess;
 void init_ocr();
 void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount );

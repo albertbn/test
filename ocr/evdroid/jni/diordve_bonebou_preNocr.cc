@@ -18,6 +18,8 @@
 #include <jni.h>
 
 #include <iostream>
+#include <fstream>
+#include <ctime>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -31,6 +33,8 @@
 using namespace cv;
 using namespace std;
 
+unsigned int clock_start;
+ofstream outfile;
 std::vector<cv::Vec4i> lines4intersect;
 std::vector<bool> lines4intersect_is_vert;
 std::vector<Point> p_from_line_vector;
@@ -47,6 +51,12 @@ string path_img; /* doesn't end with / */
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
 
+  unsigned int clock_start_main = clock();
+  clock_start = clock();
+
+  remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
+  outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
+
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
   path_img = path_sd_card + "/tessdata/img";
 
@@ -61,6 +71,8 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   mat.release();
 
+  outfile << "total time: " << clock() - clock_start_main ;
+  outfile.close();
   // (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card.c_str());
 }
 #endif // ANDROID
@@ -71,6 +83,12 @@ int main ( int argc, char** argv )
     cout << "please pass an image" << endl;
     return 1;
   }
+
+  unsigned int clock_start_main = clock();
+  clock_start = clock();
+
+  remove( (path_img + "/dump.txt").c_str() );
+  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
 
   cout << "evdroid processing img.. " << argv[1] << endl;
 
@@ -83,5 +101,7 @@ int main ( int argc, char** argv )
 
   mat.release();
 
+  outfile << "total time: " << clock() - clock_start_main ;
+  outfile.close();
   return 0;
 }

@@ -1,13 +1,10 @@
 
-#include <fstream>
-
 #include <opencv2/opencv.hpp>
 #include "db_scan.hpp"
 #include "tess.hpp"
 #include "main.hpp"
 #include "../static_fields.hpp"
 
-ofstream outfile;
 int px_line_height = 10; /* TODO - dynamic */
 int px_expand_bound_line = 10; /* TODO - dynamic */
 int px_trim_sides = 70; /* TODO - figure out how much to trim sides */
@@ -236,21 +233,12 @@ void ocr_doit ( Mat& im_orig ) {
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
 
-#ifdef ANDROID
-  remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
-  outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
-#else
-  remove( (path_img + "/dump.txt").c_str() );
-  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
-#endif // ANDROID
-
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
 
     // std::cout << "rect: " << rect_lines[i] << std::endl;
     if(7==7) crop_b_tess ( im_orig, rect_lines[i], i );
     // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
   }
-  outfile.close();
 
   for ( int i=0; i<(int)boxes.size(); ++i ) {
     cv::rectangle(grouped,boxes[i],cv::Scalar(255,255,255),3,8,0);

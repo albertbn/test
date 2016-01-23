@@ -1,4 +1,7 @@
 
+#include <iostream>
+#include <ctime>
+
 #include <opencv2/opencv.hpp>
 #include "angle.hpp"
 #include "close_center.hpp"
@@ -71,6 +74,9 @@ void longest_closed ( Mat& mat ) {
   int min_closed_line_len = (size_mat.width + size_mat.height);
 
   // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
+  std::string s = "XXX took: ";
+  outfile << s.c_str();
+
   for ( int i=0; i < (int)contours.size(); i++ ) {
 
     len = cv::arcLength(contours[i], true);

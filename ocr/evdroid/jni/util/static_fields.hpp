@@ -14,6 +14,8 @@
 using namespace cv;
 using namespace std;
 
+extern unsigned int clock_start;
+extern ofstream outfile;
 extern std::vector<cv::Vec4i> lines4intersect;
 extern std::vector<bool> lines4intersect_is_vert;
 extern std::vector<Point> p_from_line_vector;
