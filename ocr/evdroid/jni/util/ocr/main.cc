@@ -6,9 +6,9 @@
 #include "../static_fields.hpp"
 #include "../common.hpp"
 
-int threshold_value = 60;
-int threshold_type = THRESH_BINARY;
-int const max_BINARY_value = 255;
+// int threshold_value = 60;
+// int threshold_type = THRESH_BINARY;
+// int const max_BINARY_value = 255;
 
 int px_line_height = 10; /* TODO - dynamic */
 int px_expand_bound_line = 10; /* TODO - dynamic */

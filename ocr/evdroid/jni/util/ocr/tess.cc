@@ -63,7 +63,7 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
 
 #ifndef ANDROID
   // cv::imwrite ( path_img +"/db_scan_part"+icount+".jpg", cropped ) ; /*boost performance*/
-  // cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
+  cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
 #else
   icount = 0;
 #endif // ANDROID
@@ -75,7 +75,7 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
   // Get the text
   char* out = tess.GetUTF8Text();
   outfile_ocr << out;
-  delete []out;
+  // delete []out;
   // std::cout << out;
   outfile << "crop_b_test after getutf8:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
   // tess.Clear();
