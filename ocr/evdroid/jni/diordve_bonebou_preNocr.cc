@@ -35,6 +35,7 @@ using namespace std;
 
 unsigned int clock_start;
 ofstream outfile;
+ofstream outfile_ocr;
 std::vector<cv::Vec4i> lines4intersect;
 std::vector<bool> lines4intersect_is_vert;
 std::vector<Point> p_from_line_vector;
@@ -47,6 +48,9 @@ string path_img; /* doesn't end with / */
 // go on from here
 // http://answers.opencv.org/question/14881/hidden-symbol-__aeabi_atexit-in-is-referenced-by-dso/
 
+//TO FORMAT FOR GDOCS
+// sed -i '' "s/: /$(printf '\t')/g" dump.txt
+
 #ifdef ANDROID
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
@@ -54,11 +58,13 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   unsigned int clock_start_main = clock();
   clock_start = clock();
 
-  remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
-  outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
-
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
   path_img = path_sd_card + "/tessdata/img";
+
+  remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
+  remove ( (path_sd_card + "/tessdata/dump_ocr.txt").c_str() );
+  outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
+  outfile_ocr.open ( (path_sd_card + "/tessdata/dump_ocr.txt").c_str(), ios_base::app );
 
   LOGD ( "path: %s \n", (path_sd_card + "/tessdata/heb.jpg").c_str() );
 
@@ -71,15 +77,16 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 
   mat.release();
 
-  outfile << "total time: " << clock() - clock_start_main ;
+  outfile << "total time: " << clock_ticks_to_ms(clock() - clock_start_main) << endl;
+  outfile_ocr.close();
   outfile.close();
   // (*env).ReleaseStringUTFChars(jpath_sd_card, path_sd_card.c_str());
 }
 #endif // ANDROID
 
-int main ( int argc, char** argv )
-{
-  if( argc < 2  ){
+int main ( int argc, char** argv ) {
+
+  if ( argc < 2  ) {
     cout << "please pass an image" << endl;
     return 1;
   }
@@ -87,21 +94,25 @@ int main ( int argc, char** argv )
   unsigned int clock_start_main = clock();
   clock_start = clock();
 
-  remove( (path_img + "/dump.txt").c_str() );
-  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
-
   cout << "evdroid processing img.. " << argv[1] << endl;
 
   path_sd_card.clear();
   path_img = "./img";
 
+  remove( (path_img + "/dump.txt").c_str() );
+  remove( (path_img + "/dump_ocr.txt").c_str() );
+  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
+  outfile_ocr.open ( (path_img + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
+
+  outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
   Mat mat = imread ( argv[1] ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 
   mat.release();
 
-  outfile << "total time: " << clock() - clock_start_main ;
+  outfile << "total time: " << clock_ticks_to_ms(clock() - clock_start_main) << endl;
+  outfile_ocr.close();
   outfile.close();
   return 0;
 }

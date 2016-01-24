@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include <ctime>
 
 #include <opencv2/opencv.hpp>
@@ -25,6 +26,7 @@ void longest_closed ( Mat& mat ) {
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 #endif // ANDROID
 
+  outfile << "longest_closed start: " << clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   // cleanup some images...
   // remove((path_img+"/long4.jpg").c_str());
@@ -44,14 +46,19 @@ void longest_closed ( Mat& mat ) {
   cv::dilate(mat, dilated, kernel);
   kernel.release();
 
+  outfile << "longest_closed after kernel release: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
+
   blur ( dilated, dilated, Size(10,10) );
 
   // cv::imwrite( path_img+"/long0.jpg", dilated ); /*boost performance*/
+  outfile << "longest_closed after blur1: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   cv::Mat edges;
   cv::Canny(dilated, edges, 40, 1);
   dilated.release();
   blur(edges, edges, Size(10,10));
+
+  outfile << "longest_closed after blur2: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   // cv::imwrite( path_img+"/long1.jpg", edges); /*boost performance*/
 
@@ -60,6 +67,8 @@ void longest_closed ( Mat& mat ) {
   std::vector< std::vector<cv::Point> > contours;
   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
   edges.release();
+
+  outfile << "longest_closed after find contours: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   double len;
   std::vector<double> len_contours_contoursDraw2, len_contours_closed;
@@ -74,8 +83,7 @@ void longest_closed ( Mat& mat ) {
   int min_closed_line_len = (size_mat.width + size_mat.height);
 
   // fills contoursDraw2 :: filters out lines shorter than 200 px, straightens lines with approxPoly to contoursDraw(2), pushes to contours_long if > 5000 px..
-  std::string s = "XXX took: ";
-  outfile << s.c_str();
+  outfile << "longest_closed after convert, kernel, blur, canny, contours took: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0; i < (int)contours.size(); i++ ) {
 
@@ -148,6 +156,8 @@ void longest_closed ( Mat& mat ) {
   // cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
   // cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
   mat.release();
+
+  // outfile << "end of longest_closed took: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 }
 
 void deal_with_geometry_when_not_enough_90d_angles (
@@ -239,6 +249,8 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
+  outfile << "start of final magic crop: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
+
   // Mat mb;
   // if ( file_exists(path_img + "/long7.jpg") ) /*boost performance*/
   //   mb = imread ( path_img + "/long7.jpg" ); /*boost performance*/
@@ -282,10 +294,14 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
   if ( points4f.size()==4 ) {
     cv::Mat transmtx = cv::getPerspectiveTransform ( points4f, quad_pts );
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
+
+    outfile << "before ocr do it in final_magic: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
     ocr_doit ( quad /* send by reference to OCR */ );
+    outfile << "after ocr do it: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   }
   else {
     // std::cout << "checking points4f... " << points4f << std::endl;
+    outfile << "no ocr executed - else case in final_magic: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   }
 
   // cv::imwrite ( path_img + "/long7.jpg", mb ); /*boost performance*/

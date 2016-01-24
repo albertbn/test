@@ -9,6 +9,7 @@
 
 #include "tess.hpp"
 #include "../static_fields.hpp"
+#include "../common.hpp"
 
 tesseract::TessBaseAPI tess;
 tesseract::Orientation orientation;
@@ -53,22 +54,32 @@ void init_ocr ( ) {
 
 void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
 
+  // init_ocr();
+  unsigned int _clock_start = clock();
+  outfile << "crop_b_test start:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
+
   Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
+  outfile << "crop_b_test after mat clone:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
 
 #ifndef ANDROID
   // cv::imwrite ( path_img +"/db_scan_part"+icount+".jpg", cropped ) ; /*boost performance*/
-  cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
+  // cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
 #else
   icount = 0;
 #endif // ANDROID
 
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
+  outfile << "crop_b_test after tess.SetImage:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
 
   // Get the text
   char* out = tess.GetUTF8Text();
-  outfile << out;
+  outfile_ocr << out;
+  delete []out;
   // std::cout << out;
+  outfile << "crop_b_test after getutf8:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
+  // tess.Clear();
+  // tess.End();
 }
 
 void rot90 ( cv::Mat &matImage, int rotflag ) {

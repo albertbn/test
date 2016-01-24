@@ -11,7 +11,8 @@
 CC = g++
 
 # define any compile-time flags
-CFLAGS = -Wall -g $$(pkg-config --cflags --libs lept tesseract opencv)
+# CFLAGS = -Wall -g $$(pkg-config --cflags --libs lept tesseract opencv)
+CFLAGS = -g $$(pkg-config --cflags --libs lept tesseract opencv)
 
 # define any directories containing header files other than /usr/include
 #

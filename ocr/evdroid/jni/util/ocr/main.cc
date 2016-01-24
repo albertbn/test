@@ -4,22 +4,26 @@
 #include "tess.hpp"
 #include "main.hpp"
 #include "../static_fields.hpp"
+#include "../common.hpp"
+
+int threshold_value = 60;
+int threshold_type = THRESH_BINARY;
+int const max_BINARY_value = 255;
 
 int px_line_height = 10; /* TODO - dynamic */
 int px_expand_bound_line = 10; /* TODO - dynamic */
-int px_trim_sides = 70; /* TODO - figure out how much to trim sides */
+int px_trim_sides = 0; /* TODO - figure out how much to trim sides */
 
 // using namespace cv;
 struct less_custom_sort_points {
 
-    inline bool operator() (const Rect& struct1, const Rect& struct2)
-    {
+    inline bool operator() (const Rect& struct1, const Rect& struct2) {
       return ( struct1.tl().y <  struct2.tl().y );
     }
 };
 
 template <class T>
-inline std::string to_string (const T& t) {
+inline string to_string ( const T& t ) {
 
   std::stringstream ss;
   ss << t;
@@ -158,8 +162,13 @@ cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
 
 void ocr_doit ( Mat& im_orig ) {
 
+  outfile << "ocr_doit - before init_ocr:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
+
+  // threshold( im_orig, im_orig, threshold_value, max_BINARY_value,threshold_type );
+
   // init tess
   init_ocr();
+  outfile << "ocr_doit - after init_ocr:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   // tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
   // orientation_check(im_orig);
@@ -167,18 +176,25 @@ void ocr_doit ( Mat& im_orig ) {
     rot90(im_orig,1);
   // cv::imwrite ( path_img + "/lines_dbscan00.jpg", im_orig ) ; /*boost performance*/
   // return;
+  outfile << "ocr_doit - after rot90:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   Mat im = im_orig.clone();
+  outfile << "ocr_doit - after clone:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
+  outfile << "ocr_doit - after mat zero:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   std::vector<Rect> boxes = detectLetters(im);
+  outfile << "ocr_doit - after mat detect letters:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0; i<(int)boxes.size(); ++i ) {
     cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   }
   cv::imwrite ( path_img + "/lines_dbscan02.jpg", im ) ; /*boost performance*/
+  outfile << "ocr_doit - after write of dbscan02.jpg:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   DbScan dbscan ( boxes, px_line_height, 2 ); /*HERE - expected tuning or calculating of the eps param*/
+  outfile << "ocr_doit - after dbscan construct:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   dbscan.run();
+  outfile << "ocr_doit - after dbscan run:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   //done, perform display, check emacs git
 
   // std::cout << "dbscan.C: " << dbscan.C << "\ndbscan.data.size(): " << dbscan.data.size() << std::endl;
@@ -188,6 +204,7 @@ void ocr_doit ( Mat& im_orig ) {
   for ( int i=0;i<=dbscan.C;i++ ) {
     colors.push_back(HSVtoRGBcvScalar(rng(255),255,255));
   }
+  outfile << "ocr_doit - after dbscan colouurs push_back:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0;i<(int)dbscan.data.size();i++ ) {
     Scalar color;
@@ -199,10 +216,12 @@ void ocr_doit ( Mat& im_orig ) {
       color=colors[label];
     }
 
-    putText(grouped,to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
+    putText ( grouped, to_string(dbscan.labels[i]),dbscan.data[i].tl(), FONT_HERSHEY_COMPLEX,.5,color,1);
   }
+  outfile << "ocr_doit - after dbscan putText:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   std::vector<std::vector<Rect> > ggroups = dbscan.getGroups(); /*get the grouped rects*/
+  outfile << "ocr_doit - after dbscan ggroups:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   Rect r0;
   std::vector<Rect> rect_lines;
@@ -211,6 +230,7 @@ void ocr_doit ( Mat& im_orig ) {
   // tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
   tess.SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
   // tess.SetPageSegMode(tesseract::PSM_AUTO);
+  outfile << "ocr_doit - after setpagesegmpde single column:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0; i<(int)ggroups.size(); ++i ) {
 
@@ -229,20 +249,25 @@ void ocr_doit ( Mat& im_orig ) {
     cv::rectangle ( grouped, r0, colors[i], 3, 8, 0 );
     rect_lines.push_back(r0);
   }
+  outfile << "ocr_doit - after rect_lines push_back loop:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
+  outfile << "ocr_doit - after rect_lines sort:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
 
-    // std::cout << "rect: " << rect_lines[i] << std::endl;
+    // std::cout << "rect:\t" << rect_lines[i] << std::endl;
     if(7==7) crop_b_tess ( im_orig, rect_lines[i], i );
     // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
   }
+  outfile << "ocr_doit - after actual ocr - crop_b_test:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   for ( int i=0; i<(int)boxes.size(); ++i ) {
     cv::rectangle(grouped,boxes[i],cv::Scalar(255,255,255),3,8,0);
   }
+  outfile << "ocr_doit - after drawing boxes in white for debug:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   cv::imwrite ( path_img +"/lines_dbscan03.jpg", grouped ) ; /*boost performance*/
+  outfile << "ocr_doit - after writing lines_dbscan03.jpg:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 }

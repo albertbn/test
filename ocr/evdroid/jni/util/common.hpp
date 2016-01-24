@@ -21,6 +21,11 @@
 using namespace cv;
 using namespace std;
 
+float clock_ticks_to_ms ( unsigned int ticks );
+
+template <class T>
+std::string to_string ( const T& t );
+
 bool file_exists ( const string& name );
 
 double get_max_deviation(Size size, double angle_center, bool is_vert);

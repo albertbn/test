@@ -1,11 +1,17 @@
 
 #include <iostream>
+#include <ctime>
+
 #include <sys/stat.h>
 #include <opencv2/core/core.hpp>
 #include "static_fields.hpp"
 
 using namespace cv;
 using namespace std;
+
+float clock_ticks_to_ms ( unsigned int ticks ) {
+  return ((float)ticks) / (CLOCKS_PER_SEC/1000);
+}
 
 bool file_exists ( const string& name ) {
 
