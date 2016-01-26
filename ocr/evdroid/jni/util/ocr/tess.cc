@@ -25,7 +25,7 @@ void init_ocr ( ) {
   // vars_vec.push_back("load_system_dawg");
   // vars_vec.push_back("load_freq_dawg");
   // vars_vec.push_back("load_punc_dawg");
-  vars_vec.push_back("load_number_dawg");
+  // vars_vec.push_back("load_number_dawg");
   // vars_vec.push_back("load_unambig_dawg");
   // vars_vec.push_back("load_bigram_dawg");
   // vars_vec.push_back("load_fixed_length_dawgs");
@@ -35,7 +35,7 @@ void init_ocr ( ) {
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
-  vars_values.push_back("F");
+  // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
@@ -62,7 +62,6 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
   outfile << "crop_b_test after mat clone:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
 
 #ifndef ANDROID
-  // cv::imwrite ( path_img +"/db_scan_part"+icount+".jpg", cropped ) ; /*boost performance*/
   cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
 #else
   icount = 0;
