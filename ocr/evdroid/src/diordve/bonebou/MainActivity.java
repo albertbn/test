@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
         //============
 
         this.imgFavorite = (ImageView)findViewById(R.id.imageView1);
-        this.imgFavorite.setBackgroundColor(Color.WHITE);
+        // this.imgFavorite.setBackgroundColor(Color.WHITE);
 
         // calling:open()
         this.imgFavorite.setOnClickListener(new OnClickListener() {
@@ -89,7 +89,31 @@ public class MainActivity extends Activity {
                 public void onClick(View v) {
 
                     try {
-                        open();
+                        try {
+                            //=================
+                            Thread t = new Thread( new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        try{
+
+                                            open();
+
+                                        } catch ( Exception e ) {
+
+                                            //check what to do with error
+                                            show_msg( err_str(e) );
+                                        }
+                                    }
+                                });
+
+                            t.start();
+                            //=================
+                        } catch ( Exception ex ) {
+                            //e.printStackTrace();
+                            show_msg( err_str(ex));
+                        }
+                        show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
                     }
                     catch(Exception ex){
 
