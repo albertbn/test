@@ -1,4 +1,32 @@
 
+// /**
+//  * Possible modes for page layout analysis. These *must* be kept in order
+//  * of decreasing amount of layout analysis to be done, except for OSD_ONLY,
+//  * so that the inequality test macros below work.
+// */
+// enum PageSegMode {
+//   PSM_OSD_ONLY,       ///< Orientation and script detection only.
+//   PSM_AUTO_OSD,       ///< Automatic page segmentation with orientation and
+//                       ///< script detection. (OSD)
+//   PSM_AUTO_ONLY,      ///< Automatic page segmentation, but no OSD, or OCR.
+//   PSM_AUTO,           ///< Fully automatic page segmentation, but no OSD.
+//   PSM_SINGLE_COLUMN,  ///< Assume a single column of text of variable sizes.
+//   PSM_SINGLE_BLOCK_VERT_TEXT,  ///< Assume a single uniform block of vertically
+//                                ///< aligned text.
+//   PSM_SINGLE_BLOCK,   ///< Assume a single uniform block of text. (Default.)
+//   PSM_SINGLE_LINE,    ///< Treat the image as a single text line.
+//   PSM_SINGLE_WORD,    ///< Treat the image as a single word.
+//   PSM_CIRCLE_WORD,    ///< Treat the image as a single word in a circle.
+//   PSM_SINGLE_CHAR,    ///< Treat the image as a single character.
+//   PSM_SPARSE_TEXT,    ///< Find as much text as possible in no particular order.
+//   PSM_SPARSE_TEXT_OSD,  ///< Sparse text with orientation and script det.
+//   PSM_RAW_LINE,       ///< Treat the image as a single text line, bypassing
+//                       ///< hacks that are Tesseract-specific.
+
+//   PSM_COUNT           ///< Number of enum entries.
+// };
+
+
 #include <opencv2/opencv.hpp>
 #include "db_scan.hpp"
 #include "tess.hpp"
@@ -10,14 +38,14 @@
 // int threshold_type = THRESH_BINARY;
 // int const max_BINARY_value = 255;
 
-int px_line_height = 20; /* TODO - dynamic */
-int px_expand_bound_line = 20; /* TODO - dynamic */
+int px_line_height = 25; /* TODO - dynamic */
+int px_expand_bound_line = 25; /* TODO - dynamic */
 int px_trim_sides = 0; /* TODO - figure out how much to trim sides */
 
 // using namespace cv;
 struct less_custom_sort_points {
 
-    inline bool operator() (const Rect& struct1, const Rect& struct2) {
+    inline bool operator() ( const Rect& struct1, const Rect& struct2 ) {
       return ( struct1.tl().y <  struct2.tl().y );
     }
 };
@@ -227,8 +255,10 @@ void ocr_doit ( Mat& im_orig ) {
   std::vector<Rect> rect_lines;
   std::vector<cv::Point> points0;
   Point tl, br;
-  // tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
-  tess.SetPageSegMode(tesseract::PSM_SINGLE_COLUMN);
+  tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+  // tess.SetPageSegMode ( tesseract::PSM_SINGLE_BLOCK ); /*see top of page for PSM_ enum*/
+  // tess.SetPageSegMode ( tesseract::PSM_SINGLE_LINE ); /*see top of page for PSM_ enum*/
+  // tess.SetPageSegMode ( tesseract::PSM_RAW_LINE ); /*see top of page for PSM_ enum*/
   // tess.SetPageSegMode(tesseract::PSM_AUTO);
   outfile << "ocr_doit - after setpagesegmpde single column:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 

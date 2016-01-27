@@ -62,7 +62,7 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
   outfile << "crop_b_test after mat clone:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
 
 #ifndef ANDROID
-  // cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
+  cv::imwrite ( path_img +"/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ) ; /*boost performance*/
 #else
   icount = 0;
 #endif // ANDROID
