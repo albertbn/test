@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
     // gets a path to a random image, opens existing camera and inits activity
     public void open ( ) {
 
-        if ( 1==1 ) {
+        if ( 1==0 ) {
             preNocr.dodoit( "dummy testing hards..." );
             show_msg("DONE doing OCR - see how fast???");
             return;
@@ -159,36 +159,46 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult ( int requestCode, int resultCode, Intent data ) {
+        final int _result_code = resultCode;
+        final int _request_code = requestCode;
+            try {
+                //=================
+                Thread t = new Thread( new Runnable() {
 
-        try {
-            if( resultCode==RESULT_OK){
+                        @Override
+                        public void run ( ) {
+                            if( _result_code==RESULT_OK){
 
-                try {
-                    // convert to png
-                    File ff = tthis.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, requestCode);
-                    // File ff_png = tthis.get_file_temp( IMG_TMP_PREF, IMG_PNG_EXT, requestCode);
-                    // convert2png ( ff.getAbsolutePath(), ff_png.getAbsolutePath() );
-                    // call native c++ here
-                    preNocr.dodoit( ff.getAbsolutePath() );
+                                try {
+                                    // convert to png
+                                    File ff = tthis.get_file_temp( IMG_TMP_PREF, IMG_TMP_EXT, _request_code);
+                                    // call native c++ here
+                                    preNocr.dodoit( ff.getAbsolutePath() );
 
 
-                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
-                    // ff.delete();
-                }
-                catch (Exception ex) {
-                    tthis.post_error( "Camera, MainActivity.java, onActivityResult in: " + err_str(ex) );
-                }
+                                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
+                                    // ff.delete();
+                                }
+                                catch (Exception ex) {
+                                    tthis.post_error( "Camera, MainActivity.java, onActivityResult in: " + err_str(ex) );
+                                }
+                            }
+                            else {
+                                //nothing, take no action, no image came here...
+                            }
+                        }
+                    });
+
+                t.start();
+                //=================
+            } catch ( Exception ex ) {
+                show_msg( err_str(ex));
+                tthis.post_error( "Camera, MainActivity.java, onActivityResult out: " + err_str(ex) );
             }
-            else {
-                //nothing, take no action, no image came here...
-            }
+        show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
 
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        catch ( Exception ex ) {
-            tthis.post_error( "Camera, MainActivity.java, onActivityResult out: " + err_str(ex) );
-        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     // ======================================

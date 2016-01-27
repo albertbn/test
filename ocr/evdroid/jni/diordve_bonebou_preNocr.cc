@@ -69,9 +69,10 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   LOGD ( "path: %s \n", (path_sd_card + "/tessdata/heb.jpg").c_str() );
 
   // TEMP test
-  Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
-  // string img_path = (*env).GetStringUTFChars(jimg_path, 0);
-  // Mat mat = imread ( img_path ); /*yep!*/
+  // Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
+
+  string img_path = (*env).GetStringUTFChars(jimg_path, 0);
+  Mat mat = imread ( img_path ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
 
