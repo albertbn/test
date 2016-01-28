@@ -62,10 +62,14 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
     if ( diag>100 ) {
       filter_points_if_needed(circles, approx);
       angle90_count = circles.size();
+
+#ifndef ANDROID
       // std::cout << "OK, drawing circles... " << clen << std::endl;
-      // for ( int j=0; j<angle90_count; ++j ) { /*boost performance*/
-      //   cv::circle ( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
-      // }
+      for ( int j=0; j<angle90_count; ++j ) { /*boost performance*/
+        cv::circle ( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
+      }
+#endif // ANDROID
+
     }
   }
 

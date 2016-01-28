@@ -41,6 +41,8 @@ void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Poin
   y1 = y + vy*(2*size_mat.height);
 
   if ( lines4intersect_validate( is_vertical(angle_avg), Point(x,y), Vec4i(x0,y0,x1,y1) ) ) {
-    // cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA ); /*boost performance*/
+#ifndef ANDROID
+    cv::line ( pic, Point(x0, y0), Point(x1, y1), cv::Scalar(0,64,255), 2, CV_AA ); /*boost performance*/
+#endif // ANDROID
   }
 }

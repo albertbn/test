@@ -73,27 +73,30 @@ Mat coord_clusters_munge ( Size size,
                            ) {
   Mat l0, l1;
 
+  #ifndef ANDROID
+
   // if file exists - load from it - else create from zeros existing one...
-  // if(contours_l0.size()>0){ /*boost performance*/
-  //   if(file_exists(path_img + "/long5.jpg"))
-  //     l0 = imread(path_img + "/long5.jpg");
-  //   else
-  //     l0 = Mat::zeros( size, CV_8UC3 );
-  // }
-  // // the second one is optional
-  // if(contours_l1.size()>0){
+  if(contours_l0.size()>0){ /*boost performance*/
+    if(file_exists(path_img + "/long5.jpg"))
+      l0 = imread(path_img + "/long5.jpg");
+    else
+      l0 = Mat::zeros( size, CV_8UC3 );
+  }
+  // the second one is optional
+  if(contours_l1.size()>0){
 
-  //   if(file_exists(path_img + "/long6.jpg"))
-  //     l1 = imread(path_img + "/long6.jpg");
-  //   else
-  //     l1 = Mat::zeros( size, CV_8UC3 );
-  // }
+    if(file_exists(path_img + "/long6.jpg"))
+      l1 = imread(path_img + "/long6.jpg");
+    else
+      l1 = Mat::zeros( size, CV_8UC3 );
+  }
 
-  // if(contours_l0.size()>0) /*boost performance*/
-  //   cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);
-  // // the second one is optional
-  // if(contours_l1.size()>0)
-  //   cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
+  if(contours_l0.size()>0) /*boost performance*/
+    cv::drawContours(l0, contours_l0, -1, cv::Scalar(0,255,0),1);
+  // the second one is optional
+  if(contours_l1.size()>0)
+    cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
+#endif // ANDROID
 
   std::vector<cv::Point> points0, points1 /*points1 is optional*/;
   if(contours_l0.size()>0){

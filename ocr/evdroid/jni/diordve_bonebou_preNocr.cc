@@ -98,12 +98,16 @@ int main ( int argc, char** argv ) {
   cout << "evdroid processing img.. " << argv[1] << endl;
 
   path_sd_card.clear();
-  path_img = "./img";
+  string path_dump = "./img";
+  path_img = "./img/scrap"; /*this is a global extern var, used by other partial folks */
 
-  remove( (path_img + "/dump.txt").c_str() );
-  remove( (path_img + "/dump_ocr.txt").c_str() );
-  outfile.open ( (path_img + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
-  outfile_ocr.open ( (path_img + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
+  remove( (path_img +"/*").c_str() );
+  remove( (path_img +"/dbscan/*").c_str() );
+
+  remove( (path_dump + "/dump.txt").c_str() );
+  remove( (path_dump + "/dump_ocr.txt").c_str() );
+  outfile.open ( (path_dump + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
+  outfile_ocr.open ( (path_dump + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
 
   outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
   Mat mat = imread ( argv[1] ); /*yep!*/

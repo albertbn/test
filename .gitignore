@@ -1,3 +1,4 @@
+*.DS_Store
 *.dex
 *.class
 *.ap_

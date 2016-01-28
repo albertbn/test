@@ -26,7 +26,6 @@
 //   PSM_COUNT           ///< Number of enum entries.
 // };
 
-
 #include <opencv2/opencv.hpp>
 #include "db_scan.hpp"
 #include "tess.hpp"
@@ -71,7 +70,9 @@ std::vector<cv::Rect> detectLetters ( cv::Mat img ) {
     element = getStructuringElement(cv::MORPH_RECT, cv::Size(17, 3) );
     cv::morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element); //Does the trick
 
-    // cv::imwrite ( path_img + "/lines_dbscan1.jpg", img_threshold ) ; /*boost performance*/
+#ifndef ANDROID
+    cv::imwrite ( path_img + "/lines_dbscan1.jpg", img_threshold ) ; /*boost performance*/
+#endif // ANDROID
 
     std::vector< std::vector< cv::Point> > contours;
     cv::findContours(img_threshold, contours, 0, 1);
@@ -202,8 +203,11 @@ void ocr_doit ( Mat& im_orig ) {
   // orientation_check(im_orig);
   if ( im_orig.cols>im_orig.rows )
     rot90(im_orig,1);
-  // cv::imwrite ( path_img + "/lines_dbscan00.jpg", im_orig ) ; /*boost performance*/
-  // return;
+
+#ifndef ANDROID
+  cv::imwrite ( path_img + "/lines_dbscan00.jpg", im_orig ) ; /*boost performance*/
+#endif // ANDROID
+
   outfile << "ocr_doit - after rot90:\t" <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   Mat im = im_orig.clone();

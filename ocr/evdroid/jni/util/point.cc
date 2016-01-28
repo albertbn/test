@@ -132,20 +132,22 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
       }
   }
 
-  // Mat mb; /*boost performance*/
-  // if ( file_exists(path_img + "/long7.jpg") )
-  //   mb = imread ( path_img + "/long7.jpg" );
-  // else
-  //   mb = Mat::zeros ( size_mat, CV_8UC3 );
+#ifndef ANDROID
+  Mat mb; /*boost performance*/
+  if ( file_exists(path_img + "/long7.jpg") )
+    mb = imread ( path_img + "/long7.jpg" );
+  else
+    mb = Mat::zeros ( size_mat, CV_8UC3 );
 
-  // cv::Vec4i lline;
-  // std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
-  // for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
-    // lline = lines4intersect[i];
-    // line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
-  // }
+  cv::Vec4i lline;
+  std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
+  for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
+    lline = lines4intersect[i];
+    line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );
+  }
 
-  // cv::imwrite ( path_img + "/long7.jpg", mb ) ;
+  cv::imwrite ( path_img + "/long7.jpg", mb ) ;
+#endif // ANDROID
 }
 
 //1==OK t==2, b==2, 0 - not rect
@@ -198,21 +200,25 @@ bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points
     // return;
   }
 
-  // Mat m; /*boost performance*/
-  // if ( file_exists(path_img + "/long7.jpg") )
-  //   m = imread ( path_img + "/long7.jpg" );
-  // else
-  //   m = Mat::zeros ( mat_size, CV_8UC3 );
+#ifndef ANDROID
+  
+  Mat m; /*boost performance*/
+  if ( file_exists(path_img + "/long7.jpg") )
+    m = imread ( path_img + "/long7.jpg" );
+  else
+    m = Mat::zeros ( mat_size, CV_8UC3 );
 
-  // // Draw lines
-  // for ( int i = 0; i < (int)corners.size()-1; ++i ) {
-  //   cv::line(m, corners[i], corners[i+1], CV_RGB(0,255,0));
-  // }
-  // cv::line ( m, corners[corners.size()-1], corners[0], CV_RGB(0,255,0) );
+  // Draw lines
+  for ( int i = 0; i < (int)corners.size()-1; ++i ) {
+    cv::line(m, corners[i], corners[i+1], CV_RGB(0,255,0));
+  }
+  cv::line ( m, corners[corners.size()-1], corners[0], CV_RGB(0,255,0) );
 
-  // cv::circle ( m, center, 50, cv::Scalar(50,0,255) );
+  cv::circle ( m, center, 50, cv::Scalar(50,0,255) );
 
-  // cv::imwrite( path_img + "/long7.jpg", m);
+  cv::imwrite( path_img + "/long7.jpg", m);
+
+#endif // ANDROID
 
   return are4pointsfine;
 }
