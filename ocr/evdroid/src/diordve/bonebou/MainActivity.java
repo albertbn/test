@@ -160,6 +160,10 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult ( int requestCode, int resultCode, Intent data ) {
+
+        //closure?
+        final MainActivity sex = this;
+
         final int _result_code = resultCode;
         final int _request_code = requestCode;
             try {
@@ -168,7 +172,7 @@ public class MainActivity extends Activity {
 
                         @Override
                         public void run ( ) {
-                            if( _result_code==RESULT_OK){
+                            if ( _result_code==RESULT_OK ) {
 
                                 try {
                                     // convert to png
@@ -176,11 +180,10 @@ public class MainActivity extends Activity {
                                     // call native c++ here
                                     preNocr.dodoit( ff.getAbsolutePath() );
 
-
-                                    show_msg("TODO - pre and ocr... " + Uri.fromFile ( ff ) );
+                                    sex.show_msg ( "TODO - pre and ocr... " + Uri.fromFile ( ff ) ); /*!*/
                                     // ff.delete();
                                 }
-                                catch (Exception ex) {
+                                catch ( Exception ex ) {
                                     tthis.post_error( "Camera, MainActivity.java, onActivityResult in: " + err_str(ex) );
                                 }
                             }
@@ -193,10 +196,10 @@ public class MainActivity extends Activity {
                 t.start();
                 //=================
             } catch ( Exception ex ) {
-                show_msg( err_str(ex));
+                sex.show_msg( err_str(ex));
                 tthis.post_error( "Camera, MainActivity.java, onActivityResult out: " + err_str(ex) );
             }
-        show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
+        sex.show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -204,7 +207,6 @@ public class MainActivity extends Activity {
     // ======================================
     // ===========dish and home utils=========
     // ======================================
-    // =======================
 
     void convert2png ( String path_jpg, String path_png ) {
 

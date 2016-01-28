@@ -28,6 +28,8 @@ std::string to_string ( const T& t );
 
 bool file_exists ( const string& name );
 
+bool directory_exists ( string path );
+
 double get_max_deviation(Size size, double angle_center, bool is_vert);
 
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours );

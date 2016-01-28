@@ -19,6 +19,15 @@ bool file_exists ( const string& name ) {
   return (stat (name.c_str(), &buffer) == 0);
 }
 
+bool directory_exists ( string path ) {
+   struct stat statbuf;
+
+   if ( stat(path.c_str(), &statbuf) == -1 )
+      return 0;
+   else
+      return S_ISDIR(statbuf.st_mode);
+}
+
 double get_max_deviation ( Size size, double angle_center, bool is_vert ) {
 
   double max_deviation=0.0, len_side, angle_center_rad;

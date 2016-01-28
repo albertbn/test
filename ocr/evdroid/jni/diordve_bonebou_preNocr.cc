@@ -21,6 +21,9 @@
 #include <fstream>
 #include <ctime>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 
@@ -100,6 +103,10 @@ int main ( int argc, char** argv ) {
   path_sd_card.clear();
   string path_dump = "./img";
   path_img = "./img/scrap"; /*this is a global extern var, used by other partial folks */
+
+  if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   remove( (path_img +"/*").c_str() );
   remove( (path_img +"/dbscan/*").c_str() );
