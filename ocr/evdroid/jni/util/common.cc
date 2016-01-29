@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <ctime>
 
@@ -39,7 +38,12 @@ double get_max_deviation ( Size size, double angle_center, bool is_vert ) {
   return max_deviation;
 }
 
+// standard deviation
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours ) {
+
+  // cout << "reduce_noise_short_lines :: contours" << Mat(contours) << endl;
+  // cout << "reduce_noise_short_lines :: angles" << angles << endl;
+  cout << "\n\n===\n\nreduce_noise_short_lines :: len_countours" << Mat(len_contours) << endl;
 
   Mat m ( len_contours );
   cv::Scalar mean, stdev;
@@ -48,20 +52,28 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
   std::vector < std::vector<cv::Point> > contours2;
   Mat_<float> angles2;
   std::vector<double>::iterator biggest = std::max_element(len_contours.begin(), len_contours.end());
-  double d_stdev = stdev[0] / (*biggest / stdev[0]);
+  // double d_stdev = stdev[0] / (*biggest / stdev[0]);
+  double d_stdev = stdev[0];
+
+  cout << "\nreduce_noise_short_lines :: mean, stdev: " << mean << ',' << stdev << endl;
+  cout << "\nreduce_noise_short_lines :: d_stdev: " << d_stdev  << endl;
 
   float len_total = 0;
+  std::vector<double> len_contours2; /*just for dump*/
 
-  for(int i=0; i<(int)len_contours.size(); ++i){
+  for ( int i=0; i<(int)len_contours.size(); ++i ) {
     if(len_contours[i]>=d_stdev){
       contours2.push_back(contours[i]);
       angles2.push_back(angles(0,i));
       len_total+=len_contours[i];
+      len_contours2.push_back(len_contours[i]);/*just for dump*/
     }
   }
 
   if ( len_total < MIN_LINE_LENGTH_CONSIDERED_SIDE )
     contours2.clear();
 
-  contours = contours2; angles = angles2; /*TODO - go on from here */
+  cout << "\nreduce_noise_short_lines :: final len_contours2" << Mat(len_contours2)  << endl;
+
+  contours = contours2; angles = angles2;
 }

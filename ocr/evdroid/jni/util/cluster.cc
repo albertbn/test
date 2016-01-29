@@ -14,7 +14,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
 
   bool is_vert = is_vertical(angle_center);
   std::vector<cv::Point2f> points;
-  for(int i=0; i<(int)contours.size(); ++i){
+  for ( int i=0; i<(int)contours.size(); ++i ) {
 
     if ( is_vert ) {
       points.push_back( Point2f(contours[i][0].x, 0) );
@@ -27,7 +27,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   int clusterCount =  2;
   int attempts = 1;
   Mat llabels, centers;
-  kmeans(points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+  kmeans ( points, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
   std::vector < std::vector<cv::Point> > contours_l0, contours_l1;
 
@@ -51,7 +51,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
       contours_l0.push_back(contours[j]); angles0.push_back(angles(j,0));
       len_contours0.push_back(len_contours[j]);
       // len_contours0.push_back( arcLength(contours[j],true));
-    }else if(labels(j,0)==1){
+    } else if(labels(j,0)==1){
       contours_l1.push_back(contours[j]); angles1.push_back(angles(j,0));
       len_contours1.push_back(len_contours[j]);
       // len_contours1.push_back(arcLength(contours[j],true));
@@ -59,12 +59,13 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   }
 
   // go on from here - check for size > 1 maybe..., declare fn below...
-  if( (int)contours_l0.size()>0) reduce_noise_short_lines( contours_l0, angles0, len_contours0);
-  if( (int)contours_l1.size()>0) reduce_noise_short_lines( contours_l1, angles1, len_contours1);
+  if( (int)contours_l0.size()>0) reduce_noise_short_lines( contours_l0, angles0, len_contours0 );
+  if( (int)contours_l1.size()>0) reduce_noise_short_lines( contours_l1, angles1, len_contours1 );
 
   return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1 );
 }
 
+// probably the closest diagonal - fit line
 Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0,
                            std::vector < std::vector<cv::Point> > contours_l1,
@@ -73,8 +74,7 @@ Mat coord_clusters_munge ( Size size,
                            ) {
   Mat l0, l1;
 
-  #ifndef ANDROID
-
+#ifndef ANDROID
   // if file exists - load from it - else create from zeros existing one...
   if(contours_l0.size()>0){ /*boost performance*/
     if(file_exists(path_img + "/long5.jpg"))
@@ -119,18 +119,22 @@ Mat coord_clusters_munge ( Size size,
   if ( contours_l0.size()>0 ) {
     Rect r0 = cv::boundingRect(points0);
     if(points0.size()>0){
-      get_closest_diagonal(r0, angles0, points0, l0);
+      get_closest_diagonal(r0, angles0, points0, l0); /*closest diagonal*/
     }
-    // cv::imwrite( path_img + "/long5.jpg", l0);
+#ifndef ANDROID
+    cv::imwrite( path_img + "/long5.jpg", l0);
+#endif //ANDROID
   }
 
   // the second one is optional
   if ( contours_l1.size()>0 ) {
     Rect r1 = cv::boundingRect(points1);
     if(points1.size()>0){
-      get_closest_diagonal(r1, angles1, points1, l1);
+      get_closest_diagonal(r1, angles1, points1, l1); /*closest diagonal*/
     }
-    // cv::imwrite( path_img + "/long6.jpg", l1);
+#ifndef ANDROID
+    cv::imwrite( path_img + "/long6.jpg", l1);
+#endif //ANDROID
   }
 
   return l0; /*dummy*/

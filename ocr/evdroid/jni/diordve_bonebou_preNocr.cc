@@ -1,4 +1,3 @@
-
 // from jni
 // g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o preNocr.so diordve_bonebou_preNocr.cc -llept -ltesseract
 
@@ -100,19 +99,21 @@ int main ( int argc, char** argv ) {
 
   cout << "evdroid processing img.. " << argv[1] << endl;
 
-  path_sd_card.clear();
-  string path_dump = "./img";
+  path_sd_card.clear(); /*this is used just by the Andrew version*/
+  string path_dump = "./img"; /*here will be saved just dump.txt (performance benchmark) and dump_ocr.txt (ocr text result)*/
   path_img = "./img/scrap"; /*this is a global extern var, used by other partial folks */
 
-  if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); /*create ./img dir if not there*/
+  if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap dir if not there*/
+  if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap/dbscan dir if not there*/
 
-  remove( (path_img +"/*").c_str() );
-  remove( (path_img +"/dbscan/*").c_str() );
-
+  system(("exec rm -r " + path_img +"/*.jpg" ).c_str());/*clear content of ./img/scrap*/
+  system(("exec rm -r " + path_img +"/dbscan/*.jpg" ).c_str());/*clear content of ./img/scrap*/
   remove( (path_dump + "/dump.txt").c_str() );
   remove( (path_dump + "/dump_ocr.txt").c_str() );
+
+  // return 0;
+
   outfile.open ( (path_dump + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
   outfile_ocr.open ( (path_dump + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
 

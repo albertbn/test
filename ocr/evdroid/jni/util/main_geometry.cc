@@ -28,15 +28,6 @@ void longest_closed ( Mat& mat ) {
 
   outfile << "longest_closed start: " << clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
-  // cleanup some images...
-  // remove((path_img+"/long4.jpg").c_str());
-  // remove((path_img+"/long5.jpg").c_str());
-  // remove((path_img+"/long6.jpg").c_str());
-  // remove((path_img+"/long7.jpg").c_str());
-  // remove((path_img+"/long8.jpg").c_str());
-  // remove((path_img+"/long44.jpg").c_str());
-  // remove((path_img+"/long444.jpg").c_str());
-
   size_mat = mat.size();
 
   cv::cvtColor ( mat, mat, CV_BGR2GRAY );
@@ -132,17 +123,19 @@ void longest_closed ( Mat& mat ) {
   }
 
   // DONE, yep! - somewhere here start and implement the persp.cc - good luck - calc center, order points, etc...
-  //std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
+  std::cout << " \t\t ~~~ ``` _angle90_count:" << _angle90_count << std::endl;
   // OK, this is the dotted line connection and expansion algorithm
   if ( _angle90_count!=4 || !corners_magick_do(size_mat, points4 /*a 4 point chap - validate this folk*/) ) {
 
     // DONE - add logic here for using just longest and parts... for cases where there is longest and at least 1 90 deg angle...
     if ( contours_long.size() || contours_medium.size() ){
+      std::cout << " \t\t contours_long.size() || contours_medium.size " << contours_long.size() << ',' << contours_medium.size() << std::endl;
       // std::cout << "contours long || medium" << std::endl;
-      for(int i=0; i<(int)contours_long.size(); ++i) { contours_medium.push_back(contours_long[i]); }
+      for ( int i=0; i<(int)contours_long.size(); ++i ) { contours_medium.push_back(contours_long[i]); }
       deal_with_geometry_when_not_enough_90d_angles( size_mat, contours_medium, len_contours_closed, min_line_length);
     }
     else {
+      std::cout << " \t\t ELSE contours_long.size() || contours_medium.size( " << std::endl;
       deal_with_geometry_when_not_enough_90d_angles( size_mat, contoursDraw2, len_contours_contoursDraw2, min_line_length);
     }
 
@@ -316,7 +309,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
 
     outfile << "before ocr do it in final_magic: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
-    ocr_doit ( quad /* send by reference to OCR */ );
+    // ocr_doit ( quad /* send by reference to OCR */ );
     outfile << "after ocr do it: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   }
   else {

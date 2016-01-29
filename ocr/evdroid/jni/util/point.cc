@@ -52,7 +52,7 @@ bool lines4intersect_validate ( bool is_vert, Point p_from_line, Vec4i vec4i ) {
   }
 
   int min_deviation = is_vert ? size_mat.width : size_mat.height;
-  // TODO hard number
+  // TODO? hard number
   min_deviation = min_deviation/5; /*this is the minimum distance needed between lines with same direction*/
   int x_or_y, x_or_y2;
   for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
