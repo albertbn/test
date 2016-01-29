@@ -3,6 +3,7 @@
 
 #include <sys/stat.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp> /*holds the INTER_CUBIC enum for resize*/
 #include "static_fields.hpp"
 
 using namespace cv;
@@ -61,6 +62,8 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
     return;
   }
   else if ( d_mean<(MIN_LINE_LENGTH_CONSIDERED_SIDE/2.5) && (*longest/d_mean)>2.5 ){
+
+    // credits:http://stackoverflow.com/questions/2152986/effective-way-to-get-the-index-of-an-iterator
     int index = longest - len_contours.begin();
     cout << "\nindex of longest: " << index << endl;
     contours2.push_back(contours[index]);
@@ -92,3 +95,14 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
   contours = contours2; angles = angles2;
 }
+
+// downscales if needed
+void mat_downscale_check ( Mat &mat ) {
+
+  int large = max(mat.size().width, mat.size().height);
+  if ( large<5500 ) return;
+
+  resize ( mat, mat, Size(), .75, .75, INTER_CUBIC );
+}
+
+//~/Desktop/fail/vip.jpg

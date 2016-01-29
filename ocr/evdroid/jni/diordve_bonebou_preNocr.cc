@@ -119,7 +119,7 @@ int main ( int argc, char** argv ) {
 
   outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
   Mat mat = imread ( argv[1] ); /*yep!*/
-
+  mat_downscale_check ( mat ); /*ref var*/
   longest_closed ( mat /*referral variable */ );
 
   mat.release();
