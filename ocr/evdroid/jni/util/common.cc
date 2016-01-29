@@ -51,10 +51,25 @@ void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours
 
   std::vector < std::vector<cv::Point> > contours2;
   Mat_<float> angles2;
-  std::vector<double>::iterator biggest = std::max_element(len_contours.begin(), len_contours.end());
-  // double d_stdev = stdev[0] / (*biggest / stdev[0]);
-  double d_stdev = stdev[0];
+  std::vector<double>::iterator longest = std::max_element(len_contours.begin(), len_contours.end());
+  // double d_stdev = stdev[0] / (*longest / stdev[0]);
+  double d_mean = mean[0]; !d_mean && (d_mean = .001);
+  double d_stdev = stdev[0]; !d_stdev && (d_stdev=.001);
+  cout << "\n d_mean, d_stdev, x/y, longest: " << d_mean << ',' << d_stdev << ',' << (d_mean/d_stdev) << ',' << *longest << endl;
+  if ( (d_mean/d_stdev)>4.5 && d_mean<(MIN_LINE_LENGTH_CONSIDERED_SIDE/2.5) ){
+    contours = contours2; angles = angles2;
+    return;
+  }
+  else if ( d_mean<(MIN_LINE_LENGTH_CONSIDERED_SIDE/2.5) && (*longest/d_mean)>2.5 ){
+    int index = longest - len_contours.begin();
+    cout << "\nindex of longest: " << index << endl;
+    contours2.push_back(contours[index]);
+    angles2.push_back(angles(0,index));
+    contours = contours2; angles = angles2;
+    return;
+  }
 
+  cout << "\n MIN_LINE_LENGTH_CONSIDERED_SIDE: " << MIN_LINE_LENGTH_CONSIDERED_SIDE << endl;
   cout << "\nreduce_noise_short_lines :: mean, stdev: " << mean << ',' << stdev << endl;
   cout << "\nreduce_noise_short_lines :: d_stdev: " << d_stdev  << endl;
 
