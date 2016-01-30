@@ -115,7 +115,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
   // credits: http://stackoverflow.com/questions/17235987/check-if-a-cvpoint-is-inside-a-cvmat
   cv::Rect rect(cv::Point(), Size(size_mat.width+1, size_mat.height+1));
 
-  std::vector<cv::Point> corners; cv::Point pt;
+  std::vector<cv::Point> pts_busted; cv::Point pt;
   for ( int i = 0; i < (int)lines4intersect.size(); i++ ) {
 
     for ( int j = i+1; j < (int)lines4intersect.size(); j++ ) {
@@ -129,7 +129,28 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
              ){
           points4.push_back(pt);
         }
+        else if(
+                (pt.x || pt.y) &&
+                pt!=Point(size_mat.width,0) &&
+                pt!=Point(size_mat.width,size_mat.height) &&
+                pt!=Point(0,size_mat.height)
+
+                ) {
+          cout << "busted point: " << pt << endl;
+          pts_busted.push_back(pt);
+        }
       }
+  }
+
+  // fill-in points up to 4 points from busted and close to stage borders? - 5 px out?
+  if ( points4.size()<4 ) {
+    rect = cv::Rect(cv::Point(-5,-5), Size(size_mat.width+5, size_mat.height+5));
+    for ( int i=0; i<(int)pts_busted.size(); ++i ) {
+      if(rect.contains(pts_busted[i])){
+        points4.push_back(pts_busted[i]);
+        if(points4.size()>=4) break;
+      }
+    }
   }
 
 #ifndef ANDROID

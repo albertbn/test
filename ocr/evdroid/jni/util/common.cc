@@ -105,4 +105,5 @@ void mat_downscale_check ( Mat &mat ) {
   resize ( mat, mat, Size(), .75, .75, INTER_CUBIC );
 }
 
-//~/Desktop/fail/vip.jpg
+//~/Desktop/fail/vip.jpg - fixed
+//evdroid4.jpg

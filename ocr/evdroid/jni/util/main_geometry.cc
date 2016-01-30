@@ -140,14 +140,15 @@ void longest_closed ( Mat& mat ) {
     }
 
     // if ( lines4intersect.size()<4 ) {
-    // std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
-      points4.clear();
-      intersect_n_get_points ( points4 /*ref*/ );
-      corners_magick_do( size_mat, points4 /*a 4 point chap - validate this folk*/);
+    std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
+    points4.clear();
+    intersect_n_get_points ( points4 /*ref*/ );
+    std::cout << "\npoints4 after intersect..." << points4 << std::endl;
+    corners_magick_do( size_mat, points4 /*a 4 point chap - validate this folk*/);
     // }
     final_magic_crop_rotate ( mat, points4 /*ref*/ );
 
-    // std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
+    std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
   }
   else {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
@@ -309,7 +310,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
 
     outfile << "before ocr do it in final_magic: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
-    // ocr_doit ( quad /* send by reference to OCR */ );
+    ocr_doit ( quad /* send by reference to OCR */ );
     outfile << "after ocr do it: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   }
   else {

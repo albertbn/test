@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
                             //e.printStackTrace();
                             show_msg( err_str(ex));
                         }
-                        show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
+                        // show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
                     }
                     catch(Exception ex){
 
@@ -180,7 +180,7 @@ public class MainActivity extends Activity {
                                     // call native c++ here
                                     preNocr.dodoit( ff.getAbsolutePath() );
 
-                                    sex.show_msg ( "TODO - pre and ocr... " + Uri.fromFile ( ff ) ); /*!*/
+                                    sex.show_msg ( "DONE - pre and ocr... " + Uri.fromFile ( ff ) ); /*!*/
                                     // ff.delete();
                                 }
                                 catch ( Exception ex ) {
@@ -199,7 +199,7 @@ public class MainActivity extends Activity {
                 sex.show_msg( err_str(ex));
                 tthis.post_error( "Camera, MainActivity.java, onActivityResult out: " + err_str(ex) );
             }
-        sex.show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
+        // sex.show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
 
         super.onActivityResult(requestCode, resultCode, data);
     }

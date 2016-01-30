@@ -61,19 +61,27 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   clock_start = clock();
 
   path_sd_card = (*env).GetStringUTFChars(jpath_sd_card, 0);
-  path_img = path_sd_card + "/tessdata/img";
+  string path_dump = path_sd_card + "/tessdata/img"; /*here will be saved just dump.txt (performance benchmark) and dump_ocr.txt (ocr text result)*/
+  path_img = path_sd_card + "/tessdata/img/scrap"; /*this is a global extern var, used by other partial folks */
 
+  if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); /*create ./img dir if not there*/
+  if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap dir if not there*/
+  if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap/dbscan dir if not there*/
+
+  system(("exec rm -r " + path_img +"/*.jpg" ).c_str());/*clear content of ./img/scrap*/
+  system(("exec rm -r " + path_img +"/dbscan/*.jpg" ).c_str());/*clear content of ./img/scrap*/
   remove ( (path_sd_card + "/tessdata/dump.txt").c_str() );
   remove ( (path_sd_card + "/tessdata/dump_ocr.txt").c_str() );
   outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
   outfile_ocr.open ( (path_sd_card + "/tessdata/dump_ocr.txt").c_str(), ios_base::app );
 
-  LOGD ( "path: %s \n", (path_sd_card + "/tessdata/heb.jpg").c_str() );
 
   // TEMP test
   // Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
 
   string img_path = (*env).GetStringUTFChars(jimg_path, 0);
+  LOGD ( "processing image path: %s \n", img_path.c_str() );
+  outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
   Mat mat = imread ( img_path ); /*yep!*/
 
   longest_closed ( mat /*referral variable */ );
