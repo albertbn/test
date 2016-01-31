@@ -113,6 +113,8 @@ public class MainActivity extends Activity {
                             //e.printStackTrace();
                             show_msg( err_str(ex));
                         }
+                        if(1==1)
+                            show_msg("processing test mode OCR... from hard picture");
                         // show_msg("processing OCR... see how fast/slow?\n\n may the force be with you");
                     }
                     catch(Exception ex){
@@ -126,7 +128,7 @@ public class MainActivity extends Activity {
     // gets a path to a random image, opens existing camera and inits activity
     public void open ( ) {
 
-        if ( 1==0 ) {
+        if ( 1==1 ) {
             preNocr.dodoit( "dummy testing hards..." );
             show_msg("DONE doing OCR - see how fast???");
             return;

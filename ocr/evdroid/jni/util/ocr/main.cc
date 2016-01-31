@@ -37,8 +37,8 @@
 // int threshold_type = THRESH_BINARY;
 // int const max_BINARY_value = 255;
 
-int px_line_height = 25; /* TODO - dynamic */
-int px_expand_bound_line = 25; /* TODO - dynamic */
+int px_line_height = 90; /* TODO - dynamic */
+int px_expand_bound_line = 90; /* TODO - dynamic */
 int px_trim_sides = 0; /* TODO - figure out how much to trim sides */
 
 // using namespace cv;
