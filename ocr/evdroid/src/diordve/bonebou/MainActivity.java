@@ -232,18 +232,26 @@ public class MainActivity extends Activity {
         }
     }
 
-    void show_msg ( String msg ) {
+    void show_msg ( final String msg ) {
 
         try {
-            Context context = getApplicationContext();
-            CharSequence text = msg;
-            int duration = Toast.LENGTH_SHORT;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            runOnUiThread ( new Runnable() {
+                    public void run() {
+                        Toast.makeText ( MainActivity.this, msg, Toast.LENGTH_SHORT ).show();
+                    }
+                } );
+
+            // Context context = getApplicationContext();
+            // CharSequence text = msg;
+            // int duration = Toast.LENGTH_SHORT;
+
+            // Toast toast = Toast.makeText(context, text, duration);
+            // toast.show();
         }
-        catch(Exception ex){
-            tthis.post_error( "Camera, MainActivity.java, show_msg: " + err_str(ex) );
+
+        catch ( Exception ex ) {
+            tthis.post_error ( "Camera, MainActivity.java, show_msg: " + err_str(ex) );
         }
     }
 
