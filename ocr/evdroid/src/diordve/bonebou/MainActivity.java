@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
 
         if ( 1==1 ) {
             preNocr.dodoit( "dummy testing hards..." );
-            show_msg("DONE doing OCR - see how fast???");
+            show_msg("DONE doing OCR test - see how fast???");
             return;
         }
 
