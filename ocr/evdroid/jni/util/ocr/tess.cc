@@ -19,6 +19,14 @@ float deskew_angle;
 
 // using namespace cv;
 
+template <class T>
+inline string to_string ( const T& t ) {
+
+  std::stringstream ss;
+  ss << t;
+  return ss.str();
+}
+
 void init_ocr ( ) {
 
   GenericVector<STRING> vars_vec;
@@ -61,11 +69,11 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
   Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
   outfile << "crop_b_test after mat clone:\t" <<  clock_ticks_to_ms(clock()-_clock_start) << endl; _clock_start=clock();
 
-#ifndef ANDROID
+// #ifndef ANDROID
   cv::imwrite ( path_img +"/dbscan/db_scan_part" + (icount<10 ? "0" : "") + to_string(icount)+".jpg", cropped ); /*boost performance*/
-#else
-  icount = 0;
-#endif // ANDROID
+// #else
+  // icount = 0;
+// #endif // ANDROID
 
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );

@@ -41,9 +41,9 @@ void longest_closed ( Mat& mat ) {
 
   blur ( dilated, dilated, Size(10,10) );
 
-#ifndef ANDROID
+// #ifndef ANDROID
   cv::imwrite( path_img+"/long0.jpg", dilated ); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
   outfile << "longest_closed after blur1: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   cv::Mat edges;
@@ -53,9 +53,9 @@ void longest_closed ( Mat& mat ) {
 
   outfile << "longest_closed after blur2: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
-#ifndef ANDROID
+// #ifndef ANDROID
   cv::imwrite( path_img+"/long1.jpg", edges); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
 
   std::vector< std::vector<cv::Point> > contours;
   cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
@@ -70,9 +70,9 @@ void longest_closed ( Mat& mat ) {
   std::vector<std::vector<cv::Point> > contoursDraw(contours.size());
   std::vector<std::vector<cv::Point> > contoursDraw2;
 
-#ifndef ANDROID
+// #ifndef ANDROID
   Mat poly = Mat::zeros ( size_mat, CV_8UC3 ) ; /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
 
   double min_line_length = MIN_LINE_LENGTH_CONSIDERED_SIDE = max(size_mat.width, size_mat.height)/13.0; /*TODO - here - check this chap*/
   MIN_LINE_LENGTH_CONSIDERED_SIDE*=4.5; /*this is a TODO for sure - should implement some other algo for \/  / clustered in vert - pics/18.jpg*/
@@ -105,16 +105,16 @@ void longest_closed ( Mat& mat ) {
       }
     }
   }
-#ifndef ANDROID
+// #ifndef ANDROID
   Mat drawing = Mat::zeros( size_mat, CV_8UC3 ); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
   Mat clong = Mat::zeros( size_mat, CV_8UC3 );
-#ifdef ANDROID
+// #ifdef ANDROID
   clong.release(); /*boost performance*/
-#endif // ANDROID
-#ifndef ANDROID
+// #endif // ANDROID
+// #ifndef ANDROID
   cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
-#endif // ANDROID
+// #endif // ANDROID
 
   int _angle90_count=0; std::vector<cv::Point> points4;
   // count the ~90 degree angles...
@@ -154,14 +154,14 @@ void longest_closed ( Mat& mat ) {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
   }
 
-#ifndef ANDROID
+// #ifndef ANDROID
   cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
   cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
 
   cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
   cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
   cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
 
   mat.release();
 }
@@ -257,39 +257,39 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
 
   outfile << "start of final magic crop: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
-#ifndef ANDROID
+// #ifndef ANDROID
   Mat mb;
   if ( file_exists(path_img + "/long7.jpg") ) /*boost performance*/
     mb = imread ( path_img + "/long7.jpg" ); /*boost performance*/
   else /*boost performance*/
     mb = Mat::zeros ( mat.size(), CV_8UC3 ); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
 
   if ( points4.size()>4 ) { /*for sort points - draw all circles*/
-#ifndef ANDROID
+// #ifndef ANDROID
     for ( int i=0; i<(int)points4.size(); ++i ) { /*boost performance*/
       cv::circle ( mb, points4[i], 50, cv::Scalar(150,55,70) ); /*boost performance*/
     }
-#endif // ANDROID
+// #endif // ANDROID
     sort_points_closest_2center(points4); /*boost performance*/
   }
 
   std::vector<cv::Point2f> points4f;
   // this here is probably closest to the size of the original invoice... well, let's try... tension :)
   cv::RotatedRect rect_minAreaRect = minAreaRect(points4);
-#ifndef ANDROID
+// #ifndef ANDROID
   RNG rng(12345); /*boost performance*/
   Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) ); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
 
   Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
 
   for ( int i=0; i<(int)points4.size(/*4*/); ++i ) {
     points4f.push_back(points4[i]);
-#ifndef ANDROID
+// #ifndef ANDROID
     line( mb, rect_points[i], rect_points[(i+1)%4], color, 1, 8 ); /*boost performance*/
     cv::circle ( mb, points4[i], 50, cv::Scalar(50,0,255) ); /*boost performance*/
-#endif // ANDROID
+// #endif // ANDROID
   }
 
   bool is_mat_width = size_mat.width>size_mat.height; /*is width larger*/
@@ -319,9 +319,9 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
   }
 
 
-#ifndef ANDROID
+// #ifndef ANDROID
   cv::imwrite ( path_img + "/long7.jpg", mb ); /*boost performance*/
   cv::imwrite ( path_img + "/long8.jpg", quad );
-#endif // ANDROID
+// #endif // ANDROID
 
 }

@@ -74,7 +74,7 @@ Mat coord_clusters_munge ( Size size,
                            ) {
   Mat l0, l1;
 
-#ifndef ANDROID
+// #ifndef ANDROID
   // if file exists - load from it - else create from zeros existing one...
   if(contours_l0.size()>0){ /*boost performance*/
     if(file_exists(path_img + "/long5.jpg"))
@@ -96,7 +96,7 @@ Mat coord_clusters_munge ( Size size,
   // the second one is optional
   if(contours_l1.size()>0)
     cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
-#endif // ANDROID
+// #endif // ANDROID
 
   std::vector<cv::Point> points0, points1 /*points1 is optional*/;
   if(contours_l0.size()>0){
@@ -121,9 +121,9 @@ Mat coord_clusters_munge ( Size size,
     if(points0.size()>0){
       get_closest_diagonal(r0, angles0, points0, l0); /*closest diagonal*/
     }
-#ifndef ANDROID
+// #ifndef ANDROID
     cv::imwrite( path_img + "/long5.jpg", l0);
-#endif //ANDROID
+// #endif //ANDROID
   }
 
   // the second one is optional
@@ -132,9 +132,9 @@ Mat coord_clusters_munge ( Size size,
     if(points1.size()>0){
       get_closest_diagonal(r1, angles1, points1, l1); /*closest diagonal*/
     }
-#ifndef ANDROID
+// #ifndef ANDROID
     cv::imwrite( path_img + "/long6.jpg", l1);
-#endif //ANDROID
+// #endif //ANDROID
   }
 
   return l0; /*dummy*/

@@ -153,7 +153,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     }
   }
 
-#ifndef ANDROID
+// #ifndef ANDROID
   Mat mb; /*boost performance*/
   if ( file_exists(path_img + "/long7.jpg") )
     mb = imread ( path_img + "/long7.jpg" );
@@ -168,7 +168,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
   }
 
   cv::imwrite ( path_img + "/long7.jpg", mb ) ;
-#endif // ANDROID
+// #endif // ANDROID
 }
 
 //1==OK t==2, b==2, 0 - not rect
@@ -221,8 +221,8 @@ bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points
     // return;
   }
 
-#ifndef ANDROID
-  
+// #ifndef ANDROID
+
   Mat m; /*boost performance*/
   if ( file_exists(path_img + "/long7.jpg") )
     m = imread ( path_img + "/long7.jpg" );
@@ -239,7 +239,7 @@ bool corners_magick_do ( Size mat_size, std::vector<cv::Point>& corners /*points
 
   cv::imwrite( path_img + "/long7.jpg", m);
 
-#endif // ANDROID
+// #endif // ANDROID
 
   return are4pointsfine;
 }
