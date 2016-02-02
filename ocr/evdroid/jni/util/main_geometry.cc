@@ -110,7 +110,7 @@ void longest_closed ( Mat& mat ) {
 // #endif // ANDROID
   Mat clong = Mat::zeros( size_mat, CV_8UC3 );
 // #ifdef ANDROID
-  clong.release(); /*boost performance*/
+  // clong.release(); /*boost performance*/
 // #endif // ANDROID
 // #ifndef ANDROID
   cv::drawContours(drawing, contours_f1, -1, cv::Scalar(0,255,0),1);
@@ -156,13 +156,15 @@ void longest_closed ( Mat& mat ) {
 
   // std::cout << "contoursDraw2: " << Mat(contoursDraw2) << ",\n contours_long: " << Mat(contours_long) << std::endl;
 
-  // // #ifndef ANDROID
-  // cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
-  // cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+// #ifndef ANDROID
+  if(contoursDraw2.size())
+    cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+  if(contours_long.size())
+    cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
 
-  // cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
-  // cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
-  // cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
+  cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
+  cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
+  cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
 // #endif // ANDROID
 
   mat.release();

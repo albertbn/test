@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "util/signalHandler.hpp"
+// #include "util/signalHandler.hpp"
 #endif //ANDROID
 
 #include <iostream>
@@ -181,9 +181,9 @@ int main ( int argc, char** argv ) {
 
     iret = EXIT_SUCCESS;
   }
-  catch ( SignalException& e ) {
+  catch ( Exception& e ) {
 
-    std::cerr << "SignalException: " << e.what() << std::endl;
+    std::cerr << "error: " << e.what() << std::endl;
     iret = EXIT_FAILURE;
   }
 
