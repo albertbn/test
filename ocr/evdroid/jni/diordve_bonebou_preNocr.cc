@@ -1,3 +1,4 @@
+
 // from jni
 // g++ -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" -shared  -o preNocr.so diordve_bonebou_preNocr.cc -llept -ltesseract
 
@@ -15,6 +16,15 @@
 
 // TEMP
 #include <jni.h>
+
+#ifndef ANDROID
+#include <stdio.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "util/signalHandler.hpp"
+#endif //ANDROID
 
 #include <iostream>
 #include <fstream>
@@ -95,45 +105,88 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
 }
 #endif // ANDROID
 
+#ifndef ANDROID
+// credits: http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
+void handler ( int sig ) {
+
+  void *array[50];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 50);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd ( array, size, STDERR_FILENO );
+  free ( array );
+  exit(1);
+}
+
+
 int main ( int argc, char** argv ) {
 
-  if ( argc < 2  ) {
-    cout << "please pass an image" << endl;
-    return 1;
+  // signal(SIGINT, handler); // install our handler - for stack trace on error
+  // signal(SIGABRT, handler); // install our handler - for stack trace on error
+  // signal(SIGFPE, handler); // install our handler - for stack trace on error
+  // signal(SIGILL, handler); // install our handler - for stack trace on error
+  // signal(SIGSEGV, handler); // install our handler - for stack trace on error
+  // signal(SIGTERM, handler); // install our handler - for stack trace on error
+  // signal(SIGHUP, handler); // install our handler - for stack trace on error
+
+  int iret;
+
+  try {
+    if ( argc < 2  ) {
+      cout << "please pass an image" << endl;
+      return 1;
+    }
+
+    // SignalHandler signalHandler;
+    // Register signal handler to handle kill signal
+    // signalHandler.setupSignalHandlers();
+
+    unsigned int clock_start_main = clock();
+    clock_start = clock();
+
+    cout << "evdroid processing img.. " << argv[1] << endl;
+
+    path_sd_card.clear(); /*this is used just by the Andrew version*/
+    string path_dump = "./img"; /*here will be saved just dump.txt (performance benchmark) and dump_ocr.txt (ocr text result)*/
+    path_img = "./img/scrap"; /*this is a global extern var, used by other partial folks */
+
+    if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); /*create ./img dir if not there*/
+    if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap dir if not there*/
+    if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap/dbscan dir if not there*/
+
+    system(("exec rm -r " + path_img +"/*.jpg" ).c_str());/*clear content of ./img/scrap*/
+    system(("exec rm -r " + path_img +"/dbscan/*.jpg" ).c_str());/*clear content of ./img/scrap*/
+    remove( (path_dump + "/dump.txt").c_str() );
+    remove( (path_dump + "/dump_ocr.txt").c_str() );
+
+    // return 0;
+
+    outfile.open ( (path_dump + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
+    outfile_ocr.open ( (path_dump + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
+
+    outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
+    Mat mat = imread ( argv[1] ); /*yep!*/
+    mat_downscale_check ( mat ); /*ref var*/
+    longest_closed ( mat /*referral variable */ );
+
+    mat.release();
+
+    outfile << "total time: " << clock_ticks_to_ms(clock() - clock_start_main) << endl;
+    outfile_ocr.close();
+    outfile.close();
+
+    iret = EXIT_SUCCESS;
+  }
+  catch ( SignalException& e ) {
+
+    std::cerr << "SignalException: " << e.what() << std::endl;
+    iret = EXIT_FAILURE;
   }
 
-  unsigned int clock_start_main = clock();
-  clock_start = clock();
-
-  cout << "evdroid processing img.. " << argv[1] << endl;
-
-  path_sd_card.clear(); /*this is used just by the Andrew version*/
-  string path_dump = "./img"; /*here will be saved just dump.txt (performance benchmark) and dump_ocr.txt (ocr text result)*/
-  path_img = "./img/scrap"; /*this is a global extern var, used by other partial folks */
-
-  if ( !directory_exists( path_dump )) mkdir(path_dump.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); /*create ./img dir if not there*/
-  if ( !directory_exists( path_img )) mkdir(path_img.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap dir if not there*/
-  if ( !directory_exists( path_img+"/dbscan" )) mkdir( (path_img+"/dbscan").c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  /*create ./img/scrap/dbscan dir if not there*/
-
-  system(("exec rm -r " + path_img +"/*.jpg" ).c_str());/*clear content of ./img/scrap*/
-  system(("exec rm -r " + path_img +"/dbscan/*.jpg" ).c_str());/*clear content of ./img/scrap*/
-  remove( (path_dump + "/dump.txt").c_str() );
-  remove( (path_dump + "/dump_ocr.txt").c_str() );
-
-  // return 0;
-
-  outfile.open ( (path_dump + "/dump.txt").c_str(), ios_base::app ); /*regular exe computer*/
-  outfile_ocr.open ( (path_dump + "/dump_ocr.txt").c_str(), ios_base::app ); /*regular exe computer*/
-
-  outfile << "starting main (after opening outfile stream): " << clock_ticks_to_ms(clock() - clock_start) << endl; clock_start = clock();
-  Mat mat = imread ( argv[1] ); /*yep!*/
-  mat_downscale_check ( mat ); /*ref var*/
-  longest_closed ( mat /*referral variable */ );
-
-  mat.release();
-
-  outfile << "total time: " << clock_ticks_to_ms(clock() - clock_start_main) << endl;
-  outfile_ocr.close();
-  outfile.close();
-  return 0;
+  return iret;
 }
+#endif // NOT ANDREW

@@ -12,7 +12,7 @@ CC = g++
 
 # define any compile-time flags
 # CFLAGS = -Wall -g $$(pkg-config --cflags --libs lept tesseract opencv)
-CFLAGS = -g $$(pkg-config --cflags --libs lept tesseract opencv)
+CFLAGS = -g -rdynamic $$(pkg-config --cflags --libs lept tesseract opencv)
 
 # define any directories containing header files other than /usr/include
 #
@@ -29,7 +29,7 @@ CFLAGS = -g $$(pkg-config --cflags --libs lept tesseract opencv)
 # LIBS =
 
 # define the C source files
-SRCS =  diordve_bonebou_preNocr.cc util/angle.cc util/close_center.cc util/cluster.cc util/common.cc util/main_geometry.cc util/point.cc util/rect_poly.cc util/ocr/db_scan.cc util/ocr/main.cc util/ocr/tess.cc
+SRCS =  diordve_bonebou_preNocr.cc util/signalHandler.cpp util/angle.cc util/close_center.cc util/cluster.cc util/common.cc util/main_geometry.cc util/point.cc util/rect_poly.cc util/ocr/db_scan.cc util/ocr/main.cc util/ocr/tess.cc
 
 # define the C object files
 #

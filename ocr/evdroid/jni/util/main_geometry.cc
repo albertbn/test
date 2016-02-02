@@ -154,13 +154,15 @@ void longest_closed ( Mat& mat ) {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
   }
 
-// #ifndef ANDROID
-  cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
-  cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+  // std::cout << "contoursDraw2: " << Mat(contoursDraw2) << ",\n contours_long: " << Mat(contours_long) << std::endl;
 
-  cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
-  cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
-  cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
+  // // #ifndef ANDROID
+  // cv::drawContours(poly, contoursDraw2, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+  // cv::drawContours(clong, contours_long, -1, cv::Scalar(0,255,0),1); /*boost performance*/
+
+  // cv::imwrite( path_img + "/long2.jpg", drawing); /*boost performance*/
+  // cv::imwrite( path_img + "/long3.jpg", poly); /*boost performance*/
+  // cv::imwrite( path_img + "/long4.jpg", clong); /*boost performance*/
 // #endif // ANDROID
 
   mat.release();
@@ -310,7 +312,7 @@ void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {
     cv::warpPerspective ( mat, quad, transmtx, quad.size() );
 
     outfile << "before ocr do it in final_magic: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
-    ocr_doit ( quad /* send by reference to OCR */ );
+    // ocr_doit ( quad /* send by reference to OCR */ );
     outfile << "after ocr do it: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
   }
   else {
