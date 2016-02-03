@@ -44,8 +44,8 @@ double get_max_deviation ( Size size, double angle_center, bool is_vert ) {
 void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> &len_contours ) {
 
   // cout << "reduce_noise_short_lines :: contours" << Mat(contours) << endl;
-  if(angles.size().width>0)
-    cout << "reduce_noise_short_lines :: angles" << angles << endl;
+  // if(angles.size().width>0)
+  //   cout << "reduce_noise_short_lines :: angles" << angles << endl;
   // cout << "\n\n===\n\nreduce_noise_short_lines :: len_countours" << Mat(len_contours) << endl;z
 
   Mat m ( len_contours );

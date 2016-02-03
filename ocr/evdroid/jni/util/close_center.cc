@@ -59,7 +59,7 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   Point center_mat(0,0);
   center_mat += Point(0,0); center_mat += Point(size_mat.width,0); center_mat += Point(size_mat.width, size_mat.height); center_mat += Point(0,size_mat.height);
   center_mat *= ( 1. / 4 );
-  center = center_mat;
+  center = center_mat; /*global*/
 
   std::vector<cv::Point2f> points4f;
   for ( int i=0; i<(int)points4.size(); ++i ) {
@@ -69,7 +69,12 @@ void sort_points_closest_2center (  std::vector<cv::Point>& points4 ) {
   int clusterCount = 2;
   int attempts = 1;
   Mat llabels, centers;
+  // std::vector<int> llabels, centers;
+  TermCriteria tc;
+  cout << "sort_points_closest_2center :: points4f " << points4f << endl;
+  // return; /*TEMP*/
   kmeans(points4f, clusterCount, llabels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 100, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+  // kmeans(points4f, clusterCount, llabels, tc, attempts, KMEANS_PP_CENTERS, centers );
 
   std::vector<int> labels = llabels;
   std::vector<cv::Point> points40, points41;
