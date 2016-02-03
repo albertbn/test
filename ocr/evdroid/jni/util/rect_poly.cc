@@ -16,7 +16,7 @@ double get_longest_side_poly ( std::vector<cv::Point> approx ) {
 
 void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic ) {
 
-  cout << rect << endl;
+  // cout << "rest from get_closest_diagonal: " << rect << endl;
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
   Vec4f line_result;

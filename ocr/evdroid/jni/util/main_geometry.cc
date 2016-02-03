@@ -135,20 +135,21 @@ void longest_closed ( Mat& mat ) {
       deal_with_geometry_when_not_enough_90d_angles( size_mat, contours_medium, len_contours_closed, min_line_length);
     }
     else {
-      std::cout << " \t\t ELSE contours_long.size() || contours_medium.size( " << std::endl;
+      std::cout << " \t\t ELSE contours_long.size() || contours_medium.size " << std::endl;
       deal_with_geometry_when_not_enough_90d_angles( size_mat, contoursDraw2, len_contours_contoursDraw2, min_line_length);
     }
 
     // if ( lines4intersect.size()<4 ) {
-    std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
+    // std::cout << "intersecting man..." << "\npoints4: " << points4 << "\nlines4intersect: " << Mat(lines4intersect)  << std::endl;
     points4.clear();
     intersect_n_get_points ( points4 /*ref*/ );
-    std::cout << "\npoints4 after intersect..." << points4 << std::endl;
+
+    // std::cout << "\npoints4 after intersect..." << points4 << std::endl;
     corners_magick_do( size_mat, points4 /*a 4 point chap - validate this folk*/);
     // }
     final_magic_crop_rotate ( mat, points4 /*ref*/ );
 
-    std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
+    // std::cout << "lines4intersect size: " << lines4intersect.size() << ",\n points4: " << points4 << std::endl;
   }
   else {
     final_magic_crop_rotate (  mat, points4 /*ref*/ );
@@ -229,7 +230,7 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
   for ( int i=0; i < (int)contoursDraw2.size(); i++ ) {
 
     // a regular 2 point line
-    if ( contoursDraw2[i].size()<3 ){
+    if ( contoursDraw2[i].size()<3 ) {
 
       len = cv::arcLength(contoursDraw2[i], true);
       if ( len>min_line_length ) {
@@ -238,19 +239,27 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
       }
       continue;
     }
-    int ssize = (int)contoursDraw2[i].size();
-    // for ( int j=0; j<ssize; ++j ) {
-    for ( int j=0; j<ssize-1; ++j ) { /*don't do last with first - that is, don't plot a closing line */
-      line_tmp.clear();
-      line_tmp.push_back( contoursDraw2[i][j] );
-      line_tmp.push_back(contoursDraw2[i][j+1]);
-      // (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
-      len = cv::arcLength(line_tmp, true);
-      if ( len>min_line_length ) {
-        contoursDraw3.push_back( line_tmp  );
-        len_contours_contoursDraw3.push_back(len);
-      }
-    }
+    //here comes the fuck - i wish we get back with Margi soon being together, also in bed - may this project help me]
+    //also be with the kids, at home, financially independent and happy
+
+    // TODO - go on form debugging this. may the force be with you
+    split_lines_analyze_n_reduce_background_noise(contoursDraw2[i], contoursDraw3, len_contours_contoursDraw3);
+
+    // int ssize = (int)contoursDraw2[i].size();
+    // cout << "split_contours_2_dotted_lines :: count of small lines making the big one is: " << ssize << endl;
+    // // for ( int j=0; j<ssize; ++j ) {
+    // for ( int j=0; j<ssize-1; ++j ) { /*don't do last with first - that is, don't plot a closing line */
+    //   line_tmp.clear();
+    //   line_tmp.push_back( contoursDraw2[i][j] );
+    //   line_tmp.push_back(contoursDraw2[i][j+1]);
+    //   // (j<ssize-1) ? line_tmp.push_back( contoursDraw2[i][j+1] ) : line_tmp.push_back( contoursDraw2[i][0] ); /*connect last dot to first one???*/
+    //   len = cv::arcLength(line_tmp, true);
+    //   if ( len>min_line_length ) {
+    //     contoursDraw3.push_back( line_tmp  );
+    //     len_contours_contoursDraw3.push_back(len);
+    //   }
+    // }
+
   }
 
   contoursDraw2 = contoursDraw3;

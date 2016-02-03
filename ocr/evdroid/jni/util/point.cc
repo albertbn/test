@@ -136,7 +136,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
                 pt!=Point(0,size_mat.height)
 
                 ) {
-          cout << "busted point: " << pt << endl;
+          // cout << "busted point: " << pt << endl;
           pts_busted.push_back(pt);
         }
       }
@@ -161,7 +161,7 @@ void intersect_n_get_points ( std::vector<cv::Point>& points4  ) {
     mb = Mat::zeros ( size_mat, CV_8UC3 );
 
   cv::Vec4i lline;
-  std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
+  // std::cout << "drawing X lines:" << lines4intersect.size() << std::endl;
   for ( int i=0; i<(int)lines4intersect.size(); ++i ) {
     lline = lines4intersect[i];
     line( mb, Point(lline[0], lline[1]), Point(lline[2], lline[3]), cv::Scalar(0,255,0), 1, 8 );

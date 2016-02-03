@@ -32,7 +32,13 @@ bool directory_exists ( string path );
 
 double get_max_deviation(Size size, double angle_center, bool is_vert);
 
-void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> len_contours );
+void reduce_noise_short_lines ( std::vector < std::vector<cv::Point> > &contours, Mat_<float> &angles, std::vector<double> &len_contours );
+
+void split_lines_analyze_n_reduce_background_noise (
+                                              std::vector<cv::Point> line_poly,
+                                              std::vector<std::vector<cv::Point> > &contoursDraw3,
+                                              std::vector<double> &len_contours_contoursDraw
+                                              );
 
 void mat_downscale_check ( Mat &mat );
 
