@@ -264,6 +264,8 @@ void split_contours_2_dotted_lines( std::vector<std::vector<cv::Point> > &contou
 
   contoursDraw2 = contoursDraw3;
   len_contours_contoursDraw2 = len_contours_contoursDraw3;
+
+  cout << "split_contours_2_dotted_lines :: contoursDraw2, len_contours_contoursDraw2 :" << contoursDraw2.size() << ',' << len_contours_contoursDraw2.size() << endl;
 }
 
 void final_magic_crop_rotate ( Mat mat,  std::vector<cv::Point>& points4 ) {

@@ -21,6 +21,11 @@ struct less_custom_sort_points {
 
 void sort_points_closest_2center8 ( std::vector<cv::Point>& points4x ) {
 
+  if ( points4x.size()<2 ){
+    cout << "sort_points_closest_2center8 :: points4x count: " << points4x.size() << endl;
+    return;
+  }
+
   std::vector<cv::Point> points80, points81;
   std::vector<cv::Point2f> points4f;
   for ( int i=0; i<(int)points4x.size(); ++i ) {
