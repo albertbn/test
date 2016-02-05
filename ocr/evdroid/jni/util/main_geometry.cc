@@ -22,6 +22,8 @@ using namespace std;
 // start here
 void longest_closed ( Mat& mat ) {
 
+  cv::Point kernel_ksize(19,19); /*Size of the structuring element*/
+  
 #ifdef ANDROID
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 #endif // ANDROID
@@ -32,7 +34,7 @@ void longest_closed ( Mat& mat ) {
 
   cv::cvtColor ( mat, mat, CV_BGR2GRAY );
 
-  cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Point(19,19));
+  cv::Mat kernel = cv::getStructuringElement ( cv::MORPH_RECT, kernel_ksize );
   cv::Mat dilated;
   cv::dilate(mat, dilated, kernel);
   kernel.release();
@@ -89,7 +91,7 @@ void longest_closed ( Mat& mat ) {
     }
     len_contours_contoursDraw2.push_back ( len );
 
-    cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 40, true);
+    cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 20, true);
     contoursDraw2.push_back(contoursDraw[i]);
 
     if ( len>0 ) {
