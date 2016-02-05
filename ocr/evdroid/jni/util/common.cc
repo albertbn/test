@@ -66,7 +66,7 @@ void reduce_noise_short_lines (
     }
   }
 
-  if ( len_total < (MIN_LINE_LENGTH_CONSIDERED_SIDE/20) ) {
+  if ( len_total < (MIN_LINE_LENGTH_CONSIDERED_SIDE/2) ) {
     cout << "reduce_noise_short_lines :: len_total smaller: " << Mat(len_contours) << endl;
     contours2.clear();
   }
@@ -79,7 +79,6 @@ void reduce_noise_short_lines_raw_from_polydp (
                                std::vector<double> &len_contours
                                ) {
 
-  // cout << "reduce_noise_short_lines :: contours" << Mat(contours) << endl;
   // cout << "\n===\nreduce_noise_short_lines_raw_from_polydp :: len_countours" << Mat(len_contours) << endl;
   Mat m ( len_contours );
   cv::Scalar mean, stdev;
@@ -91,23 +90,23 @@ void reduce_noise_short_lines_raw_from_polydp (
   double d_mean = mean[0]; !d_mean && (d_mean = .001);
   double d_stdev = stdev[0]; !d_stdev && (d_stdev=.001);
 
-  // cout << "\nreduce_noise_short_lines_raw_from_polydp :: d_mean, d_stdev, x/y, longest: " << d_mean << ',' << d_stdev << ',' << (d_mean/d_stdev) << ',' << *longest << endl;
+  // cout << "reduce_noise_short_lines_raw_from_polydp :: d_mean, d_stdev, x/y, longest: " << d_mean << ',' << d_stdev << ',' << (d_mean/d_stdev) << ',' << *longest << endl;
 
   std::vector<double> len_contours2; /* NOT :) just for dump*/
 
-  // cout << "\n MIN_LINE_LENGTH_CONSIDERED_SIDE: " << MIN_LINE_LENGTH_CONSIDERED_SIDE << endl;
-  // cout << "\nreduce_noise_short_lines_raw_from_polydp :: mean, stdev: " << mean << ',' << stdev << endl;
-  // cout << "\nreduce_noise_short_lines_raw_from_polydp :: d_stdev: " << d_stdev  << endl;
+  // cout << "MIN_LINE_LENGTH_CONSIDERED_SIDE: " << MIN_LINE_LENGTH_CONSIDERED_SIDE << endl;
+  // cout << "reduce_noise_short_lines_raw_from_polydp :: mean, stdev: " << mean << ',' << stdev << endl;
+  // cout << "reduce_noise_short_lines_raw_from_polydp :: d_stdev: " << d_stdev  << endl;
 
   // contours2.clear(); len_contours2.clear();
   for(int i=0; i<(int)contours.size(); ++i){
-    if ( len_contours[i]>= MIN_LINE_LENGTH_CONSIDERED_SIDE ){
+    if ( len_contours[i]>= MIN_LINE_LENGTH_CONSIDERED_SIDE/4 ){
       contours2.push_back(contours[i]);
       len_contours2.push_back(len_contours[i]);
     }
   }
 
-  // cout << "\nreduce_noise_short_lines_raw_from_polydp :: final len_contours2" << Mat(len_contours2)  << endl;
+  // cout << "reduce_noise_short_lines_raw_from_polydp :: final len_contours2" << Mat(len_contours2)  << endl;
   contours = contours2; len_contours = len_contours2;
 }
 

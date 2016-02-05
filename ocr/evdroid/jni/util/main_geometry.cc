@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -22,8 +21,12 @@ using namespace std;
 // start here
 void longest_closed ( Mat& mat ) {
 
-  cv::Point kernel_ksize(19,19); /*Size of the structuring element*/
-  
+  Point kernel_ksize(19,19); /*Size of the structuring element*/
+  Size blur_ksize(10,10);
+  int canny_thresh_big = 30; /*here*/
+  int canny_thresh_small = 1;
+  int appr_poly_epsilon = 15; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
+
 #ifdef ANDROID
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
 #endif // ANDROID
@@ -41,7 +44,7 @@ void longest_closed ( Mat& mat ) {
 
   outfile << "longest_closed after kernel release: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
-  blur ( dilated, dilated, Size(10,10) );
+  blur ( dilated, dilated, blur_ksize );
 
 // #ifndef ANDROID
   cv::imwrite( path_img+"/long0.jpg", dilated ); /*boost performance*/
@@ -49,9 +52,9 @@ void longest_closed ( Mat& mat ) {
   outfile << "longest_closed after blur1: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
   cv::Mat edges;
-  cv::Canny(dilated, edges, 40, 1);
+  cv::Canny ( dilated, edges, canny_thresh_big, canny_thresh_small );
   dilated.release();
-  blur(edges, edges, Size(10,10));
+  blur ( edges, edges, blur_ksize );
 
   outfile << "longest_closed after blur2: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
 
@@ -60,7 +63,7 @@ void longest_closed ( Mat& mat ) {
 // #endif // ANDROID
 
   std::vector< std::vector<cv::Point> > contours;
-  cv::findContours(edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS);
+  cv::findContours ( edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_KCOS );
   edges.release();
 
   outfile << "longest_closed after find contours: " <<  clock_ticks_to_ms(clock()-clock_start) << endl; clock_start=clock();
@@ -91,7 +94,7 @@ void longest_closed ( Mat& mat ) {
     }
     len_contours_contoursDraw2.push_back ( len );
 
-    cv::approxPolyDP(Mat(contours[i]), contoursDraw[i], 20, true);
+    cv::approxPolyDP ( Mat(contours[i]), contoursDraw[i], appr_poly_epsilon, true );
     contoursDraw2.push_back(contoursDraw[i]);
 
     if ( len>0 ) {
@@ -191,6 +194,7 @@ void deal_with_geometry_when_not_enough_90d_angles (
   double len_sum0=0.0, len_sum1=0.0;
   std::vector<double> len_contours0, len_contours1;
 
+
   /*separate / divide into 2 groups with approximate 90 degree alignment */
   for ( int j=0; j<labels.rows; ++j ) {
 
@@ -208,6 +212,9 @@ void deal_with_geometry_when_not_enough_90d_angles (
   }
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
+
+  cout << "deal_with_geometry_when_not_enough_90d_angles :: contours_l0, contours_l0" << Mat(contours_l0) << endl;
+  cout << "deal_with_geometry_when_not_enough_90d_angles :: contours_l1, contours_l1" << Mat(contours_l1) << endl;
 
   if ( contours_l0.size()>1 && len_sum0>min_line_length*5 )
     coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0), len_contours0); /*DONE then pass center[0] or centers[1] here...*/
