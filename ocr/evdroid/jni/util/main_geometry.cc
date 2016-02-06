@@ -213,9 +213,6 @@ void deal_with_geometry_when_not_enough_90d_angles (
 
   std::vector< std::vector<cv::Point> > dumm; Mat_<float> angles_dumm; /*2 dummies used as null pointers - no time to learn c++ :) */
 
-  cout << "deal_with_geometry_when_not_enough_90d_angles :: contours_l0, contours_l0" << Mat(contours_l0) << endl;
-  cout << "deal_with_geometry_when_not_enough_90d_angles :: contours_l1, contours_l1" << Mat(contours_l1) << endl;
-
   if ( contours_l0.size()>1 && len_sum0>min_line_length*5 )
     coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0), len_contours0); /*DONE then pass center[0] or centers[1] here...*/
   else if ( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
