@@ -16,7 +16,7 @@ using namespace std;
 
 double get_longest_side_poly ( std::vector<cv::Point> approx );
 
-void get_closest_diagonal ( Rect rect,  Mat_<float> angles, std::vector<cv::Point> points, Mat &pic );
+void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> > contours, Mat &pic, vector<double> len_contours );
 
 #endif // __cplusplus
 #endif /*RECT_POLY_HPP*/

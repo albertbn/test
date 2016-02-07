@@ -216,13 +216,13 @@ void deal_with_geometry_when_not_enough_90d_angles (
   if ( contours_l0.size()>1 && len_sum0>min_line_length*5 )
     coord_clusters( mat_size, contours_l0, angles0, angle_centers(0,0), len_contours0); /*DONE then pass center[0] or centers[1] here...*/
   else if ( contours_l0.size()<2 && len_sum0>min_line_length*5 ){
-    coord_clusters_munge( mat_size, contours_l0, dumm, angles0, angles_dumm );
+    coord_clusters_munge ( mat_size, contours_l0, dumm, angles0, angles_dumm, len_contours0, len_contours1 );
   }
 
   if( contours_l1.size()>1 && len_sum1>min_line_length*5 )
     coord_clusters( mat_size, contours_l1, angles1, angle_centers(1,0), len_contours1); /*DONE then pass center[0] or centers[1] here...*/
   else if( contours_l1.size()<2 && len_sum1>min_line_length*5 ){
-    coord_clusters_munge( mat_size, contours_l1, dumm, angles1, angles_dumm );
+    coord_clusters_munge ( mat_size, contours_l1, dumm, angles1, angles_dumm, len_contours1, len_contours0 );
   }
 }
 

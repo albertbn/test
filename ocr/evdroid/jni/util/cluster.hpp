@@ -18,7 +18,8 @@ Mat coord_clusters( Size size, std::vector < std::vector<cv::Point> > contours, 
 Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0,
                            std::vector < std::vector<cv::Point> > contours_l1,
-                           Mat_<float> angles0, Mat_<float> angles1
+                           Mat_<float> angles0, Mat_<float> angles1,
+                           vector<double> len_contours0, vector<double> len_contours1
                            );
 
 #endif // __cplusplus

@@ -62,7 +62,7 @@ Mat coord_clusters ( Size size, std::vector < std::vector<cv::Point> > contours,
   if( (int)contours_l0.size()>0) reduce_noise_short_lines( contours_l0, angles0, len_contours0 );
   if( (int)contours_l1.size()>0) reduce_noise_short_lines( contours_l1, angles1, len_contours1 );
 
-  return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1 );
+  return coord_clusters_munge( size, contours_l0, contours_l1, angles0, angles1, len_contours0, len_contours1 );
 }
 
 // probably the closest diagonal - fit line
@@ -70,7 +70,9 @@ Mat coord_clusters_munge ( Size size,
                            std::vector < std::vector<cv::Point> > contours_l0,
                            std::vector < std::vector<cv::Point> > contours_l1,
                            Mat_<float> angles0,
-                           Mat_<float> angles1
+                           Mat_<float> angles1,
+                           vector<double> len_contours0,
+                           vector<double> len_contours1
                            ) {
   Mat l0, l1;
 
@@ -98,29 +100,8 @@ Mat coord_clusters_munge ( Size size,
     cv::drawContours(l1, contours_l1, -1, cv::Scalar(255,255,0),1);
 // #endif // ANDROID
 
-  std::vector<cv::Point> points0, points1 /*points1 is optional*/;
-  if(contours_l0.size()>0){
-    for(int i=0; i<(int)contours_l0.size();++i){
-      if ( contours_l0[i][0].x==0 || contours_l0[i][1].x==0 ) continue;
-      points0.push_back(contours_l0[i][0]);
-      points0.push_back(contours_l0[i][1]);
-    }
-  }
-
-  // the second one is optional
-  if(contours_l1.size()>0){
-    for(int i=0; i<(int)contours_l1.size();++i){
-      if ( contours_l1[i][0].x==0 || contours_l1[i][1].x==0  ) continue;
-      points1.push_back(contours_l1[i][0]);
-      points1.push_back(contours_l1[i][1]);
-    }
-  }
-
   if ( contours_l0.size()>0 ) {
-    Rect r0 = cv::boundingRect(points0);
-    if(points0.size()>0){
-      get_closest_diagonal(r0, angles0, points0, l0); /*closest diagonal*/
-    }
+    get_closest_diagonal ( angles0, contours_l0, l0, len_contours0); /*closest diagonal*/
 // #ifndef ANDROID
     cv::imwrite( path_img + "/long5.jpg", l0);
 // #endif //ANDROID
@@ -128,10 +109,7 @@ Mat coord_clusters_munge ( Size size,
 
   // the second one is optional
   if ( contours_l1.size()>0 ) {
-    Rect r1 = cv::boundingRect(points1);
-    if(points1.size()>0){
-      get_closest_diagonal(r1, angles1, points1, l1); /*closest diagonal*/
-    }
+    get_closest_diagonal( angles1, contours_l1, l1, len_contours1); /*closest diagonal*/
 // #ifndef ANDROID
     cv::imwrite( path_img + "/long6.jpg", l1);
 // #endif //ANDROID
