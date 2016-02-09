@@ -40,6 +40,63 @@ float get_angle_avg_by_lengths ( Mat_<float> angles,  vector<double> len_contour
   return angles_sum_by_len/divide_by;
 }
 
+void get_geometry_points_vertical ( float angle_avg_by_len, Point &up, Point &down, float x_fitline, float y_fitline ) {
+
+  float x_upper=0, x_lower=0;
+  float ang = abs ( angle_avg_by_len-90.0 ), ang_tan; /* the smaller angle (close to 1 degrees) */
+  cout << "get_geometry_points_vertical :: ang degrees: " << ang << endl;
+  ang = abs(ang*CV_PI/180.0); /* to rad */
+  cout << "get_geometry_points_vertical :: ang rad: " << ang << endl;
+
+  ang_tan = tan(ang);
+  x_upper = y_fitline * tan(ang_tan);
+  x_lower = (size_mat.height-y_fitline) * tan(ang_tan);
+
+  // abs(angle_avg_by_len * 180 / CV_PI);
+  if ( angle_avg_by_len>90 ) {
+    x_upper += x_fitline;
+    x_lower = x_fitline - x_lower;
+  }
+  //~80 degree
+  else {
+    x_upper = x_fitline-x_upper;
+    x_lower += x_fitline;
+  }
+
+  up = Point(x_upper, 0);
+  down = Point(x_lower, size_mat.height);
+
+  cout << "get_geometry_points_vertical :: DIY upper, lower :" << up << ',' << down << endl;
+}
+
+void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point &right, float x_fitline, float y_fitline ) {
+
+  float y_left=0, y_righ=0;
+  float ang = abs ( 180 - angle_avg_by_len ), ang_tan; /* the smaller angle (close to 1 degrees) */
+  cout << "get_geometry_points_horizontal :: ang degrees: " << ang << endl;
+  ang = abs(ang*CV_PI/180.0); /* to rad */
+  cout << "get_geometry_points_horizontal :: ang rad: " << ang << endl;
+
+  ang_tan = tan(ang);
+  y_left = x_fitline * ang_tan;
+  y_righ = (size_mat.width-x_fitline) * ang_tan;
+
+  if ( angle_avg_by_len>180 ) {
+    y_left += y_fitline;
+    y_righ = y_fitline - y_righ;
+  }
+  //???
+  else {
+    y_left = y_fitline-y_left;
+    y_righ += y_fitline;
+  }
+
+  left = Point ( 0, y_left );
+  right = Point( size_mat.width, y_righ );
+
+  cout << "get_geometry_points_horizontal :: DIY left, right :" << left << ',' << right << endl;
+}
+
 // something stinky here? 6 Feb 2016
 void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> > contours, Mat &pic, vector<double> len_contours ) {
 
@@ -61,28 +118,15 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   float y = line_result[3];
 
   float angle_avg_by_len =  get_angle_avg_by_lengths ( angles, len_contours );
-  float x_upper, x_lower;
+  Point p1, p2;
   // float angle_avg_by_len =  angle_avg;
-  //TODO - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
+  //DONE - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
   if ( is_vert ) {
-
-    float ang = abs(angle_avg_by_len-90.0);
-    cout << "get_closest_diagonal :: ang degrees: " << ang << endl;
-    ang = abs(ang*CV_PI/180.0); /* to rad */
-    cout << "get_closest_diagonal :: ang rad: " << ang << endl;
-
-    // cout << "get_closest_diagonal :: tan rad: " << tan(ang) << endl;
-    // cout << "get_closest_diagonal :: cotan rad: " << 1.0/tan(ang) << endl;
-
-    // abs(angle_avg_by_len * 180 / CV_PI);
-    x_upper = (y * tan(ang)) + x;
-    x_lower = x - ((size_mat.height-y) * tan(ang));
-    cout << "get_closest_diagonal ::  upper point DIY :" << Point(x_upper,0) << endl;
-    cout << "get_closest_diagonal ::  lower point DIY :" << Point(x_lower,size_mat.height) << endl;
-
-    cv::circle ( pic, Point(x_upper,0), 50, cv::Scalar(255,255,255) );
-    cv::circle ( pic, Point(x_lower,size_mat.height), 50, cv::Scalar(255,255,255) );
+    get_geometry_points_vertical ( angle_avg_by_len, p1, p2, x, y );
   }
+
+  cv::circle ( pic, p1, 50, cv::Scalar(255,255,255) );
+  cv::circle ( pic, p2, 50, cv::Scalar(255,255,255) );
 
   cout << "get_closest_diagonal :: angle__avg_by_len : " << angle_avg_by_len << endl;
   cout << "get_closest_diagonal :: vx, vy, x, y : " << vx << ',' << vy << ',' << x << ',' << y << endl;
@@ -107,10 +151,12 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
 
   float angle_candidate_fitLine = angle_2points( Point(x0,y0), Point(x1,y1));
   cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << cout;
-  if ( is_vert && angle_candidate_fitLine > angle_avg_by_len ) {
-    x0=x_upper; y = 0;
-    x1=x_lower; y = size_mat.height;
+  if ( is_vert && angle_candidate_fitLine>90.0 && angle_candidate_fitLine>angle_avg_by_len ) {
+    x0=p1.x; y0 = p1.y;
+    x1=p2.x; y = p2.y;
   }
+  //TODO - go on from here
+  else if ( is_vert && angle_candidate_fitLine<90.0 && angle_candidate_fitLine>angle_avg_by_le  )
 
   // cv.Line(img, (x0-m*vx[0], y0-m*vy[0]), (x0+m*vx[0], y0+m*vy[0]), (0,0,0))
 
