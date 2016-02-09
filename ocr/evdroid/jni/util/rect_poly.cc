@@ -45,11 +45,11 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
 
   float angle_avg = mean(angles)[0]; /*calculate, to know if horizontal or vertical*/
   bool is_vert = is_vertical(angle_avg);
-  cout << "get_closest_diagonal :: angle_avg, is_vert: " << angle_avg << ',' << is_vert << endl;
 
   vector<cv::Point> points = get_points_from_contours ( is_vert, contours );
 
   cout << "\n\n=========\nget_closest_diagonal :: angles, points\n" << '\n' << angles << '\n' << points << endl;
+  cout << "get_closest_diagonal :: angle_avg, is_vert: " << angle_avg << ',' << is_vert << endl;
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
   Vec4f line_result;
@@ -61,17 +61,22 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   float y = line_result[3];
 
   float angle_avg_by_len =  get_angle_avg_by_lengths ( angles, len_contours );
+  float x_upper, x_lower;
+  // float angle_avg_by_len =  angle_avg;
   //TODO - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
   if ( is_vert ) {
-    float ang = 180.0 - angle_avg_by_len;
+
+    float ang = abs(angle_avg_by_len-90.0);
     cout << "get_closest_diagonal :: ang degrees: " << ang << endl;
     ang = abs(ang*CV_PI/180.0); /* to rad */
     cout << "get_closest_diagonal :: ang rad: " << ang << endl;
-    cout << "get_closest_diagonal :: tan rad: " << tan(ang) << endl;
-    cout << "get_closest_diagonal :: cotan rad: " << 1.0/tan(ang) << endl;
-      // abs(angle_avg_by_len * 180 / CV_PI);
-    float x_upper = y * 1.0/tan(ang) + x ;
-    float x_lower = x - (size_mat.height-y) * 1.0/tan(ang);
+
+    // cout << "get_closest_diagonal :: tan rad: " << tan(ang) << endl;
+    // cout << "get_closest_diagonal :: cotan rad: " << 1.0/tan(ang) << endl;
+
+    // abs(angle_avg_by_len * 180 / CV_PI);
+    x_upper = (y * tan(ang)) + x;
+    x_lower = x - ((size_mat.height-y) * tan(ang));
     cout << "get_closest_diagonal ::  upper point DIY :" << Point(x_upper,0) << endl;
     cout << "get_closest_diagonal ::  lower point DIY :" << Point(x_lower,size_mat.height) << endl;
 
@@ -99,6 +104,13 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
     x1 = x + vx*1.2*larger;
 
   y1 = y + vy*1.2*larger;
+
+  float angle_candidate_fitLine = angle_2points( Point(x0,y0), Point(x1,y1));
+  cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << cout;
+  if ( is_vert && angle_candidate_fitLine > angle_avg_by_len ) {
+    x0=x_upper; y = 0;
+    x1=x_lower; y = size_mat.height;
+  }
 
   // cv.Line(img, (x0-m*vx[0], y0-m*vy[0]), (x0+m*vx[0], y0+m*vy[0]), (0,0,0))
 
