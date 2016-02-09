@@ -25,13 +25,17 @@ bool is_vertical ( float angle ) {
   return angle > 45.0 && angle < 135.0;
 }
 
+// TODO - go on from solving the angle translation with direction as well
 float angle_2points ( cv::Point p1, cv::Point p2 ) {
 
   float ang = atan2(p1.y - p2.y, p1.x - p2.x);
-  ang = abs(ang * 180 / CV_PI);
+  ang = ang * 180 / CV_PI;
+  cout << "angle_2points :: orig: " << ang << endl;
+  ang = abs(ang);
 
   /*put all folks in the top left quadrant of the 360 circle - used only for kmeans clustering*/
   ang<90.0 && (ang=180.0-ang);
+  cout << "angle_2points ::  fake: " << ang << endl;
   return ang;
 }
 
