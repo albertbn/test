@@ -52,7 +52,7 @@ void get_geometry_points_vertical ( float angle_avg_by_len, Point &up, Point &do
   x_upper = y_fitline * tan(ang_tan);
   x_lower = (size_mat.height-y_fitline) * tan(ang_tan);
 
-  // abs(angle_avg_by_len * 180 / CV_PI);
+  // this decides in which direction the line is tilted
   if ( angle_avg_by_len>90 ) {
     x_upper += x_fitline;
     x_lower = x_fitline - x_lower;
@@ -71,7 +71,7 @@ void get_geometry_points_vertical ( float angle_avg_by_len, Point &up, Point &do
 
 void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point &right, float x_fitline, float y_fitline ) {
 
-  float y_left=0, y_righ=0;
+  float y_left=0, y_right=0;
   float ang = abs ( 180 - angle_avg_by_len ), ang_tan; /* the smaller angle (close to 1 degrees) */
   cout << "get_geometry_points_horizontal :: ang degrees: " << ang << endl;
   ang = abs(ang*CV_PI/180.0); /* to rad */
@@ -79,20 +79,21 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
 
   ang_tan = tan(ang);
   y_left = x_fitline * ang_tan;
-  y_righ = (size_mat.width-x_fitline) * ang_tan;
+  y_right = (size_mat.width-x_fitline) * ang_tan;
 
-  if ( angle_avg_by_len>180 ) {
+  // this decides in which direction the line is tilted
+  if ( angle_avg_by_len<180 ) {
     y_left += y_fitline;
-    y_righ = y_fitline - y_righ;
+    y_right = y_fitline - y_right;
   }
   //???
   else {
     y_left = y_fitline-y_left;
-    y_righ += y_fitline;
+    y_right += y_fitline;
   }
 
   left = Point ( 0, y_left );
-  right = Point( size_mat.width, y_righ );
+  right = Point( size_mat.width, y_right );
 
   cout << "get_geometry_points_horizontal :: DIY left, right :" << left << ',' << right << endl;
 }
@@ -117,12 +118,17 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   float x = line_result[2];
   float y = line_result[3];
 
+  cv::circle ( pic, Point(x,y), 50, cv::Scalar(255,255,255) );
+
   float angle_avg_by_len =  get_angle_avg_by_lengths ( angles, len_contours );
   Point p1, p2;
   // float angle_avg_by_len =  angle_avg;
   //DONE - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
   if ( is_vert ) {
     get_geometry_points_vertical ( angle_avg_by_len, p1, p2, x, y );
+  }
+  else{
+    get_geometry_points_horizontal ( angle_avg_by_len, p1, p2, x, y );
   }
 
   cv::circle ( pic, p1, 50, cv::Scalar(255,255,255) );
@@ -140,6 +146,7 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
     x0 = x + vx*1.2*larger;
   else
     x0 = x - vx*1.2*larger;
+  //TODO - make the same for horizontal with y
   y0 = y - vy*1.2*larger;
 
   if ( is_vert && angle_avg>=90 )
@@ -147,20 +154,31 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   else
     x1 = x + vx*1.2*larger;
 
+  //TODO - make the same for horizontal with y
   y1 = y + vy*1.2*larger;
 
   float angle_candidate_fitLine = angle_2points( Point(x0,y0), Point(x1,y1));
-  cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << cout;
-  if ( is_vert && angle_candidate_fitLine>90.0 && angle_candidate_fitLine>angle_avg_by_len ) {
+  cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << endl;
+  if (
+      //vert
+      (is_vert && angle_candidate_fitLine>90.0 && angle_candidate_fitLine>angle_avg_by_len)
+      ||
+      //vert
+      (is_vert && angle_candidate_fitLine<90.0 && angle_candidate_fitLine<angle_avg_by_len)
+      ||
+      //hor
+      (!is_vert && angle_candidate_fitLine<180.0 && angle_candidate_fitLine<angle_avg_by_len)
+      ||
+      //hor
+      (!is_vert && angle_candidate_fitLine<180.0 && angle_candidate_fitLine<angle_avg_by_len)
+      ) {
+    cout << "get_closest_diagonal :: C H A N G E D  to pi, p2" << endl;
     x0=p1.x; y0 = p1.y;
-    x1=p2.x; y = p2.y;
+    x1=p2.x; y1 = p2.y; /*!*/
   }
-  //TODO - go on from here
-  else if ( is_vert && angle_candidate_fitLine<90.0 && angle_candidate_fitLine>angle_avg_by_le  )
 
   // cv.Line(img, (x0-m*vx[0], y0-m*vy[0]), (x0+m*vx[0], y0+m*vy[0]), (0,0,0))
 
-  cv::circle ( pic, Point(x,y), 50, cv::Scalar(255,255,255) );
 
   cout << "get_closest_diagonal :: x0, y0, x1, y1 : " << x0 << ',' << y0 << ',' << x1 << ',' << y1  << endl;
   if ( lines4intersect_validate( is_vertical(angle_avg), Point(x,y), Vec4i(x0,y0,x1,y1) ) ) {
