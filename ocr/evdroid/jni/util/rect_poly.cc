@@ -96,6 +96,20 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
   cout << "get_geometry_points_horizontal :: DIY left, right :" << left << ',' << right << endl;
 }
 
+void test_angle ( vector< std::vector<cv::Point> > contours ) {
+
+  float angle;
+  Point p1, p2;
+  for ( int i=0; i<(int)contours.size(); ++i ){
+    p1 = contours[i][0];
+    p2 = contours[i][1];
+
+    angle_2points ( p2, p1, angle /*ref*/ ) ;
+    cout << "test_angle :: angle p2,p1: " << angle << endl;
+    cout << "test_angle :: fastAtan2: " << fastAtan2( abs(p1.y - p2.y), abs(p1.x - p2.x) ) << endl;
+  }
+}
+
 // something stinky here? 6 Feb 2016
 void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> > contours, Mat &pic, vector<double> len_contours ) {
 
@@ -106,6 +120,10 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
 
   cout << "\n\n=========\nget_closest_diagonal :: angles, points\n" << '\n' << angles << '\n' << points << endl;
   cout << "get_closest_diagonal :: angle_avg, is_vert: " << angle_avg << ',' << is_vert << endl;
+  // if ( angles.rows==3 ){
+  //   test_angle ( contours );
+  // }
+
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
   Vec4f line_result;

@@ -42,7 +42,7 @@ void angle_tranlsate_to_45_225_range ( float &angle ) {
 // sets ref angle in the 45,225 range (45, -135)
 float angle_2points ( cv::Point p1, cv::Point p2, float &ang_45_225 ) {
 
-  float ang = atan2(p1.y - p2.y, p1.x - p2.x);
+  float ang = atan2 ( abs(p1.y - p2.y), abs(p1.x - p2.x) );
   ang = ang_45_225 = ang * 180 / CV_PI;
 
   cout << "angle_2points :: orig: " << ang << endl;
