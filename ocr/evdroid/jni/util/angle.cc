@@ -25,17 +25,35 @@ bool is_vertical ( float angle ) {
   return angle > 45.0 && angle < 135.0;
 }
 
-// TODO - go on from solving the angle translation with direction as well
-float angle_2points ( cv::Point p1, cv::Point p2 ) {
+// puts all angles in the 45, 225 range (45, -135)
+// used for regarding also the left or right direction
+void angle_tranlsate_to_45_225_range ( float &angle ) {
+
+  if ( angle<=45 && angle >= -135 ) {
+    angle+=180;
+  }
+  else if ( angle < -135 ){
+    angle+=360;
+  }
+}
+
+// ON IT - go on from solving the angle translation with direction as well
+/* returns angle: all folks in the top left quadrant of the 360 circle - used only for kmeans clustering*/
+// sets ref angle in the 45,225 range (45, -135)
+float angle_2points ( cv::Point p1, cv::Point p2, float &ang_45_225 ) {
 
   float ang = atan2(p1.y - p2.y, p1.x - p2.x);
-  ang = ang * 180 / CV_PI;
-  cout << "angle_2points :: orig: " << ang << endl;
-  ang = abs(ang);
+  ang = ang_45_225 = ang * 180 / CV_PI;
 
-  /*put all folks in the top left quadrant of the 360 circle - used only for kmeans clustering*/
+  cout << "angle_2points :: orig: " << ang << endl;
+  angle_tranlsate_to_45_225_range ( ang_45_225 /*by ref*/ );
+  cout << "angle_2points :: ang_45_225, ang: " << ang_45_225 << ',' << ang << endl;
+
+  ang = abs ( ang ) ;
+
+  /* all folks in the top left quadrant of the 360 circle - used only for kmeans clustering*/
   ang<90.0 && (ang=180.0-ang);
-  cout << "angle_2points ::  fake: " << ang << endl;
+  // cout << "angle_2points ::  fake: " << ang << endl;
   return ang;
 }
 
@@ -80,15 +98,18 @@ int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::
   return angle90_count;
 }
 
-Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers ){
+Mat angle_clusters ( std::vector < std::vector<cv::Point> > contours, Mat_<float> &angles, Mat_<double> &centers ) {
 
   int clusterCount = 2;
   Mat labels;
   Mat_<int> labels2;
 
   // Mat angles;
+  float ang_45_225;
+  Mat_<float> angles_45_225;
   for ( int i=0; i<(int)contours.size(); ++i ) {
-    angles.push_back ( angle_2points(contours[i][0], contours[i][1]) );
+    angles.push_back ( angle_2points(contours[i][0], contours[i][1], ang_45_225/*ref*/) );
+    angles_45_225.push_back ( ang_45_225 );
   }
 
   // check if there was just one line - then return here
@@ -99,8 +120,8 @@ Mat angle_clusters( std::vector < std::vector<cv::Point> > contours, Mat_<float>
   }
 
   int attempts = 5;
-  kmeans(angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
-
+  kmeans ( angles, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
+  angles = angles_45_225;
   labels2 = labels;
   double angle_centre_diff = abs(centers(0,0)-centers(1,0));
 

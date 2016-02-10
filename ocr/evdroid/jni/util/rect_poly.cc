@@ -53,12 +53,11 @@ void get_geometry_points_vertical ( float angle_avg_by_len, Point &up, Point &do
   x_lower = (size_mat.height-y_fitline) * tan(ang_tan);
 
   // this decides in which direction the line is tilted
-  if ( angle_avg_by_len>90 ) {
+  if ( angle_avg_by_len<90 /*90, 45*/ ) {
     x_upper += x_fitline;
     x_lower = x_fitline - x_lower;
   }
-  //~80 degree
-  else {
+  else { /*90, 135*/
     x_upper = x_fitline-x_upper;
     x_lower += x_fitline;
   }
@@ -86,7 +85,6 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
     y_left += y_fitline;
     y_right = y_fitline - y_right;
   }
-  //???
   else {
     y_left = y_fitline-y_left;
     y_right += y_fitline;
@@ -123,42 +121,50 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   float angle_avg_by_len =  get_angle_avg_by_lengths ( angles, len_contours );
   Point p1, p2;
   // float angle_avg_by_len =  angle_avg;
-  //DONE - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
+  // DONE - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
   if ( is_vert ) {
     get_geometry_points_vertical ( angle_avg_by_len, p1, p2, x, y );
   }
-  else{
+  else {
     get_geometry_points_horizontal ( angle_avg_by_len, p1, p2, x, y );
   }
 
   cv::circle ( pic, p1, 50, cv::Scalar(255,255,255) );
   cv::circle ( pic, p2, 50, cv::Scalar(255,255,255) );
 
-  cout << "get_closest_diagonal :: angle__avg_by_len : " << angle_avg_by_len << endl;
+  cout << "get_closest_diagonal :: angle_avg_by_len : " << angle_avg_by_len << endl;
   cout << "get_closest_diagonal :: vx, vy, x, y : " << vx << ',' << vy << ',' << x << ',' << y << endl;
 
   float x0, y0, x1, y1;
   float larger = max(size_mat.width, size_mat.height);
 
-  // is_vertical
-
-  if ( is_vert && angle_avg>=90 )
+  if ( is_vert && angle_avg_by_len<=90 )
     x0 = x + vx*1.2*larger;
   else
     x0 = x - vx*1.2*larger;
-  //TODO - make the same for horizontal with y
-  y0 = y - vy*1.2*larger;
 
-  if ( is_vert && angle_avg>=90 )
+  // ON IT - make the same for horizontal with y
+  if ( !is_vert && angle_avg_by_len>=180 )
+    y0 = y + vy*1.2*larger;
+  else {
+    y0 = y - vy*1.2*larger;
+  }
+
+  if ( is_vert && angle_avg<=90 )
     x1 = x - vx*1.2*larger;
   else
     x1 = x + vx*1.2*larger;
 
-  //TODO - make the same for horizontal with y
-  y1 = y + vy*1.2*larger;
+  // ON IT - make the same for horizontal with y
+  if ( !is_vert && angle_avg_by_len>=180 )
+    y1 = y - vy*1.2*larger;
+  else
+    y1 = y + vy*1.2*larger;
 
-  float angle_candidate_fitLine = angle_2points( Point(x0,y0), Point(x1,y1));
+  float angle_candidate_fitLine;
+  angle_2points ( Point(x0,y0), Point(x1,y1), angle_candidate_fitLine /*ref*/ ) ;
   cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << endl;
+  // get the closest angle candidate to angle fitLine
   if (
       //vert
       (is_vert && angle_candidate_fitLine>90.0 && angle_candidate_fitLine>angle_avg_by_len)
@@ -167,7 +173,7 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
       (is_vert && angle_candidate_fitLine<90.0 && angle_candidate_fitLine<angle_avg_by_len)
       ||
       //hor
-      (!is_vert && angle_candidate_fitLine<180.0 && angle_candidate_fitLine<angle_avg_by_len)
+      (!is_vert && angle_candidate_fitLine>180.0 && angle_candidate_fitLine>angle_avg_by_len)
       ||
       //hor
       (!is_vert && angle_candidate_fitLine<180.0 && angle_candidate_fitLine<angle_avg_by_len)
