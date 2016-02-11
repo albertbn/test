@@ -46,6 +46,7 @@ float angle_2points ( cv::Point _p1, cv::Point _p2, float &ang_45_225 ) {
 
   Point p1, p2;
 
+  //order points - for vertical put upper first, for horizontal put left first
   if ( is_vert && _p1.y < _p2.y ) {
     p1 = _p1;
     p2 = _p2;
