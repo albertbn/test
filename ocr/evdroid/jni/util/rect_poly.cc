@@ -81,7 +81,7 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
   y_right = (size_mat.width-x_fitline) * ang_tan;
 
   // this decides in which direction the line is tilted
-  if ( angle_avg_by_len<180 ) {
+  if ( angle_avg_by_len>180 ) {
     y_left += y_fitline;
     y_right = y_fitline - y_right;
   }
@@ -96,17 +96,36 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
   cout << "get_geometry_points_horizontal :: DIY left, right :" << left << ',' << right << endl;
 }
 
-void test_angle ( vector< std::vector<cv::Point> > contours ) {
+void test_angle ( vector< std::vector<cv::Point> > contours, bool is_vert ) {
 
   float angle;
   Point p1, p2;
-  for ( int i=0; i<(int)contours.size(); ++i ){
-    p1 = contours[i][0];
-    p2 = contours[i][1];
+  for ( int i=0; i<(int)contours.size(); ++i ) {
 
-    angle_2points ( p2, p1, angle /*ref*/ ) ;
+    if ( is_vert && contours[i][0].y<contours[i][1].y ) {
+      p1 = contours[i][0];
+      p2 = contours[i][1];
+    }
+    else if ( is_vert ) {
+      p2 = contours[i][0];
+      p1 = contours[i][1];
+    }
+    else if ( !is_vert && contours[i][0].x<contours[i][1].x ) {
+      p1 = contours[i][0];
+      p2 = contours[i][1];
+    }
+    else if ( !is_vert ) {
+       p2 = contours[i][0];
+       p1 = contours[i][1];
+    }
+
+    angle_2points ( p1, p2, angle /*ref*/ ) ;
     cout << "test_angle :: angle p2,p1: " << angle << endl;
-    cout << "test_angle :: fastAtan2: " << fastAtan2( abs(p1.y - p2.y), abs(p1.x - p2.x) ) << endl;
+
+    if ( is_vert )
+      cout << "=============\ntest_angle :: fastAtan2 vert: " << fastAtan2( abs(p1.y - p2.y), (p1.x - p2.x) ) << "\n=============\n" << endl;
+    else
+      cout << "=============\ntest_angle :: fastAtan2 hor: " << fastAtan2( (p1.y - p2.y), abs(p1.x - p2.x) ) << "\n=============" << endl;
   }
 }
 
@@ -120,9 +139,8 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
 
   cout << "\n\n=========\nget_closest_diagonal :: angles, points\n" << '\n' << angles << '\n' << points << endl;
   cout << "get_closest_diagonal :: angle_avg, is_vert: " << angle_avg << ',' << is_vert << endl;
-  // if ( angles.rows==3 ){
-  //   test_angle ( contours );
-  // }
+
+  // test_angle ( contours, is_vert );
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -154,36 +172,39 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
   cout << "get_closest_diagonal :: vx, vy, x, y : " << vx << ',' << vy << ',' << x << ',' << y << endl;
 
   float x0, y0, x1, y1;
-  float larger = max(size_mat.width, size_mat.height);
 
-  if ( is_vert && angle_avg_by_len<=90 )
-    x0 = x + vx*1.2*larger;
-  else
-    x0 = x - vx*1.2*larger;
+  // float larger = max(size_mat.width, size_mat.height);
 
-  // ON IT - make the same for horizontal with y
-  if ( !is_vert && angle_avg_by_len>=180 )
-    y0 = y + vy*1.2*larger;
-  else {
-    y0 = y - vy*1.2*larger;
-  }
+  // if ( is_vert && angle_avg<=90 )
+  //   x0 = x + vx*1.2*larger;
+  // else
+  //   x0 = x - vx*1.2*larger;
 
-  if ( is_vert && angle_avg<=90 )
-    x1 = x - vx*1.2*larger;
-  else
-    x1 = x + vx*1.2*larger;
+  // // ON IT - make the same for horizontal with y
+  // if ( !is_vert && angle_avg>=180 )
+  //   y0 = y + vy*1.2*larger;
+  // else {
+  //   y0 = y - vy*1.2*larger;
+  // }
 
-  // ON IT - make the same for horizontal with y
-  if ( !is_vert && angle_avg_by_len>=180 )
-    y1 = y - vy*1.2*larger;
-  else
-    y1 = y + vy*1.2*larger;
+  // if ( is_vert && angle_avg<=90 )
+  //   x1 = x - vx*1.2*larger;
+  // else
+  //   x1 = x + vx*1.2*larger;
+
+  // // ON IT - make the same for horizontal with y
+  // if ( !is_vert && angle_avg>=180 )
+  //   y1 = y - vy*1.2*larger;
+  // else
+  //   y1 = y + vy*1.2*larger;
 
   float angle_candidate_fitLine;
-  angle_2points ( Point(x0,y0), Point(x1,y1), angle_candidate_fitLine /*ref*/ ) ;
-  cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << endl;
+  // angle_2points ( Point(x0,y0), Point(x1,y1), angle_candidate_fitLine /*ref*/ ) ;
+  // cout << "angle_candidate_fitLine :: " << angle_candidate_fitLine << endl;
+
   // get the closest angle candidate to angle fitLine
   if (
+      1==1 ||
       //vert
       (is_vert && angle_candidate_fitLine>90.0 && angle_candidate_fitLine>angle_avg_by_len)
       ||

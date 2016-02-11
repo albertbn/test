@@ -40,14 +40,40 @@ void angle_tranlsate_to_45_225_range ( float &angle ) {
 // ON IT - go on from solving the angle translation with direction as well
 /* returns angle: all folks in the top left quadrant of the 360 circle - used only for kmeans clustering*/
 // sets ref angle in the 45,225 range (45, -135)
-float angle_2points ( cv::Point p1, cv::Point p2, float &ang_45_225 ) {
+float angle_2points ( cv::Point _p1, cv::Point _p2, float &ang_45_225 ) {
 
-  float ang = atan2 ( abs(p1.y - p2.y), abs(p1.x - p2.x) );
+  bool is_vert = abs(_p1.x - _p2.x) < abs(_p1.y - _p2.y) ;
+
+  Point p1, p2;
+
+  if ( is_vert && _p1.y < _p2.y ) {
+    p1 = _p1;
+    p2 = _p2;
+  }
+  else if ( is_vert ) {
+    p2 = _p1;
+    p1 = _p2;
+  }
+  else if ( !is_vert && _p1.x < _p2.x ) {
+    p1 = _p1;
+    p2 = _p2;
+  }
+  else if ( !is_vert ) {
+    p2 = _p1;
+    p1 = _p2;
+  }
+
+  float ang;
+  if(is_vert)
+    ang = atan2 ( abs(p1.y - p2.y), (p1.x - p2.x) );
+  else
+    ang = atan2 ( (p1.y - p2.y), abs(p1.x - p2.x) );
+
   ang = ang_45_225 = ang * 180 / CV_PI;
 
-  cout << "angle_2points :: orig: " << ang << endl;
+  // cout << "angle_2points :: orig: " << ang << endl;
   angle_tranlsate_to_45_225_range ( ang_45_225 /*by ref*/ );
-  cout << "angle_2points :: ang_45_225, ang: " << ang_45_225 << ',' << ang << endl;
+  // cout << "angle_2points :: ang_45_225, ang: " << ang_45_225 << ',' << ang << endl;
 
   ang = abs ( ang ) ;
 
