@@ -7,11 +7,48 @@
 using namespace cv;
 using namespace std;
 
+const float DEVIATION_RATIO = .038; /*usually, if th stdev is smaller than mean, then if stdev/mean > DEVIATION_RATIO - suspect is set*/
+const float DEVIATION_RATIO_ANGLE = .27;
+
 double get_longest_side_poly ( std::vector<cv::Point> approx ) {
 
   Rect rect = boundingRect(approx);
 
   return sqrt ( rect.width*rect.width + rect.height*rect.height );
+}
+
+//severity
+void find_rebel_suspect ( Mat_<float> m_one_dimension, vector<int> &suspect_indexes, vector<float> &severity ) {
+
+  suspect_indexes.clear();
+  severity.clear();
+  cv::Scalar mean, stdev;
+  cv::meanStdDev( m_one_dimension, mean/*ref*/, stdev/*ref*/ );
+
+  cout << "find_rebel_suspect :: mat: " << m_one_dimension << endl;
+
+  float small, large, ssmall, slarge;
+  double severe;
+  ssmall = min(mean.val[0], stdev.val[0]);
+  slarge = max(mean.val[0], stdev.val[0]);
+
+  if ( (ssmall/slarge)>DEVIATION_RATIO ) {
+    for ( int i=0; i<m_one_dimension.rows; ++i ) {
+      small = abs(mean.val[0]-stdev.val[0]);
+      large = mean.val[0]+stdev.val[0];
+      // if not in standard deviation range - add to suspect list
+      if ( !(small<m_one_dimension[i][0] &&  m_one_dimension[i][0]<large) ) {
+        suspect_indexes.push_back(i);
+
+        severe = abs ( m_one_dimension[i][0]-mean.val[0] ) ;
+        small = min ( severe, stdev.val[0] ) ;
+        large = max ( severe, stdev.val[0] ) ;
+        severity.push_back ( small/large ) ;
+      }
+    }
+  }
+
+  cout << "find_rebel_suspect :: mean, stdev: " << mean << ',' << stdev << endl;
 }
 
 vector<cv::Point> get_points_from_contours (
@@ -20,27 +57,21 @@ vector<cv::Point> get_points_from_contours (
                                             Mat_<float> &angles,
                                             vector<double> &len_contours
                                             ) {
-  vector<double> xy_angle_len_calc, vxalc, vxy;
-  double xalc;
+  vector<float> vxy;
+  float xalc;
   for ( int i=0; i<(int)contours.size(); ++i ) {
     xalc = (is_vert)
       ? (contours[i][0].x + contours[i][1].x)/2.0
       : (contours[i][0].y + contours[i][1].y)/2.0;
     vxy.push_back(xalc);
-
-    xalc*=angles[i][0];
-    vxalc.push_back(xalc);
-    for ( int j=0; j<len_contours[i]; ++j ) {
-      xy_angle_len_calc.push_back(xalc);/*push it thousand times here... - this is weighted stdDev*/
-    }
   }
 
-  cv::Scalar mean, stdev;
-  cv::meanStdDev( Mat(xy_angle_len_calc), mean/*ref*/, stdev/*ref*/ );
+  vector<int> suspect_indexes_xy, suspect_indexes_angles;
+  vector<float> severe_suspect_indexes_xy, severe_suspect_indexes_angles;
+  find_rebel_suspect ( Mat_<float>(vxy), suspect_indexes_xy, severe_suspect_indexes_xy );
+  find_rebel_suspect ( angles, suspect_indexes_angles, severe_suspect_indexes_angles );
 
-  cout << "=====~~~======\nget_points_from_contours :: vxy, angles, len:" << Mat(vxy) << " ,\n" << angles << " ,\n" << " ,\n" << Mat(len_contours) << "\n=====~~~======" << endl;
-  cout << "get_points_from_contours :: mean, stdev, map:" << mean << ',' << stdev << ',' << ',' << Mat(vxalc) << "\n=====~~~======" << endl;
-
+  cout << "get_points_from_contours :: rebels: " << Mat(suspect_indexes_xy) << ',' << Mat(suspect_indexes_angles) << ',' << Mat(severe_suspect_indexes_angles) << endl;
   //ON IT - filter out lines by vertical/horizontal out of standard deviation
   //for horizontal - calculate avg y, for vert avg x
   //multiply by angle
@@ -53,8 +84,26 @@ vector<cv::Point> get_points_from_contours (
   for ( int i=0; i<(int)contours.size(); ++i ) {
     if ( contours[i][0].x==0 || contours[i][1].x==0  ) continue;
 
-    if ( mean.val[0]>stdev.val[0] && vxalc[i]<stdev.val[0] ) continue;
-    if ( mean.val[0]<stdev.val[0] && vxalc[i]>mean.val[0] ) continue;
+    if ( suspect_indexes_xy.size() || suspect_indexes_angles.size() ){
+
+      if (
+          (find(suspect_indexes_xy.begin(), suspect_indexes_xy.end(), i) != suspect_indexes_xy.end())
+          &&
+          (find(suspect_indexes_angles.begin(), suspect_indexes_angles.end(), i) != suspect_indexes_angles.end())
+          )
+        continue;
+
+      else if(
+              ( find(suspect_indexes_angles.begin(), suspect_indexes_angles.end(), i) != suspect_indexes_angles.end() )
+              ){
+        cout << "~~~DEVIATION_RATIO_ANGLE severe, check, sever_vec~~~ :" << severe_suspect_indexes_angles[i] << ',' << (severe_suspect_indexes_angles[i]>DEVIATION_RATIO_ANGLE) << ',' << Mat(severe_suspect_indexes_angles) << endl;
+        Mat_<float> mm( severe_suspect_indexes_angles );
+        if ( mm[i][0]>DEVIATION_RATIO_ANGLE ){
+          // cout << "yep???" << endl;
+          // continue;
+        }
+      }
+    }
 
     points.push_back(contours[i][0]);
     points.push_back(contours[i][1]);
