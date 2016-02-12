@@ -1,4 +1,4 @@
-
+#include <unordered_map>
 #include <opencv2/opencv.hpp>
 #include "angle.hpp"
 #include "point.hpp"
@@ -14,17 +14,55 @@ double get_longest_side_poly ( std::vector<cv::Point> approx ) {
   return sqrt ( rect.width*rect.width + rect.height*rect.height );
 }
 
-vector<cv::Point> get_points_from_contours ( bool is_vert, vector< std::vector<cv::Point> > contours ) {
+vector<cv::Point> get_points_from_contours (
+                                            bool is_vert,
+                                            vector< std::vector<cv::Point> > &contours,
+                                            Mat_<float> &angles,
+                                            vector<double> &len_contours
+                                            ) {
+  vector<double> xy_angle_len_calc, vxalc, vxy;
+  double xalc;
+  for ( int i=0; i<(int)contours.size(); ++i ) {
+    xalc = (is_vert)
+      ? (contours[i][0].x + contours[i][1].x)/2.0
+      : (contours[i][0].y + contours[i][1].y)/2.0;
+    vxy.push_back(xalc);
 
-  //TODO - filter out lines by vert/hor out of standard dev
+    xalc*=angles[i][0];
+    vxalc.push_back(xalc);
+    for ( int j=0; j<len_contours[i]; ++j ) {
+      xy_angle_len_calc.push_back(xalc);/*push it thousand times here... - this is weighted stdDev*/
+    }
+  }
+
+  cv::Scalar mean, stdev;
+  cv::meanStdDev( Mat(xy_angle_len_calc), mean/*ref*/, stdev/*ref*/ );
+
+  cout << "=====~~~======\nget_points_from_contours :: vxy, angles, len:" << Mat(vxy) << " ,\n" << angles << " ,\n" << " ,\n" << Mat(len_contours) << "\n=====~~~======" << endl;
+  cout << "get_points_from_contours :: mean, stdev, map:" << mean << ',' << stdev << ',' << ',' << Mat(vxalc) << "\n=====~~~======" << endl;
+
+  //ON IT - filter out lines by vertical/horizontal out of standard deviation
+  //for horizontal - calculate avg y, for vert avg x
+  //multiply by angle
+  //then add *len times to regard also the len
+  //then do standard deviation and clear noise
   vector<cv::Point> points;
+  Mat_<float> angles2;
+  vector<double> len_contours2;
 
   for ( int i=0; i<(int)contours.size(); ++i ) {
     if ( contours[i][0].x==0 || contours[i][1].x==0  ) continue;
+
+    if ( mean.val[0]>stdev.val[0] && vxalc[i]<stdev.val[0] ) continue;
+    if ( mean.val[0]<stdev.val[0] && vxalc[i]>mean.val[0] ) continue;
+
     points.push_back(contours[i][0]);
     points.push_back(contours[i][1]);
+    angles2.push_back(angles[i][0]);
+    len_contours2.push_back(len_contours[i]);
   }
 
+  angles = angles2;
   return points;
 }
 
@@ -96,51 +134,16 @@ void get_geometry_points_horizontal ( float angle_avg_by_len, Point &left, Point
   cout << "get_geometry_points_horizontal :: DIY left, right :" << left << ',' << right << endl;
 }
 
-void test_angle ( vector< std::vector<cv::Point> > contours, bool is_vert ) {
-
-  float angle;
-  Point p1, p2;
-  for ( int i=0; i<(int)contours.size(); ++i ) {
-
-    if ( is_vert && contours[i][0].y<contours[i][1].y ) {
-      p1 = contours[i][0];
-      p2 = contours[i][1];
-    }
-    else if ( is_vert ) {
-      p2 = contours[i][0];
-      p1 = contours[i][1];
-    }
-    else if ( !is_vert && contours[i][0].x<contours[i][1].x ) {
-      p1 = contours[i][0];
-      p2 = contours[i][1];
-    }
-    else if ( !is_vert ) {
-       p2 = contours[i][0];
-       p1 = contours[i][1];
-    }
-
-    angle_2points ( p1, p2, angle /*ref*/ ) ;
-    cout << "test_angle :: angle p2,p1: " << angle << endl;
-
-    if ( is_vert )
-      cout << "=============\ntest_angle :: fastAtan2 vert: " << fastAtan2( abs(p1.y - p2.y), (p1.x - p2.x) ) << "\n=============\n" << endl;
-    else
-      cout << "=============\ntest_angle :: fastAtan2 hor: " << fastAtan2( (p1.y - p2.y), abs(p1.x - p2.x) ) << "\n=============" << endl;
-  }
-}
-
 // something stinky here? 6 Feb 2016
 void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> > contours, Mat &pic, vector<double> len_contours ) {
 
   float angle_avg = mean(angles)[0]; /*calculate, to know if horizontal or vertical*/
   bool is_vert = is_vertical(angle_avg);
 
-  vector<cv::Point> points = get_points_from_contours ( is_vert, contours );
+  vector<cv::Point> points = get_points_from_contours ( is_vert, contours/*ref*/, angles /*ref*/, len_contours /*ref*/ );
 
   cout << "\n\n=========\nget_closest_diagonal :: angles, points\n" << '\n' << angles << '\n' << points << endl;
   cout << "get_closest_diagonal :: angle_avg, is_vert: " << angle_avg << ',' << is_vert << endl;
-
-  // test_angle ( contours, is_vert );
 
   // vx,vy,x,y
   // (vx, vy, x0, y0), where (vx, vy) is a normalized vector collinear to the line and (x0, y0) is a point on the line
@@ -154,7 +157,7 @@ void get_closest_diagonal ( Mat_<float> angles, vector< std::vector<cv::Point> >
 
   cv::circle ( pic, Point(x,y), 50, cv::Scalar(255,255,255) );
 
-  float angle_avg_by_len =  get_angle_avg_by_lengths ( angles, len_contours );
+  float angle_avg_by_len = angle_avg = get_angle_avg_by_lengths ( angles, len_contours );
   Point p1, p2;
   // float angle_avg_by_len =  angle_avg;
   // DONE - go on from x = 1291 * atan2(180-angle... vert hor rad - see get_max_deviation in common)
