@@ -86,6 +86,9 @@ vector<cv::Point> get_points_from_contours (
 
     if ( suspect_indexes_xy.size() || suspect_indexes_angles.size() ){
 
+      if(severe_suspect_indexes_angles.size()>i )
+        cout << "is begin, end on vector giving me hard time? :" << ',' << severe_suspect_indexes_angles[i] << endl;
+
       if (
           (find(suspect_indexes_xy.begin(), suspect_indexes_xy.end(), i) != suspect_indexes_xy.end())
           &&
@@ -96,10 +99,11 @@ vector<cv::Point> get_points_from_contours (
       else if(
               ( find(suspect_indexes_angles.begin(), suspect_indexes_angles.end(), i) != suspect_indexes_angles.end() )
               ){
+        suspect_indexes_angles.front();
         cout << "~~~DEVIATION_RATIO_ANGLE severe, check, sever_vec~~~ :" << severe_suspect_indexes_angles[i] << ',' << (severe_suspect_indexes_angles[i]>DEVIATION_RATIO_ANGLE) << ',' << Mat(severe_suspect_indexes_angles) << endl;
-        Mat_<float> mm( severe_suspect_indexes_angles );
-        if ( mm[i][0]>DEVIATION_RATIO_ANGLE ){
-          // cout << "yep???" << endl;
+        // Mat_<float> mm( severe_suspect_indexes_angles );
+        if ( severe_suspect_indexes_angles[i]>DEVIATION_RATIO_ANGLE ){
+          cout << "yep???" << ',' << severe_suspect_indexes_angles[i] << endl;
           // continue;
         }
       }
