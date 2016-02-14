@@ -1,4 +1,4 @@
-#include <unordered_map>
+
 #include <opencv2/opencv.hpp>
 #include "angle.hpp"
 #include "point.hpp"
@@ -7,8 +7,9 @@
 using namespace cv;
 using namespace std;
 
-const float DEVIATION_RATIO = .038; /*usually, if th stdev is smaller than mean, then if stdev/mean > DEVIATION_RATIO - suspect is set*/
-const float DEVIATION_RATIO_ANGLE = .27;
+//my father was born 1938, my mother in  1949
+const float DEVIATION_RATIO = .038; /* (if > then suspect) usually, if the stdev is smaller than mean, then if stdev/mean > DEVIATION_RATIO - suspect is set*/
+const float DEVIATION_MIN_RATIO_ALLOWED_ANGLE = .49; /* (if < then suspect) values less than that are rebel suspects, greater than that - close to 1.0 are OK */
 
 double get_longest_side_poly ( std::vector<cv::Point> approx ) {
 
@@ -45,6 +46,9 @@ void find_rebel_suspect ( Mat_<float> m_one_dimension, vector<int> &suspect_inde
         large = max ( severe, stdev.val[0] ) ;
         severity.push_back ( small/large ) ;
       }
+      else {
+        severity.push_back ( 0.0 ) ; /*!*/
+      }
     }
   }
 
@@ -80,7 +84,6 @@ vector<cv::Point> get_points_from_contours (
   vector<cv::Point> points;
   Mat_<float> angles2;
   vector<double> len_contours2;
-  vector<float>::iterator it_severe_suspect_indexes_angles;
 
   for ( int i=0; i<(int)contours.size(); ++i ) {
     if ( contours[i][0].x==0 || contours[i][1].x==0  ) continue;
@@ -98,13 +101,11 @@ vector<cv::Point> get_points_from_contours (
               ( find(suspect_indexes_angles.begin(), suspect_indexes_angles.end(), i) != suspect_indexes_angles.end() )
               ){
 
-        it_severe_suspect_indexes_angles = severe_suspect_indexes_angles.begin(); it_severe_suspect_indexes_angles+=i-1;
+        cout << "~~~DEVIATION_RATIO_ANGLE severe, check, sever_vec~~~ :" << severe_suspect_indexes_angles[i] << ',' << (severe_suspect_indexes_angles[i]<DEVIATION_MIN_RATIO_ALLOWED_ANGLE) << ',' << Mat(severe_suspect_indexes_angles) << endl;
 
-        cout << "~~~DEVIATION_RATIO_ANGLE severe, check, sever_vec~~~ :" << *it_severe_suspect_indexes_angles << ',' << (severe_suspect_indexes_angles[i]>DEVIATION_RATIO_ANGLE) << ',' << Mat(severe_suspect_indexes_angles) << endl;
-
-        if ( *it_severe_suspect_indexes_angles>DEVIATION_RATIO_ANGLE ) {
-          cout << "yep???" << ',' << *it_severe_suspect_indexes_angles << endl;
-          // continue;
+        if ( severe_suspect_indexes_angles[i] < DEVIATION_MIN_RATIO_ALLOWED_ANGLE ) {
+          cout << "yep???" << ',' << severe_suspect_indexes_angles[i] << endl;
+          continue;
         }
       }
     }
