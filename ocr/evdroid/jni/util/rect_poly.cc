@@ -12,9 +12,7 @@ const float DEVIATION_RATIO = .038; /* (if > then suspect) usually, if the stdev
 const float DEVIATION_MIN_RATIO_ALLOWED_ANGLE = .49; /* (if < then suspect) values less than that are rebel suspects, greater than that - close to 1.0 are OK */
 
 double get_longest_side_poly ( std::vector<cv::Point> approx ) {
-
   Rect rect = boundingRect(approx);
-
   return sqrt ( rect.width*rect.width + rect.height*rect.height );
 }
 

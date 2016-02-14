@@ -99,8 +99,9 @@ void reduce_noise_short_lines_raw_from_polydp (
   // cout << "reduce_noise_short_lines_raw_from_polydp :: d_stdev: " << d_stdev  << endl;
 
   // contours2.clear(); len_contours2.clear();
-  for(int i=0; i<(int)contours.size(); ++i){
-    if ( len_contours[i]>= MIN_LINE_LENGTH_CONSIDERED_SIDE/4 ){
+  // rebel set: MIN_LINE_LENGTH_CONSIDERED_SIDE/4
+  for ( int i=0; i<(int)contours.size(); ++i ) {
+    if ( len_contours[i]>= MIN_LINE_LENGTH_CONSIDERED_SIDE/3 ){
       contours2.push_back(contours[i]);
       len_contours2.push_back(len_contours[i]);
     }
