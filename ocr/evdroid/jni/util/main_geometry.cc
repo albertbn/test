@@ -31,9 +31,9 @@ void longest_closed ( Mat& mat ) {
   // original longest_closed set
   Point kernel_ksize(19,19); /*Size of the structuring element*/
   Size blur_ksize(10,10);
-  int canny_thresh_big = 40; /*here*/
+  int canny_thresh_big = 50; /*here*/
   int canny_thresh_small = 1;
-  int appr_poly_epsilon = 30; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
+  int appr_poly_epsilon = 25; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
 
 #ifdef ANDROID
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
