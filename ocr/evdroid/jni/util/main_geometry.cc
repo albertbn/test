@@ -21,7 +21,7 @@ using namespace std;
 // start here
 void longest_closed ( Mat& mat ) {
 
-  // rebel set
+  // rebel set - several sample pics fail with missing sides and a lot of noise
   // Point kernel_ksize(19,19); /*Size of the structuring element*/
   // Size blur_ksize(10,10);
   // int canny_thresh_big = 30; /*here*/
@@ -29,11 +29,18 @@ void longest_closed ( Mat& mat ) {
   // int appr_poly_epsilon = 15; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
 
   // original longest_closed set
+  // Point kernel_ksize(19,19); /*Size of the structuring element*/
+  // Size blur_ksize(10,10);
+  // int canny_thresh_big = 40; /*here*/
+  // int canny_thresh_small = 1;
+  // int appr_poly_epsilon = 40; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
+
+    // original longest_closed set
   Point kernel_ksize(19,19); /*Size of the structuring element*/
   Size blur_ksize(10,10);
-  int canny_thresh_big = 50; /*here*/
-  int canny_thresh_small = 1;
-  int appr_poly_epsilon = 25; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
+  int canny_thresh_big = 40; /*here*/
+  int canny_thresh_small = 10;
+  int appr_poly_epsilon = 40; /*10-smaller sides in noise shapes (more angles), 40-larger - larger poly-sides with less angles*/
 
 #ifdef ANDROID
   LOGD ( "longest_closed mat (width, height): %d, %d \n", mat.size().width, mat.size().height );
