@@ -68,6 +68,8 @@ OPENCV_CAMERA_MODULES := off
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
+LOCAL_SRC_FILES  += util/colour/Object.cpp
+LOCAL_SRC_FILES  += util/colour/multipleObjectTracking.cpp
 LOCAL_SRC_FILES  += util/angle.cc
 LOCAL_SRC_FILES  += util/close_center.cc
 LOCAL_SRC_FILES  += util/cluster.cc
