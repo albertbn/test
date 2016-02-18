@@ -67,7 +67,9 @@ string path_img; /* doesn't end with / */
 #ifdef ANDROID
 JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
     JNIEnv *env, jobject thisObj, jstring jpath_sd_card, jstring jimg_path ) {
+  LOGD ( "about to run maina\n" );
   maina();
+  LOGD ( "after maina\n" );
 }
 #endif // ANDROID
 
