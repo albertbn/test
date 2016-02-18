@@ -64,7 +64,11 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 OPENCV_LIB_TYPE:=STATIC
 OPENCV_PACKAGE_DIR:= ~/dev/OpenCV-android-sdk/sdk
-OPENCV_CAMERA_MODULES := off
+
+# 18 feb 2016 - shall we yep - remarked the := off for camera modules and set the modules for native to true. yep? i hope we yep :) 
+# OPENCV_CAMERA_MODULES := off
+OPENCV_CAMERA_MODULES:=on
+OPENCV_INSTALL_MODULES:=on
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
