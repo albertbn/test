@@ -256,6 +256,9 @@ int maina ( ) {
   //set height and width of capture frame
   // capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
   // capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
+
+  capture.set(CV_CAP_PROP_FRAME_WIDTH,300);
+  capture.set(CV_CAP_PROP_FRAME_HEIGHT,200);
   //start an infinite loop where webcam feed is copied to cameraFeed matrix
   //all of our operations will be performed within this loop
   // waitKey(1000);
