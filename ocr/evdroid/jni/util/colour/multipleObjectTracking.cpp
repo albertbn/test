@@ -14,15 +14,18 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //IN THE SOFTWARE.
 
+#include <iostream>
 #include <sstream>
 #include <string>
-#include <iostream>
 #include <vector>
+#include <unistd.h>
 
 #include "Object.hpp"
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include "../common.hpp"
 
 //initial min and max HSV filter values.
 //these will be changed using trackbars
@@ -257,22 +260,27 @@ int maina ( ) {
   // capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
   // capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
 
-  capture.set(CV_CAP_PROP_FRAME_WIDTH,300);
-  capture.set(CV_CAP_PROP_FRAME_HEIGHT,200);
+  capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
+  capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
   //start an infinite loop where webcam feed is copied to cameraFeed matrix
   //all of our operations will be performed within this loop
   // waitKey(1000);
-  waitKey(1000000);
+  LOGD ( "before sleep 1000 in maina \n" );
+  usleep(1000*1000);
+  LOGD ( "after sleep 1000 in maina \n" );
   // TEMP
-  return 0;
+  // return 0;
   while(1){
     //store image to matrix
     capture.read(cameraFeed);
 
     src = cameraFeed;
 
-    if( !src.data )
-      { return -1; }
+    if ( !src.data ) {
+      LOGD ( "!!!no src camera feed in maina\n" );
+      // return -1;
+      continue;
+    }
 
     //convert frame from BGR to HSV colorspace
     cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
@@ -345,7 +353,11 @@ int maina ( ) {
 
     //delay 30ms so that screen can refresh.
     //image will not appear without this waitKey() command
-    waitKey(30);
+    // waitKey(30);
+    LOGD ( "before 30ms sleep in maina\n" );
+    usleep(30*1000);
+    LOGD ( "after 30ms sleep in maina\n" );
   }
+  LOGD ( "before end return in maina\n" );
   return 0;
 }
