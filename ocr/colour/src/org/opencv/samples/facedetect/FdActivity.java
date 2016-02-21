@@ -47,7 +47,8 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
     private CascadeClassifier      mJavaDetector;
     private DetectionBasedTracker  mNativeDetector;
 
-    private int                    mDetectorType       = JAVA_DETECTOR;
+    // private int                    mDetectorType       = JAVA_DETECTOR;
+    private int                    mDetectorType       = NATIVE_DETECTOR;
     private String[]               mDetectorName;
 
     private float                  mRelativeFaceSize   = 0.2f;
@@ -64,7 +65,10 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
                     Log.i(TAG, "OpenCV loaded successfully");
 
                     // Load native library after(!) OpenCV initialization
-                    System.loadLibrary("detection_based_tracker");
+                    System.loadLibrary("pngt");
+                    System.loadLibrary("lept");
+                    System.loadLibrary("tess");
+                    System.loadLibrary("preNocr");
 
                     try {
                         // load cascade file from application resources
