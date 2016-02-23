@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <android/log.h>
+#include "multipleObjectTracking.hpp"
 
 #define LOG_TAG "FaceDetection/DetectionBasedTracker"
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
@@ -230,10 +231,13 @@ JNIEXPORT void JNICALL Java_org_opencv_samples_facedetect_DetectionBasedTracker_
 
     try
     {
-        vector<Rect> RectFaces;
-        ((DetectorAgregator*)thiz)->tracker->process(*((Mat*)imageGray));
-        ((DetectorAgregator*)thiz)->tracker->getObjects(RectFaces);
-        *((Mat*)faces) = Mat(RectFaces, true);
+      //in multipleObjectTracking
+      do_frame ( *((Mat*)imageGray) );
+
+        // vector<Rect> RectFaces;
+        // ((DetectorAgregator*)thiz)->tracker->process(*((Mat*)imageGray));
+        // ((DetectorAgregator*)thiz)->tracker->getObjects(RectFaces);
+        // *((Mat*)faces) = Mat(RectFaces, true);
     }
     catch(cv::Exception& e)
     {

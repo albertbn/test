@@ -173,32 +173,35 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
 
-        if (mAbsoluteFaceSize == 0) {
-            int height = mGray.rows();
-            if (Math.round(height * mRelativeFaceSize) > 0) {
-                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-            }
-            mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
-        }
-
         MatOfRect faces = new MatOfRect();
+        mNativeDetector.detect(mRgba, faces);
 
-        if (mDetectorType == JAVA_DETECTOR) {
-            if (mJavaDetector != null)
-                mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-                        new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-        }
-        else if (mDetectorType == NATIVE_DETECTOR) {
-            if (mNativeDetector != null)
-                mNativeDetector.detect(mGray, faces);
-        }
-        else {
-            Log.e(TAG, "Detection method is not selected!");
-        }
+        // if (mAbsoluteFaceSize == 0) {
+        //     int height = mGray.rows();
+        //     if (Math.round(height * mRelativeFaceSize) > 0) {
+        //         mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
+        //     }
+        //     mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
+        // }
 
-        Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++)
-            Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
+        // MatOfRect faces = new MatOfRect();
+
+        // if (mDetectorType == JAVA_DETECTOR) {
+        //     if (mJavaDetector != null)
+        //         mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+        //                 new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
+        // }
+        // else if (mDetectorType == NATIVE_DETECTOR) {
+        //     if (mNativeDetector != null)
+        //         mNativeDetector.detect(mGray, faces);
+        // }
+        // else {
+        //     Log.e(TAG, "Detection method is not selected!");
+        // }
+
+        // Rect[] facesArray = faces.toArray();
+        // for (int i = 0; i < facesArray.length; i++)
+        //     Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
 
         return mRgba;
     }
