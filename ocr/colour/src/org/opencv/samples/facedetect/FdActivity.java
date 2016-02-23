@@ -19,6 +19,7 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +28,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.os.Environment;
 
+//yep! go on with resolution and auto focus, yep!
+// http://answers.opencv.org/question/19796/android-use-autofocus-with-camerabridgeviewbase/
 public class FdActivity extends Activity implements CvCameraViewListener2 {
 
     private static final String    TAG                 = "OCVSample::Activity";
@@ -35,6 +39,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
     public static final int        JAVA_DETECTOR       = 0;
     public static final int        NATIVE_DETECTOR     = 1;
 
+    private MenuItem               mSaveFrame;
     private MenuItem               mItemFace50;
     private MenuItem               mItemFace40;
     private MenuItem               mItemFace30;
@@ -176,29 +181,6 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
         MatOfRect faces = new MatOfRect();
         mNativeDetector.detect(mRgba, faces);
 
-        // if (mAbsoluteFaceSize == 0) {
-        //     int height = mGray.rows();
-        //     if (Math.round(height * mRelativeFaceSize) > 0) {
-        //         mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-        //     }
-        //     mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
-        // }
-
-        // MatOfRect faces = new MatOfRect();
-
-        // if (mDetectorType == JAVA_DETECTOR) {
-        //     if (mJavaDetector != null)
-        //         mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-        //                 new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-        // }
-        // else if (mDetectorType == NATIVE_DETECTOR) {
-        //     if (mNativeDetector != null)
-        //         mNativeDetector.detect(mGray, faces);
-        // }
-        // else {
-        //     Log.e(TAG, "Detection method is not selected!");
-        // }
-
         // Rect[] facesArray = faces.toArray();
         // for (int i = 0; i < facesArray.length; i++)
         //     Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
@@ -209,6 +191,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "called onCreateOptionsMenu");
+        mSaveFrame = menu.add("Jimi Page");
         mItemFace50 = menu.add("Face size 50%");
         mItemFace40 = menu.add("Face size 40%");
         mItemFace30 = menu.add("Face size 30%");
@@ -220,7 +203,9 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
-        if (item == mItemFace50)
+        if ( item==mSaveFrame )
+            saveFrame();
+        else if (item == mItemFace50)
             setMinFaceSize(0.5f);
         else if (item == mItemFace40)
             setMinFaceSize(0.4f);
@@ -234,6 +219,15 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
             setDetectorType(tmpDetectorType);
         }
         return true;
+    }
+
+    void saveFrame ( ) {
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath(); /*does NOT end with /*/
+        String filename = "/tessdata/img/zeppelin.png";
+        File file = new File(path, filename);
+        filename = file.toString();
+        Imgcodecs.imwrite(filename, mRgba);
     }
 
     private void setMinFaceSize(float faceSize) {
