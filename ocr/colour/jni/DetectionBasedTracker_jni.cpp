@@ -225,14 +225,14 @@ JNIEXPORT void JNICALL Java_org_opencv_samples_facedetect_DetectionBasedTracker_
 
 
 JNIEXPORT void JNICALL Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeDetect
-(JNIEnv * jenv, jclass, jlong thiz, jlong imageGray, jlong faces)
+(JNIEnv * jenv, jclass, jlong thiz, jlong imageColour, jlong faces)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeDetect");
 
     try
     {
       //in multipleObjectTracking
-      do_frame ( *((Mat*)imageGray) );
+      do_frame ( *((Mat*)imageColour) );
 
         // vector<Rect> RectFaces;
         // ((DetectorAgregator*)thiz)->tracker->process(*((Mat*)imageGray));

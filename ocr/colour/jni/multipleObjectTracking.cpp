@@ -242,7 +242,11 @@ void do_frame ( Mat cameraFeed ) {
 
   Object white("white");
   //white
-  cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
+  // opencv cvtColor: http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html
+  // test and know
+  // cvtColor(cameraFeed,HSV,COLOR_BGR2HSV); /*not clear if image comes rgb(a) or bgr from java*/
+  cvtColor(cameraFeed,HSV,CV_RGB2HSV); /*not clear if image comes rgb(a) or bgr from java*/
+
   inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
   morphOps(threshold);
   trackFilteredObject(white,threshold,HSV,cameraFeed);
