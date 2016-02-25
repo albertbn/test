@@ -1,4 +1,3 @@
-
 package org.opencv.samples.facedetect;
 
 import java.io.File;
@@ -77,46 +76,48 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                 {
-                    Log.i(TAG, "OpenCV loaded successfully");
+                    saveFrame();
 
-                    // Load native library after(!) OpenCV initialization
-                    System.loadLibrary("pngt");
-                    System.loadLibrary("lept");
-                    System.loadLibrary("tess");
-                    System.loadLibrary("preNocr");
+                    // Log.i(TAG, "OpenCV loaded successfully");
 
-                    try {
-                        // load cascade file from application resources
-                        InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
-                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                        mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
-                        FileOutputStream os = new FileOutputStream(mCascadeFile);
+                    // // Load native library after(!) OpenCV initialization
+                    // System.loadLibrary("pngt");
+                    // System.loadLibrary("lept");
+                    // System.loadLibrary("tess");
+                    // System.loadLibrary("preNocr");
 
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                        is.close();
-                        os.close();
+                    // try {
+                    //     // load cascade file from application resources
+                    //     InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
+                    //     File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+                    //     mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
+                    //     FileOutputStream os = new FileOutputStream(mCascadeFile);
 
-                        mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
-                        if (mJavaDetector.empty()) {
-                            Log.e(TAG, "Failed to load cascade classifier");
-                            mJavaDetector = null;
-                        } else
-                            Log.i(TAG, "Loaded cascade classifier from " + mCascadeFile.getAbsolutePath());
+                    //     byte[] buffer = new byte[4096];
+                    //     int bytesRead;
+                    //     while ((bytesRead = is.read(buffer)) != -1) {
+                    //         os.write(buffer, 0, bytesRead);
+                    //     }
+                    //     is.close();
+                    //     os.close();
 
-                        mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(), 0);
+                    //     mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+                    //     if (mJavaDetector.empty()) {
+                    //         Log.e(TAG, "Failed to load cascade classifier");
+                    //         mJavaDetector = null;
+                    //     } else
+                    //         Log.i(TAG, "Loaded cascade classifier from " + mCascadeFile.getAbsolutePath());
 
-                        cascadeDir.delete();
+                    //     mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(), 0);
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
-                    }
+                    //     cascadeDir.delete();
 
-                    mOpenCvCameraView.enableView();
+                    // } catch (IOException e) {
+                    //     e.printStackTrace();
+                    //     Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
+                    // }
+
+                    // mOpenCvCameraView.enableView();
                 } break;
                 default:
                 {
@@ -251,25 +252,26 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
     }
 
     //=============
+
     void saveFrame ( ) {
 
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath(); /*does NOT end with /*/
-        String filename = "/tessdata/img/zeppelin.png";
-        File file = new File(path, filename);
-        filename = file.toString();
-        Imgcodecs.imwrite(filename, mRgba);
+        // String path = Environment.getExternalStorageDirectory().getAbsolutePath(); /*does NOT end with /*/
+        // String filename = "/tessdata/img/zeppelin.png";
+        // File file = new File(path, filename);
+        // filename = file.toString();
+        // Imgcodecs.imwrite(filename, mRgba);
 
-        //stop stream, take single shot
-        // mOpenCvCameraView.stop() /*???*/;
-        mOpenCvCameraView.disableView();
-        mNativeDetector.stop();
+        // //stop stream, take single shot
+        // // mOpenCvCameraView.stop() /*???*/;
+        // mOpenCvCameraView.disableView();
+        // mNativeDetector.stop();
 
         cameraId = findFrontFacingCamera();
         camera = Camera.open(cameraId);
 
         camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
-        camera.release();
-        camera = null;
+        // camera.release();
+        // camera = null;
     }
 
     int findFrontFacingCamera ( ) {
