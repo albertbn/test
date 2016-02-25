@@ -1,3 +1,4 @@
+
 package org.opencv.samples.facedetect;
 
 import java.io.File;
@@ -30,9 +31,18 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.os.Environment;
 
+//==================camera single shot stuff =============
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
+
 //yep! go on with resolution and auto focus, yep!
 // http://answers.opencv.org/question/19796/android-use-autofocus-with-camerabridgeviewbase/
 public class FdActivity extends Activity implements CvCameraViewListener2 {
+
+    //camera single stuff
+    Camera camera;
+    int cameraId = 0;
+    //==================
 
     private static final String    TAG                 = "OCVSample::Activity";
     private static final Scalar    FACE_RECT_COLOR     = new Scalar(0, 255, 0, 255);
@@ -221,15 +231,6 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
         return true;
     }
 
-    void saveFrame ( ) {
-
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath(); /*does NOT end with /*/
-        String filename = "/tessdata/img/zeppelin.png";
-        File file = new File(path, filename);
-        filename = file.toString();
-        Imgcodecs.imwrite(filename, mRgba);
-    }
-
     private void setMinFaceSize(float faceSize) {
         mRelativeFaceSize = faceSize;
         mAbsoluteFaceSize = 0;
@@ -247,5 +248,45 @@ public class FdActivity extends Activity implements CvCameraViewListener2 {
                 mNativeDetector.stop();
             }
         }
+    }
+
+    //=============
+    void saveFrame ( ) {
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath(); /*does NOT end with /*/
+        String filename = "/tessdata/img/zeppelin.png";
+        File file = new File(path, filename);
+        filename = file.toString();
+        Imgcodecs.imwrite(filename, mRgba);
+
+        //stop stream, take single shot
+        // mOpenCvCameraView.stop() /*???*/;
+        mOpenCvCameraView.disableView();
+        mNativeDetector.stop();
+
+        cameraId = findFrontFacingCamera();
+        camera = Camera.open(cameraId);
+
+        camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+        camera.release();
+        camera = null;
+    }
+
+    int findFrontFacingCamera ( ) {
+
+        int cameraId = -1;
+        // Search for the front facing camera
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            CameraInfo info = new CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                // Log.d(DEBUG_TAG, "Camera found");
+                cameraId = i;
+                break;
+            }
+        }
+
+        return cameraId;
     }
 }
