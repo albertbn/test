@@ -1,0 +1,6 @@
+# view AndroidManifest.xml #generated:9
+-keep class pic.hq.hqpic_act { <init>(...); }
+
+# onClick res/layout/main.xml #generated:6
+-keepclassmembers class * { *** onClick(...); }
+

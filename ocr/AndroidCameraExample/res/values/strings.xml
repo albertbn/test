@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AndroidCameraExample</string>
+    <string name="hello_world">fuck u world</string>
+    <string name="action_settings">sets</string>
+
+</resources>
