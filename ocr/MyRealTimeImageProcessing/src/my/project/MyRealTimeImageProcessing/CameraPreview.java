@@ -81,6 +81,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     public void surfaceCreated(SurfaceHolder arg0)
     {
         mCamera = Camera.open();
+        if(mCamera==null) mCamera = Camera.open(0);
         try
             {
                 // If did not set the SurfaceHolder, the preview area will be black.
