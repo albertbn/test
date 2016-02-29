@@ -4,4 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/frameLayout1">
+          <Button
+            android:id="@+id/button_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="save the middle class"
+            android:layout_marginTop="100dp"/>
 </FrameLayout>
