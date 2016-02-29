@@ -1,4 +1,3 @@
-
 package my.project.MyRealTimeImageProcessing;
 
 import java.io.File;
@@ -111,12 +110,40 @@ public class MyRealTimeImageProcessing extends Activity {
             public void onClick ( View v ) {
 
                 Camera.Parameters params = mCamera.getParameters();
-                params.setPictureSize(2048, 1536);
+                Camera.Size size = getBestPreviewSize ( 2048,1536, params );
+                params.setPictureSize(size.width, size.height);
                 params.setJpegQuality(100);
                 mCamera.setParameters(params);
                 mCamera.takePicture ( null, null, mPicture ) ;
             }
         };
+
+    // credits: https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Preview/src/com/commonsware/android/camera/PreviewDemo.java
+    Camera.Size getBestPreviewSize(
+                                   int width,
+                                   int height,
+                                   Camera.Parameters parameters
+                                   ) {
+    Camera.Size result=null;
+
+    for ( Camera.Size size : parameters.getSupportedPictureSizes() ) {
+      if ( size.width<=width && size.height<=height ) {
+        if (result==null) {
+          result=size;
+        }
+        else {
+          int resultArea=result.width*result.height;
+          int newArea=size.width*size.height;
+
+          if (newArea>resultArea) {
+            result=size;
+          }
+        }
+      }
+    }
+
+    return(result);
+  }
 
     //callback - trace - from captureListener > onClick > cam.takePicture
     PictureCallback getPictureCallback ( ) {
@@ -179,6 +206,8 @@ public class MyRealTimeImageProcessing extends Activity {
     void releaseCamera ( ) {
         // stop and release camera
         if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
             mCamera.release();
             mCamera = null;
         }
@@ -186,6 +215,7 @@ public class MyRealTimeImageProcessing extends Activity {
 
     boolean hasCamera ( Context context ) {
         //check if the device has camera
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        // return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        return true; /*fuck you*/
     }
 }

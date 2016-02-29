@@ -78,14 +78,16 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
     @Override
     public void surfaceCreated ( SurfaceHolder arg0 ) {
-        mCamera = Camera.open();
-        if(mCamera==null) mCamera = Camera.open(0);
+        // mCamera = Camera.open();
+        // if(mCamera==null) mCamera = Camera.open(0);
         try {
             // If did not set the SurfaceHolder, the preview area will be black.
             mCamera.setPreviewDisplay(arg0);
             mCamera.setPreviewCallback(this);
         }
         catch (IOException e) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
             mCamera.release();
             mCamera = null;
         }
@@ -93,10 +95,13 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
     @Override
     public void surfaceDestroyed ( SurfaceHolder arg0 ) {
-        mCamera.setPreviewCallback(null);
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
+        try {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+        }
+        catch(Exception ex){}
     }
 
     public void refreshCamera ( Camera camera ) {
