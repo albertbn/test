@@ -95,7 +95,7 @@ public class AndroidCameraExample extends Activity {
         }
     }
 
-    public void initialize() {
+    public void initialize ( ) {
         cameraPreview = (LinearLayout) findViewById(R.id.camera_preview);
         mPreview = new CameraPreview(myContext, mCamera);
         cameraPreview.addView(mPreview);
@@ -233,7 +233,7 @@ public class AndroidCameraExample extends Activity {
         return mediaFile;
     }
 
-    void releaseCamera() {
+    void releaseCamera ( ) {
         // stop and release camera
         if (mCamera != null) {
             mCamera.release();

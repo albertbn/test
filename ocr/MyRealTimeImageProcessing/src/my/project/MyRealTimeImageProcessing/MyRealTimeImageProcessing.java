@@ -29,9 +29,7 @@ public class MyRealTimeImageProcessing extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
-        //
         // Create my camera preview
-        //
         MyCameraPreview = new ImageView(this);
 
         SurfaceView camView = new SurfaceView(this);
@@ -45,10 +43,10 @@ public class MyRealTimeImageProcessing extends Activity
         mainLayout.addView(camView, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
         mainLayout.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
     }
-    protected void onPause()
-        {
-                if ( camPreview != null)
-                        camPreview.onPause();
-                super.onPause();
-        }
+
+    protected void onPause() {
+        if ( camPreview != null)
+            camPreview.onPause();
+        super.onPause();
+    }
 }

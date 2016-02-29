@@ -32,8 +32,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     Handler mHandler = new Handler(Looper.getMainLooper());
 
     public CameraPreview(int PreviewlayoutWidth, int PreviewlayoutHeight,
-                         ImageView CameraPreview)
-    {
+                         ImageView CameraPreview) {
         PreviewSizeWidth = PreviewlayoutWidth;
         PreviewSizeHeight = PreviewlayoutHeight;
         MyCameraPreview = CameraPreview;
@@ -42,44 +41,33 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     @Override
-    public void onPreviewFrame(byte[] arg0, Camera arg1)
-    {
+    public void onPreviewFrame(byte[] arg0, Camera arg1) {
         // At preview mode, the frame data will push to here.
-        if (imageFormat == ImageFormat.NV21)
-            {
-                //We only accept the NV21(YUV420) format.
-                if ( !bProcessing )
-                    {
-                        FrameData = arg0;
-                        mHandler.post(DoImageProcessing);
-                    }
+        if (imageFormat == ImageFormat.NV21) {
+            //We only accept the NV21(YUV420) format.
+            if ( !bProcessing ) {
+                FrameData = arg0;
+                mHandler.post(DoImageProcessing);
             }
+        }
     }
 
-    public void onPause()
-    {
+    public void onPause() {
         mCamera.stopPreview();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3)
-    {
-        Parameters parameters;
-
-        parameters = mCamera.getParameters();
+    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+        Parameters parameters = mCamera.getParameters();
         // Set the camera preview size
         parameters.setPreviewSize(PreviewSizeWidth, PreviewSizeHeight);
-
         imageFormat = parameters.getPreviewFormat();
-
         mCamera.setParameters(parameters);
-
         mCamera.startPreview();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder arg0)
-    {
+    public void surfaceCreated(SurfaceHolder arg0) {
         mCamera = Camera.open();
         if(mCamera==null) mCamera = Camera.open(0);
         try
@@ -96,8 +84,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder arg0)
-    {
+    public void surfaceDestroyed(SurfaceHolder arg0) {
         mCamera.setPreviewCallback(null);
         mCamera.stopPreview();
         mCamera.release();
@@ -107,8 +94,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     //
     // Native JNI
     //
-    public native boolean ImageProcessing(int width, int height,
-                                          byte[] NV21FrameData, int [] pixels);
+    public native boolean ImageProcessing(int width, int height, byte[] NV21FrameData, int [] pixels);
+
     static {
         System.loadLibrary("pngt");
         System.loadLibrary("lept");
@@ -116,10 +103,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         System.loadLibrary("ImageProcessing");
     }
 
-    Runnable DoImageProcessing = new Runnable()
-        {
-            public void run()
-            {
+    Runnable DoImageProcessing = new Runnable() {
+            public void run() {
                 Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
                 bProcessing = true;
                 ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
