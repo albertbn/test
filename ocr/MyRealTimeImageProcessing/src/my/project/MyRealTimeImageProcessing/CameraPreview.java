@@ -135,6 +135,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
     // Native JNI
     public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int [] pixels );
+    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData );
 
     static {
         System.loadLibrary("pngt");
@@ -148,10 +149,12 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
             public void run() {
                 Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
                 bProcessing = true;
-                ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
+                // ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
+                // try to modify the FrameData mat
+                colourDetect ( PreviewSizeWidth, PreviewSizeHeight, FrameData );
 
-                bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
-                MyCameraPreview.setImageBitmap(bitmap);
+                // bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
+                // MyCameraPreview.setImageBitmap(bitmap);
                 bProcessing = false;
             }
         };
