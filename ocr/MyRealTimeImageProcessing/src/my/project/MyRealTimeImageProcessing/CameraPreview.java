@@ -134,15 +134,15 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     // Native JNI
-    public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int [] pixels );
-    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData );
-
     static {
         System.loadLibrary("pngt");
         System.loadLibrary("lept");
         System.loadLibrary("tess");
         System.loadLibrary("ImageProcessing");
     }
+
+    public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int[] pixels );
+    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels );
 
     Runnable DoImageProcessing = new Runnable() {
 
@@ -151,10 +151,10 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 bProcessing = true;
                 // ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
                 // try to modify the FrameData mat
-                colourDetect ( PreviewSizeWidth, PreviewSizeHeight, FrameData );
+                colourDetect ( PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels );
 
-                // bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
-                // MyCameraPreview.setImageBitmap(bitmap);
+                bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
+                MyCameraPreview.setImageBitmap(bitmap);
                 bProcessing = false;
             }
         };

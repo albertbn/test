@@ -29,23 +29,38 @@ void convertYUV ( JNIEnv* env, int width, int height, jbyteArray &yuvArray, Mat 
     env->ReleaseByteArrayElements(yuvArray, data, 0);
 }
 
+// do_frame ( mFrame );
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
 		JNIEnv* env, jobject thiz,
 		jint width, jint height,
-		jbyteArray NV21FrameData ) {
+		jbyteArray NV21FrameData,
+                jintArray outPixels ) {
 
-  // return true;
-  // jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
+  jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
+  jint * poutPixels = env->GetIntArrayElements(outPixels, 0);
 
-  Mat mFrame;
-  convertYUV ( env, width, height, NV21FrameData, mFrame );
-  NV21FrameData = NULL;
-  // Mat mFrame ( height, width, CV_8UC1, (unsigned char *)pNV21FrameData );
-  // do_frame ( mFrame );
+  // if ( mCanny == NULL ) {
+  //     mCanny = new Mat(height, width, CV_8UC1);
+  // }
 
-  // env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
+  // Mat mGray(height, width, CV_8UC1, (unsigned char *)pNV21FrameData);
+  Mat mGray(height, width, CV_8UC4, (unsigned char *)pNV21FrameData);
+  Mat mResult(height, width, CV_8UC4, (unsigned char *)poutPixels);
+  Mat mImg = imdecode(mGray, CV_LOAD_IMAGE_COLOR);
+
+  // IplImage srcImg = mGray;
+  IplImage srcImg = mImg;
+  // IplImage CannyImg = *mCanny;
+  IplImage ResultImg = mResult;
+
+  // cvCanny(&srcImg, &CannyImg, 80, 100, 3);
+  // cvCvtColor(&CannyImg, &ResultImg, CV_GRAY2BGRA);
+  cvCvtColor ( &srcImg, &ResultImg, CV_GRAY2BGRA ) ;
+
+  env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
+  env->ReleaseIntArrayElements(outPixels, poutPixels, 0);
 
   return true;
 }
@@ -55,8 +70,8 @@ jboolean
 Java_my_project_MyRealTimeImageProcessing_CameraPreview_ImageProcessing (
 		JNIEnv* env, jobject thiz,
 		jint width, jint height,
-		jbyteArray NV21FrameData, jintArray outPixels)
-{
+		jbyteArray NV21FrameData, jintArray outPixels) {
+
 	jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
 	jint * poutPixels = env->GetIntArrayElements(outPixels, 0);
 
