@@ -15,14 +15,15 @@ Mat * mCanny = NULL;
 
 // extern "C"
 // http://stackoverflow.com/questions/22752555/need-an-advice-processing-color-image-from-camera-android-opencv-ndk-c
-void convertYUV ( JNIEnv* env, int width, int height, jbyteArray yuvArray, Mat &img ) {
+void convertYUV ( JNIEnv* env, int width, int height, jbyteArray &yuvArray, Mat &img ) {
 
      // Get the data from JEnv.
      jbyte * data = env->GetByteArrayElements(yuvArray, 0);
 
      // Convert to Mat object.
      Mat imgbuf( Size(width,height), CV_8UC1, (unsigned char*) data );
-     img = imdecode(imgbuf, CV_LOAD_IMAGE_COLOR);
+     // img = imdecode(imgbuf, CV_LOAD_IMAGE_COLOR);
+     imgbuf = imdecode(imgbuf, CV_LOAD_IMAGE_GRAYSCALE);
 
     // Release the JNI data pointer.
     env->ReleaseByteArrayElements(yuvArray, data, 0);
@@ -40,8 +41,9 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
 
   Mat mFrame;
   convertYUV ( env, width, height, NV21FrameData, mFrame );
+  NV21FrameData = NULL;
   // Mat mFrame ( height, width, CV_8UC1, (unsigned char *)pNV21FrameData );
-  do_frame ( mFrame );
+  // do_frame ( mFrame );
 
   // env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
 
