@@ -30,6 +30,7 @@ void convertYUV ( JNIEnv* env, int width, int height, jbyteArray &yuvArray, Mat 
 }
 
 // do_frame ( mFrame );
+// new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
@@ -39,16 +40,13 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 jintArray outPixels ) {
 
   jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
+  // signed char * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
   jint * poutPixels = env->GetIntArrayElements(outPixels, 0);
 
-  // if ( mCanny == NULL ) {
-  //     mCanny = new Mat(height, width, CV_8UC1);
-  // }
-
-  // Mat mGray(height, width, CV_8UC1, (unsigned char *)pNV21FrameData);
-  Mat mGray(height, width, CV_8UC4, (unsigned char *)pNV21FrameData);
-  Mat mResult(height, width, CV_8UC4, (unsigned char *)poutPixels);
-  Mat mImg = imdecode(mGray, CV_LOAD_IMAGE_COLOR);
+  Mat mGray ( height, width, CV_8UC1, (unsigned char *)pNV21FrameData ) ;
+  // Mat mGray ( height, width, CV_8UC4, (unsigned char *)pNV21FrameData ) ;
+  Mat mResult ( height, width, CV_8UC4, (unsigned char *)poutPixels ) ;
+  Mat mImg = imdecode ( mGray, CV_LOAD_IMAGE_COLOR ) ;
 
   // IplImage srcImg = mGray;
   IplImage srcImg = mImg;
@@ -57,7 +55,10 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
 
   // cvCanny(&srcImg, &CannyImg, 80, 100, 3);
   // cvCvtColor(&CannyImg, &ResultImg, CV_GRAY2BGRA);
-  cvCvtColor ( &srcImg, &ResultImg, CV_GRAY2BGRA ) ;
+  // cvCvtColor ( &srcImg, &ResultImg, CV_GRAY2BGRA ) ;
+  // color conversions: http://docs.opencv.org/master/df/d4e/group__imgproc__c.html#gsc.tab=0
+  // cvCvtColor ( &srcImg, &ResultImg, CV_RGB2BGRA ) ;
+  // Mat mImg = imdecode(mGray, CV_LOAD_IMAGE_COLOR);
 
   env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
   env->ReleaseIntArrayElements(outPixels, poutPixels, 0);
