@@ -17,7 +17,7 @@ Object::Object ( string name ) {
     setHSVmin(Scalar(0,0,128));
     setHSVmax(Scalar(256,27,256));
 
-    setColor(Scalar(0,255,0)); /*green border for white*/
+    setColor(Scalar(0,0,0));
   }
 
   if(name=="blue"){
