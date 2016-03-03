@@ -135,7 +135,8 @@ void morphOps ( Mat &thresh ) {
   dilate(thresh,thresh,dilateElement);
 }
 
-void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
+void trackFilteredObject ( Mat threshold, Mat HSV, Mat &cameraFeed ) {
+
   vector <Object> objects;
   Mat temp;
   threshold.copyTo(temp);
@@ -150,10 +151,8 @@ void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
   if (hierarchy.size() > 0) {
     int numObjects = hierarchy.size();
     //if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-    if(numObjects<MAX_NUM_OBJECTS)
-      {
-        for (int index = 0; index >= 0; index = hierarchy[index][0])
-          {
+    if(numObjects<MAX_NUM_OBJECTS) {
+        for (int index = 0; index >= 0; index = hierarchy[index][0]) {
             Moments moment = moments((cv::Mat)contours[index]);
             double area = moment.m00;
             //if the area is less than 20 px by 20px then it is probably just noise
