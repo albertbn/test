@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import android.graphics.Bitmap;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -119,7 +120,7 @@ public class MyRealTimeImageProcessing extends Activity {
         };
 
     // credits: https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Preview/src/com/commonsware/android/camera/PreviewDemo.java
-    Camera.Size getBestPreviewSize(
+    Camera.Size getBestPreviewSize (
                                    int width,
                                    int height,
                                    Camera.Parameters parameters
@@ -145,22 +146,32 @@ public class MyRealTimeImageProcessing extends Activity {
     return(result);
   }
 
+        public native boolean saveMiddleClass ( int width, int height, byte[] NV21FrameData, int[] pixels );
     //callback - trace - from captureListener > onClick > cam.takePicture
     PictureCallback getPictureCallback ( ) {
         PictureCallback picture = new PictureCallback ( ) {
 
                 @Override
                 public void onPictureTaken(byte[] data, Camera camera) {
+
+                    Bitmap bitmap = Bitmap.createBitmap(2048,1536, Bitmap.Config.ARGB_8888);
+                    int[] pixels = new int[2048*1536];
+
+                    // error prone - don't know if this comes yuv
+                    saveMiddleClass ( 2048, 1536, data, pixels );
+                    bitmap.setPixels(pixels, 0, 2048, 0, 0, 2048, 1536);
+
                     //make a new picture file
                     File pictureFile = getOutputMediaFile();
 
-                    if (pictureFile == null) {
+                    if ( pictureFile == null ) {
                         return;
                     }
                     try {
                         //write the file
                         FileOutputStream fos = new FileOutputStream(pictureFile);
                         fos.write(data);
+                        // bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                         fos.close();
                         Toast toast =
                             Toast.makeText(

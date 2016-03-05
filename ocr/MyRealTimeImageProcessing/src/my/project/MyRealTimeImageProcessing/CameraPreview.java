@@ -150,7 +150,6 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
                 bProcessing = true;
                 // ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
-                // try to modify the FrameData mat
                 colourDetect ( PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels );
 
                 bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);

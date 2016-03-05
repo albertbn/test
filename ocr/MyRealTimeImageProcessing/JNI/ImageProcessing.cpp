@@ -13,20 +13,35 @@ using namespace cv;
 
 Mat * mCanny = NULL;
 
-// extern "C"
-// http://stackoverflow.com/questions/22752555/need-an-advice-processing-color-image-from-camera-android-opencv-ndk-c
-void convertYUV ( JNIEnv* env, int width, int height, jbyteArray &yuvArray, Mat &img ) {
+extern "C"
+jboolean
+Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
+		JNIEnv* env, jobject,
+		jint width, jint height, jbyteArray yuv, jintArray bgra ) {
 
-     // Get the data from JEnv.
-     jbyte * data = env->GetByteArrayElements(yuvArray, 0);
+  // Get native access to the given Java arrays.
+  jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
+  jint*  _bgra = env->GetIntArrayElements(bgra, 0);
 
-     // Convert to Mat object.
-     Mat imgbuf( Size(width,height), CV_8UC1, (unsigned char*) data );
-     // img = imdecode(imgbuf, CV_LOAD_IMAGE_COLOR);
-     imgbuf = imdecode(imgbuf, CV_LOAD_IMAGE_GRAYSCALE);
+  // Prepare a cv::Mat that points to the YUV420sp data.
+  Mat myuv(height, width, CV_8UC1, (uchar *)_yuv);
+  // Prepare a cv::Mat that points to the BGRA output data.
+  Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra);
 
-    // Release the JNI data pointer.
-    env->ReleaseByteArrayElements(yuvArray, data, 0);
+  // Convert the color format from the camera's
+  // NV21 "YUV420sp" format to an Android BGRA color image.
+  cvtColor(myuv, mbgra, CV_YUV420sp2RGBA);
+
+  // OpenCV can now access/modify the BGRA image if we want ...
+  // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
+  // save_middle_class ( mbgra );
+  save_middle_class ( myuv );
+
+  // Release the native lock we placed on the Java arrays.
+  env->ReleaseIntArrayElements(bgra, _bgra, 0);
+  env->ReleaseByteArrayElements(yuv, _yuv, 0);
+
+  return true;
 }
 
 // do_frame ( mFrame );

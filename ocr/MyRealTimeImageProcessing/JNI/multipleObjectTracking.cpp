@@ -135,7 +135,7 @@ void morphOps ( Mat &thresh ) {
   dilate(thresh,thresh,dilateElement);
 }
 
-void trackFilteredObject ( Mat threshold, Mat HSV, Mat &cameraFeed ) {
+void trackFilteredObject_calibration ( Mat threshold, Mat HSV, Mat &cameraFeed ) {
 
   vector <Object> objects;
   Mat temp;
@@ -184,17 +184,21 @@ void trackFilteredObject ( Mat threshold, Mat HSV, Mat &cameraFeed ) {
   }
 }
 
-void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed){
+vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
+void trackFilteredObject ( Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed ) {
 
   vector <Object> objects;
   Mat temp;
   threshold.copyTo(temp);
   //these two vectors needed for output of findContours
   vector< vector<Point> > contours;
+  contours_poly2.clear();
+
   vector<Vec4i> hierarchy;
   //find contours of filtered image using openCV findContours function
   findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-  //use moments method to find our filtered object
+  vector < vector<Point> > contours_poly(contours.size());
+ //use moments method to find our filtered object
   // double refArea = 0;
   bool objectFound = false;
   if (hierarchy.size() > 0) {
@@ -212,26 +216,27 @@ void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed
         //iteration and compare it to the area in the next iteration.
         if(area>MIN_OBJECT_AREA){
 
-          Object object;
+          // here - go to moon - yep indeed
+          approxPolyDP ( Mat(contours[index]), contours_poly[index], 40, true );
+          contours_poly2.push_back(contours_poly[index]);
 
-          object.setXPos(moment.m10/area);
-          object.setYPos(moment.m01/area);
-          object.setType(theObject.getType());
-          object.setColor(theObject.getColor());
-
-          objects.push_back(object);
-
-          objectFound = true;
-
-        }else objectFound = false;
+        } else objectFound = false;
       }
       //let user know you found an object
-      if(objectFound ==true){
+      // if(objectFound ==true){
+      if ( 1==1 /*fucking cosine up*/ ) {
         //draw object location on screen
-        drawObject(objects,cameraFeed,temp,contours,hierarchy);}
+        // drawObject(objects,cameraFeed,temp,contours,hierarchy);}
+        // credits: thanks PowHu for alpha 255, http://stackoverflow.com/questions/15916751/cvscalar-not-displaying-expected-color
+        drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
+      }
 
-    }else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
+    } else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
   }
+}
+
+void save_middle_class ( Mat picture ) {
+  drawContours ( picture, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
 }
 
 void do_frame ( Mat cameraFeed ) {
@@ -243,12 +248,12 @@ void do_frame ( Mat cameraFeed ) {
   //white
   // opencv cvtColor: http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html
   // test and know
-  cvtColor(cameraFeed,HSV,COLOR_BGR2HSV); /*not clear if image comes rgb(a) or bgr from java*/
+  cvtColor(cameraFeed,HSV,COLOR_BGR2HSV); /*not clear if image comes rgb(a) or bgr from java - bgr it is, yep!*/
   // cvtColor(cameraFeed,HSV,CV_RGB2HSV); /*not clear if image comes rgb(a) or bgr from java*/
 
   inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
   morphOps(threshold);
-  trackFilteredObject(white,threshold,HSV,cameraFeed);
+  trackFilteredObject ( white, threshold, HSV, cameraFeed );
 }
 
 int maina ( ) {
@@ -317,7 +322,7 @@ int maina ( ) {
       /// Create a Trackbar for user to enter threshold
       createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold);
       /// Show the image
-      trackFilteredObject(threshold,HSV,cameraFeed);
+      trackFilteredObject_calibration(threshold,HSV,cameraFeed);
     }
     else {
 
