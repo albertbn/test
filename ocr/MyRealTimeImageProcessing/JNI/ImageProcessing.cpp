@@ -17,29 +17,28 @@ extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
 		JNIEnv* env, jobject,
-		jint width, jint height, jbyteArray yuv, jintArray bgra ) {
+		jint width, jint height, jbyteArray NV21FrameData, jintArray outPixels ) {
 
-  // Get native access to the given Java arrays.
-  jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
-  jint*  _bgra = env->GetIntArrayElements(bgra, 0);
+  jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
+  jint * poutPixels = env->GetIntArrayElements(outPixels, 0);
 
-  // Prepare a cv::Mat that points to the YUV420sp data.
-  Mat myuv(height, width, CV_8UC1, (uchar *)_yuv);
-  // Prepare a cv::Mat that points to the BGRA output data.
-  Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra);
+  if ( mCanny == NULL )
+    {
+      mCanny = new Mat(height, width, CV_8UC1);
+    }
 
-  // Convert the color format from the camera's
-  // NV21 "YUV420sp" format to an Android BGRA color image.
-  cvtColor(myuv, mbgra, CV_YUV420sp2RGBA);
+  Mat mGray(height, width, CV_8UC1, (unsigned char *)pNV21FrameData);
+  Mat mResult(height, width, CV_8UC4, (unsigned char *)poutPixels);
 
-  // OpenCV can now access/modify the BGRA image if we want ...
-  // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
-  // save_middle_class ( mbgra );
-  save_middle_class ( myuv );
+  IplImage srcImg = mGray;
+  IplImage CannyImg = *mCanny;
+  IplImage ResultImg = mResult;
 
-  // Release the native lock we placed on the Java arrays.
-  env->ReleaseIntArrayElements(bgra, _bgra, 0);
-  env->ReleaseByteArrayElements(yuv, _yuv, 0);
+  cvCanny(&srcImg, &CannyImg, 80, 100, 3);
+  cvCvtColor(&CannyImg, &ResultImg, CV_GRAY2BGRA);
+
+  env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
+  env->ReleaseIntArrayElements(outPixels, poutPixels, 0);
 
   return true;
 }

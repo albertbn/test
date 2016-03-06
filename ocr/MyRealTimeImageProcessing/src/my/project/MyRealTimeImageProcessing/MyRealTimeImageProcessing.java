@@ -170,8 +170,8 @@ public class MyRealTimeImageProcessing extends Activity {
                     try {
                         //write the file
                         FileOutputStream fos = new FileOutputStream(pictureFile);
-                        fos.write(data);
-                        // bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        // fos.write(data);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                         fos.close();
                         Toast toast =
                             Toast.makeText(
