@@ -10,10 +10,15 @@ import java.util.Date;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.core.CvType;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -27,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,18 +52,26 @@ public class MyRealTimeImageProcessing extends Activity {
     int PreviewSizeWidth = 640;
     int PreviewSizeHeight= 480;
 
+    BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
     @Override
     public void onCreate ( Bundle savedInstanceState ) {
 
         super.onCreate(savedInstanceState);
-
-        if ( !OpenCVLoader.initDebug() ) {
-            // Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, null);
-        } else {
-            // Log.d(TAG, "OpenCV library found inside package. Using it!");
-            // mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
 
         //Set this APK Full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -103,6 +117,15 @@ public class MyRealTimeImageProcessing extends Activity {
     public void onResume ( ) {
 
         super.onResume();
+
+        if (!OpenCVLoader.initDebug()) {
+            // Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+        } else {
+            // Log.d(TAG, "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+
         if ( !hasCamera(myContext) ) {
             Toast toast =
                 Toast.makeText(myContext,
@@ -161,10 +184,15 @@ public class MyRealTimeImageProcessing extends Activity {
   }
 
     void tweak_bytes ( byte[] data ) {
-        Mat jpegData = new Mat(1, data.length, CvType.CV_8UC1);
-        Mat bgrMat = Imgcodecs.imdecode ( jpegData, Imgcodecs.IMREAD_COLOR );
+
+        Mat mat=new Mat();
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
+        bmp=null;
+        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
+        mat.getNativeObjAddr();
         File pictureFile = getOutputMediaFile();
-        Imgcodecs.imwrite ( pictureFile.toString(), bgrMat );
+        Imgcodecs.imwrite ( pictureFile.toString(), mat );
     }
 
     public native boolean saveMiddleClass ( int width, int height, byte[] NV21FrameData, int[] pixels );
