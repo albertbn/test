@@ -10,6 +10,11 @@ import java.util.Date;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.core.CvType;
+import org.opencv.android.OpenCVLoader;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
@@ -45,6 +50,15 @@ public class MyRealTimeImageProcessing extends Activity {
     public void onCreate ( Bundle savedInstanceState ) {
 
         super.onCreate(savedInstanceState);
+
+        if ( !OpenCVLoader.initDebug() ) {
+            // Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, null);
+        } else {
+            // Log.d(TAG, "OpenCV library found inside package. Using it!");
+            // mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+
         //Set this APK Full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -136,7 +150,7 @@ public class MyRealTimeImageProcessing extends Activity {
           int resultArea=result.width*result.height;
           int newArea=size.width*size.height;
 
-          if (newArea>resultArea) {
+          if ( newArea>resultArea ) {
             result=size;
           }
         }
@@ -146,46 +160,55 @@ public class MyRealTimeImageProcessing extends Activity {
     return(result);
   }
 
-        public native boolean saveMiddleClass ( int width, int height, byte[] NV21FrameData, int[] pixels );
+    void tweak_bytes ( byte[] data ) {
+        Mat jpegData = new Mat(1, data.length, CvType.CV_8UC1);
+        Mat bgrMat = Imgcodecs.imdecode ( jpegData, Imgcodecs.IMREAD_COLOR );
+        File pictureFile = getOutputMediaFile();
+        Imgcodecs.imwrite ( pictureFile.toString(), bgrMat );
+    }
+
+    public native boolean saveMiddleClass ( int width, int height, byte[] NV21FrameData, int[] pixels );
     //callback - trace - from captureListener > onClick > cam.takePicture
     PictureCallback getPictureCallback ( ) {
         PictureCallback picture = new PictureCallback ( ) {
 
                 @Override
-                public void onPictureTaken(byte[] data, Camera camera) {
+                public void onPictureTaken ( byte[] data, Camera camera ) {
 
-                    Bitmap bitmap = Bitmap.createBitmap(2048,1536, Bitmap.Config.ARGB_8888);
-                    int[] pixels = new int[2048*1536];
+                    tweak_bytes ( data ) ; return;
 
-                    // error prone - don't know if this comes yuv
-                    saveMiddleClass ( 2048, 1536, data, pixels );
-                    bitmap.setPixels(pixels, 0, 2048, 0, 0, 2048, 1536);
+                    // Bitmap bitmap = Bitmap.createBitmap(2048,1536, Bitmap.Config.ARGB_8888);
+                    // int[] pixels = new int[2048*1536];
 
-                    //make a new picture file
-                    File pictureFile = getOutputMediaFile();
+                    // // error prone - don't know if this comes yuv
+                    // saveMiddleClass ( 2048, 1536, data, pixels );
+                    // bitmap.setPixels(pixels, 0, 2048, 0, 0, 2048, 1536);
 
-                    if ( pictureFile == null ) {
-                        return;
-                    }
-                    try {
-                        //write the file
-                        FileOutputStream fos = new FileOutputStream(pictureFile);
-                        // fos.write(data);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        fos.close();
-                        Toast toast =
-                            Toast.makeText(
-                                           myContext,
-                                           "Picture saved: " + pictureFile.getName(),
-                                           Toast.LENGTH_LONG);
-                        toast.show();
+                    // //make a new picture file
+                    // File pictureFile = getOutputMediaFile();
 
-                    } catch (FileNotFoundException e) {
-                    } catch (IOException e) {
-                    }
+                    // if ( pictureFile == null ) {
+                    //     return;
+                    // }
+                    // try {
+                    //     //write the file
+                    //     FileOutputStream fos = new FileOutputStream(pictureFile);
+                    //     // fos.write(data);
+                    //     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    //     fos.close();
+                    //     Toast toast =
+                    //         Toast.makeText(
+                    //                        myContext,
+                    //                        "Picture saved: " + pictureFile.getName(),
+                    //                        Toast.LENGTH_LONG);
+                    //     toast.show();
 
-                    //refresh camera to continue preview
-                    camPreview.refreshCamera ( mCamera );
+                    // } catch (FileNotFoundException e) {
+                    // } catch (IOException e) {
+                    // }
+
+                    // //refresh camera to continue preview
+                    // camPreview.refreshCamera ( mCamera );
                 }
             };
         return picture;
