@@ -1,19 +1,6 @@
 
 // g++ -g -rdynamic $(pkg-config --cflags --libs opencv)  -o colour Object.cpp multipleObjectTracking.cpp
 
-//Written by  Kyle Hounslow 2013
-
-// modified by: Ahmad Kaifi, Hassan Althobaiti
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software")
-//, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-//The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-//IN THE SOFTWARE.
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -25,100 +12,76 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-//initial min and max HSV filter values.
-//these will be changed using trackbars
-int H_MIN = 0;
-int H_MAX = 256;
-int S_MIN = 0;
-int S_MAX = 256;
-int V_MIN = 0;
-int V_MAX = 256;
-//default capture width and height
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
+vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
 //minimum and maximum object area
 const int MIN_OBJECT_AREA = 20*20;
-// const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
-//names that will appear at the top of each window
-const string windowName = "Original Image";
-const string windowName1 = "HSV Image";
-const string windowName2 = "Thresholded Image";
-const string windowName3 = "After Morphological Operations";
-const string trackbarWindowName = "Trackbars";
 
-//The following for canny edge detec
-Mat dst, detected_edges;
-Mat src, src_gray;
-int edgeThresh = 1;
-int lowThreshold;
-int const max_lowThreshold = 100;
-int ratio = 3;
-int kernel_size = 3;
-char* window_name = "Edge Map";
 
-void on_trackbar ( int, void* ) {
-  //This function gets called whenever a
-  // trackbar position is changed
+
+static double angle ( Point pt1, Point pt2, Point pt0 ) {
+
+  double dx1 = pt1.x - pt0.x;
+  double dy1 = pt1.y - pt0.y;
+  double dx2 = pt2.x - pt0.x;
+  double dy2 = pt2.y - pt0.y;
+  double cos_value =
+    (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+
+  return acos(cos_value) * 180.0 / CV_PI;
 }
 
-string intToString(int number){
+// returns the angle90 count as well as draws circles... love u emacs
+int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& circles /*points4*/  ) {
 
-  std::stringstream ss;
-  ss << number;
-  return ss.str();
-}
+  // Number of vertices of polygonal curve
+  int vtc = approx.size();
+  // std::cout << "vtc: " << vtc << std::endl;
 
-void createTrackbars() {
-  //create window for trackbars
-  namedWindow(trackbarWindowName,0);
-  //create memory to store trackbar name on window
-  char TrackbarName[50];
-  sprintf( TrackbarName, "H_MIN", H_MIN);
-  sprintf( TrackbarName, "H_MAX", H_MAX);
-  sprintf( TrackbarName, "S_MIN", S_MIN);
-  sprintf( TrackbarName, "S_MAX", S_MAX);
-  sprintf( TrackbarName, "V_MIN", V_MIN);
-  sprintf( TrackbarName, "V_MAX", V_MAX);
-  //create trackbars and insert them into window
-  //3 parameters are: the address of the variable that is changing when the trackbar is moved(eg.H_LOW),
-  //the max value the trackbar can move (eg. H_HIGH),
-  //and the function that is called whenever the trackbar is moved(eg. on_trackbar)
-  //                                  ---->    ---->     ---->
-  createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, H_MAX, on_trackbar );
-  createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, H_MAX, on_trackbar );
-  createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, S_MAX, on_trackbar );
-  createTrackbar( "S_MAX", trackbarWindowName, &S_MAX, S_MAX, on_trackbar );
-  createTrackbar( "V_MIN", trackbarWindowName, &V_MIN, V_MAX, on_trackbar );
-  createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, V_MAX, on_trackbar );
-}
+  // DONE - go on and crack the cos/degree thing...
+  // Get the degree (in cosines) of all corners
+  // std::vector<double> cos;
+  double ang, ang_deg;
+  int angle90_count = 0;
 
-void drawObject ( vector<Object> theObjects,Mat &frame, Mat &temp, vector< vector<Point> > contours, vector<Vec4i> hierarchy ) {
+  int j_mid;
+  for ( int j = 1; j < vtc+1; j++ ) {
 
-  for ( int i =0; i<(int)theObjects.size(); i++ ) {
-    cv::drawContours(frame,contours,i,theObjects.at(i).getColor(),3,8,hierarchy);
-    cv::circle(frame,cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()),5,theObjects.at(i).getColor());
-    cv::putText(
-                frame,
-                intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),
-                cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),
-                1,1,
-                theObjects.at(i).getColor()
-                );
-    cv::putText(frame,theObjects.at(i).getType(),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()-20),1,2,theObjects.at(i).getColor());
+    (j==1 && (j_mid = vtc-1)) || (j_mid=j-2); /*6 nov 2015, Albert, Shawn 1 month old - fixed net/github script - go figure how come it's an educated world of assholes, writing un-perfect scripts */
+    // std::cout << "approx indexes: " << j%vtc << ',' << j_mid << ',' << j-1 << std::endl;
+    ang = ang_deg = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
+    // cos.push_back(ang);
+    // ang_deg = abs(ang*180/CV_PI);
+
+    if ( ang_deg >60.0 && ang_deg<120.0 ) {
+      // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
+      ++angle90_count;
+      circles.push_back(approx[j-1]);
+      // std::cout << "drawing circles... "  << std::endl;
+    }
+
+    // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
   }
-}
 
-void drawObject ( vector<Object> theObjects,Mat &frame ) {
+  double diag = 0;
+  angle90_count && (diag = get_longest_side_poly ( circles ));
 
-  for(int i =0; i<(int)theObjects.size(); i++){
-
-    cv::circle(frame,cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()),10,cv::Scalar(0,0,255));
-    cv::putText(frame,intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),1,1,Scalar(0,255,0));
-    cv::putText(frame,theObjects.at(i).getType(),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()-30),1,2,theObjects.at(i).getColor());
+  if ( angle90_count ) {
+    if(diag>100){
+      filter_points_if_needed(circles, approx);
+      angle90_count = circles.size();
+      // std::cout << "OK, drawing circles... " << clen << std::endl;
+      for ( int j=0; j<angle90_count; ++j ) {
+        cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
+      }
+    }
   }
+
+  return angle90_count;
 }
+
+//==============
 
 void morphOps ( Mat &thresh ) {
 
@@ -135,106 +98,41 @@ void morphOps ( Mat &thresh ) {
   dilate(thresh,thresh,dilateElement);
 }
 
-void trackFilteredObject_calibration ( Mat threshold, Mat HSV, Mat &cameraFeed ) {
+void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
   vector <Object> objects;
   Mat temp;
-  threshold.copyTo(temp);
-  //these two vectors needed for output of findContours
-  vector< vector<Point> > contours;
-  vector<Vec4i> hierarchy;
-  //find contours of filtered image using openCV findContours function
-  findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-  //use moments method to find our filtered object
-  // double refArea = 0;
-  bool objectFound = false;
-  if (hierarchy.size() > 0) {
-    int numObjects = hierarchy.size();
-    //if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-    if(numObjects<MAX_NUM_OBJECTS) {
-        for (int index = 0; index >= 0; index = hierarchy[index][0]) {
-            Moments moment = moments((cv::Mat)contours[index]);
-            double area = moment.m00;
-            //if the area is less than 20 px by 20px then it is probably just noise
-            //if the area is the same as the 3/2 of the image size, probably just a bad filter
-            //we only want the object with the largest area so we safe a reference area each
-            //iteration and compare it to the area in the next iteration.
-            if(area>MIN_OBJECT_AREA)
-              {
-                Object object;
-
-                object.setXPos(moment.m10/area);
-                object.setYPos(moment.m01/area);
-
-                objects.push_back(object);
-
-                objectFound = true;
-
-              }
-            else objectFound = false;
-          }
-        //let user know you found an object
-        if(objectFound ==true)
-          {
-            //draw object location on screen
-            drawObject(objects,cameraFeed);
-          }
-      }
-    else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
-  }
-}
-
-vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
-void trackFilteredObject ( Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed ) {
-
-  vector <Object> objects;
-  Mat temp;
-  threshold.copyTo(temp);
-  //these two vectors needed for output of findContours
+  threshold.copyTo ( temp ) ;
   vector< vector<Point> > contours;
   contours_poly2.clear();
 
   vector<Vec4i> hierarchy;
-  //find contours of filtered image using openCV findContours function
   findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
   vector < vector<Point> > contours_poly(contours.size());
- //use moments method to find our filtered object
-  // double refArea = 0;
-  bool objectFound = false;
-  if (hierarchy.size() > 0) {
+  if ( hierarchy.size() > 0 ) {
+
     int numObjects = hierarchy.size();
     //if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-    if(numObjects<MAX_NUM_OBJECTS){
-      for (int index = 0; index >= 0; index = hierarchy[index][0]) {
+    if ( numObjects>MAX_NUM_OBJECTS ) return;
 
-        Moments moment = moments((cv::Mat)contours[index]);
-        double area = moment.m00;
+    for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
-        //if the area is less than 20 px by 20px then it is probably just noise
-        //if the area is the same as the 3/2 of the image size, probably just a bad filter
-        //we only want the object with the largest area so we safe a reference area each
-        //iteration and compare it to the area in the next iteration.
-        if(area>MIN_OBJECT_AREA){
+      Moments moment = moments((cv::Mat)contours[index]);
+      double area = moment.m00;
 
-          // here - go to moon - yep indeed
-          approxPolyDP ( Mat(contours[index]), contours_poly[index], 40, true );
-          contours_poly2.push_back(contours_poly[index]);
-
-        } else objectFound = false;
+      if(area>MIN_OBJECT_AREA){
+        // here - go to moon - yep indeed
+        approxPolyDP ( Mat(contours[index]), contours_poly[index], 40, true );
+        contours_poly2.push_back(contours_poly[index]);
       }
-      //let user know you found an object
-      // if(objectFound ==true){
-      if ( 1==1 /*fucking cosine up*/ ) {
-        //draw object location on screen
-        // drawObject(objects,cameraFeed,temp,contours,hierarchy);}
-        // credits: thanks PowHu for alpha 255, http://stackoverflow.com/questions/15916751/cvscalar-not-displaying-expected-color
-        drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
-      }
+    }
 
-    } else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
+    // credits: thanks PowHu for alpha 255, http://stackoverflow.com/questions/15916751/cvscalar-not-displaying-expected-color
+    drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
   }
 }
 
+// should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat picture ) {
   drawContours ( picture, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
 }
@@ -253,94 +151,5 @@ void do_frame ( Mat cameraFeed ) {
 
   inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
   morphOps(threshold);
-  trackFilteredObject ( white, threshold, HSV, cameraFeed );
-}
-
-int maina ( ) {
-
-  //if we would like to calibrate our filter values, set to true.
-  // bool calibrationMode = true;
-  bool calibrationMode = false;
-
-  //Matrix to store each frame of the webcam feed
-  Mat cameraFeed;
-  Mat threshold;
-  Mat HSV;
-
-  if(calibrationMode){
-    //create slider bars for HSV filtering
-    createTrackbars();
-  }
-  //video capture object to acquire webcam feed
-  VideoCapture capture;
-  //open capture object at location zero (default location for webcam)
-  capture.open(0);
-  //set height and width of capture frame
-  // capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-  // capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-
-  capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-  capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-  //start an infinite loop where webcam feed is copied to cameraFeed matrix
-  //all of our operations will be performed within this loop
-  // waitKey(1000);
-  usleep(1000*1000);
-  // TEMP
-  // return 0;
-  while(1){
-    //store image to matrix
-    capture.read(cameraFeed);
-
-    src = cameraFeed;
-
-    if ( !src.data ) {
-      // return -1;
-      continue;
-    }
-
-    //convert frame from BGR to HSV colorspace
-    cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
-
-    if(calibrationMode==true){
-
-      //need to find the appropriate color range values
-      // calibrationMode must be false
-
-      //if in calibration mode, we track objects based on the HSV slider values.
-      cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
-      inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),threshold);
-      morphOps(threshold);
-      imshow(windowName2,threshold);
-
-      //the folowing for canny edge detec
-      /// Create a matrix of the same type and size as src (for dst)
-      dst.create( src.size(), src.type() );
-      /// Convert the image to grayscale
-      cvtColor( src, src_gray, CV_BGR2GRAY );
-      /// Create a window
-      namedWindow( window_name, CV_WINDOW_AUTOSIZE );
-      /// Create a Trackbar for user to enter threshold
-      createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold);
-      /// Show the image
-      trackFilteredObject_calibration(threshold,HSV,cameraFeed);
-    }
-    else {
-
-      //create some temp fruit objects so that
-      //we can use their member functions/information
-
-
-    }
-    //show frames
-    //imshow(windowName2,threshold);
-
-    imshow(windowName,cameraFeed);
-    //imshow(windowName1,HSV);
-
-    //delay 30ms so that screen can refresh.
-    //image will not appear without this waitKey() command
-    // waitKey(30);
-    usleep(30*1000);
-  }
-  return 0;
+  trackFilteredObject ( threshold, cameraFeed );
 }

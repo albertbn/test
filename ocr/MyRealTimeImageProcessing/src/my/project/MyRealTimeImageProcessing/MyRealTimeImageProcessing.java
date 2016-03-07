@@ -53,15 +53,14 @@ public class MyRealTimeImageProcessing extends Activity {
     int PreviewSizeHeight= 480;
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
+
+            @Override
         public void onManagerConnected(int status) {
             switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
-
+                case LoaderCallbackInterface.SUCCESS: {
+                    //fuck
                 } break;
-                default:
-                {
+                default: {
                     super.onManagerConnected(status);
                 } break;
             }
@@ -118,7 +117,7 @@ public class MyRealTimeImageProcessing extends Activity {
 
         super.onResume();
 
-        if (!OpenCVLoader.initDebug()) {
+        if ( !OpenCVLoader.initDebug() ) {
             // Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
         } else {
@@ -183,6 +182,7 @@ public class MyRealTimeImageProcessing extends Activity {
     return(result);
   }
 
+    public native boolean saveMiddleClass ( long inputImage );
     void tweak_bytes ( byte[] data ) {
 
         Mat mat=new Mat();
@@ -191,11 +191,11 @@ public class MyRealTimeImageProcessing extends Activity {
         bmp=null;
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
         mat.getNativeObjAddr();
+        //here - send the mat as in the fd app
         File pictureFile = getOutputMediaFile();
         Imgcodecs.imwrite ( pictureFile.toString(), mat );
     }
 
-    public native boolean saveMiddleClass ( int width, int height, byte[] NV21FrameData, int[] pixels );
     //callback - trace - from captureListener > onClick > cam.takePicture
     PictureCallback getPictureCallback ( ) {
         PictureCallback picture = new PictureCallback ( ) {
@@ -204,39 +204,6 @@ public class MyRealTimeImageProcessing extends Activity {
                 public void onPictureTaken ( byte[] data, Camera camera ) {
 
                     tweak_bytes ( data ) ; return;
-
-                    // Bitmap bitmap = Bitmap.createBitmap(2048,1536, Bitmap.Config.ARGB_8888);
-                    // int[] pixels = new int[2048*1536];
-
-                    // // error prone - don't know if this comes yuv
-                    // saveMiddleClass ( 2048, 1536, data, pixels );
-                    // bitmap.setPixels(pixels, 0, 2048, 0, 0, 2048, 1536);
-
-                    // //make a new picture file
-                    // File pictureFile = getOutputMediaFile();
-
-                    // if ( pictureFile == null ) {
-                    //     return;
-                    // }
-                    // try {
-                    //     //write the file
-                    //     FileOutputStream fos = new FileOutputStream(pictureFile);
-                    //     // fos.write(data);
-                    //     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    //     fos.close();
-                    //     Toast toast =
-                    //         Toast.makeText(
-                    //                        myContext,
-                    //                        "Picture saved: " + pictureFile.getName(),
-                    //                        Toast.LENGTH_LONG);
-                    //     toast.show();
-
-                    // } catch (FileNotFoundException e) {
-                    // } catch (IOException e) {
-                    // }
-
-                    // //refresh camera to continue preview
-                    // camPreview.refreshCamera ( mCamera );
                 }
             };
         return picture;
