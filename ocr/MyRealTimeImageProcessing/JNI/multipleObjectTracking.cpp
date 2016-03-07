@@ -18,8 +18,6 @@ const int MAX_NUM_OBJECTS=50;
 //minimum and maximum object area
 const int MIN_OBJECT_AREA = 20*20;
 
-
-
 static double angle ( Point pt1, Point pt2, Point pt0 ) {
 
   double dx1 = pt1.x - pt0.x;
@@ -33,48 +31,24 @@ static double angle ( Point pt1, Point pt2, Point pt0 ) {
 }
 
 // returns the angle90 count as well as draws circles... love u emacs
-int get_angle_approx90_count ( std::vector<cv::Point> approx, Mat drawing, std::vector<cv::Point>& circles /*points4*/  ) {
+int get_angle_approx90_count ( vector<Point> approx, vector<Point>& circles /*points4*/  ) {
 
-  // Number of vertices of polygonal curve
+  // Number of vertexes of polygonal curve
   int vtc = approx.size();
-  // std::cout << "vtc: " << vtc << std::endl;
 
-  // DONE - go on and crack the cos/degree thing...
-  // Get the degree (in cosines) of all corners
-  // std::vector<double> cos;
-  double ang, ang_deg;
+  double ang;
   int angle90_count = 0;
 
   int j_mid;
   for ( int j = 1; j < vtc+1; j++ ) {
 
-    (j==1 && (j_mid = vtc-1)) || (j_mid=j-2); /*6 nov 2015, Albert, Shawn 1 month old - fixed net/github script - go figure how come it's an educated world of assholes, writing un-perfect scripts */
-    // std::cout << "approx indexes: " << j%vtc << ',' << j_mid << ',' << j-1 << std::endl;
-    ang = ang_deg = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
-    // cos.push_back(ang);
-    // ang_deg = abs(ang*180/CV_PI);
+    (j==1 && (j_mid = vtc-1)) || (j_mid=j-2);
+    ang = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
 
-    if ( ang_deg >60.0 && ang_deg<120.0 ) {
+    if ( ang >60.0 && ang < 120.0 ) {
       // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
       ++angle90_count;
       circles.push_back(approx[j-1]);
-      // std::cout << "drawing circles... "  << std::endl;
-    }
-
-    // std::cout << "angle is: " << ang_deg << ", " << ang  << std::endl;
-  }
-
-  double diag = 0;
-  angle90_count && (diag = get_longest_side_poly ( circles ));
-
-  if ( angle90_count ) {
-    if(diag>100){
-      filter_points_if_needed(circles, approx);
-      angle90_count = circles.size();
-      // std::cout << "OK, drawing circles... " << clen << std::endl;
-      for ( int j=0; j<angle90_count; ++j ) {
-        cv::circle( drawing, circles[j], 50,  cv::Scalar(50,0,255) );
-      }
     }
   }
 
@@ -134,7 +108,19 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
 // should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat picture ) {
+
   drawContours ( picture, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
+
+  int _angle90_count=0; std::vector<cv::Point> points4;
+
+  // count the ~90 degree angles...
+  for ( int i=0; i<(int)contours_poly2.size(); ++i ) {
+    _angle90_count += get_angle_approx90_count ( contours_poly2[i], points4/*ref*/ );
+    // points4 now should have the corners - go on with affine
+  }
+
+  // getPerspectiveTransform, warpPerspective
+  // final_magic_crop_rotate, corners_magick_do, sortCorners - good luck, may the force be with you
 }
 
 void do_frame ( Mat cameraFeed ) {
