@@ -190,7 +190,7 @@ public class MyRealTimeImageProcessing extends Activity {
         Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
         bmp=null;
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
-        mat.getNativeObjAddr();
+        saveMiddleClass( mat.getNativeObjAddr() );
         //here - send the mat as in the fd app
         File pictureFile = getOutputMediaFile();
         Imgcodecs.imwrite ( pictureFile.toString(), mat );

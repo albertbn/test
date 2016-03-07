@@ -107,9 +107,12 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR
-void save_middle_class ( Mat picture ) {
+void save_middle_class ( Mat &picture ) {
 
-  drawContours ( picture, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
+  drawContours ( picture, contours_poly2, -1, Scalar(94,206,165), 5 ) ;
+
+  // TEMP
+  return;
 
   int _angle90_count=0; std::vector<cv::Point> points4;
 
