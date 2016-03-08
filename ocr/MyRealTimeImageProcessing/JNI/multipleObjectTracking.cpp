@@ -210,7 +210,8 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
 // should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat &picture ) {
 
-  drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
+  // white small size
+  // drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
 
   int _angle90_count=0; vector<Point> points4;
 
