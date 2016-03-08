@@ -12,6 +12,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+Point center;
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
@@ -46,7 +47,7 @@ int get_angle_approx90_count ( vector<Point> approx, vector<Point>& circles /*po
     ang = angle(approx[j%vtc], approx[j_mid], approx[j-1]);
 
     if ( ang >60.0 && ang < 120.0 ) {
-      // cv::circle( drawing, approx[j%vtc], 50,  cv::Scalar(0,0,255) );
+      // circle( drawing, approx[j%vtc], 50,  Scalar(0,0,255) );
       ++angle90_count;
       circles.push_back(approx[j-1]);
     }
@@ -91,7 +92,7 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
     for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
-      Moments moment = moments((cv::Mat)contours[index]);
+      Moments moment = moments((Mat)contours[index]);
       double area = moment.m00;
 
       if(area>MIN_OBJECT_AREA){
@@ -106,24 +107,127 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
   }
 }
 
+float width_small = 640.0;
+float height_small = 480.0;
+float width = 2048.0;
+float height = 1536.0;
+
+float x_ratio = width/width_small;
+float y_ratio = height/height_small;
+
+void relocate_poly ( vector<Point> &points4 ) {
+
+  int x,y;
+  for ( int i=0; i<(int)points4.size(); ++i ) {
+    x = points4[i].x; y = points4[i].y;
+    x*=x_ratio; y*=y_ratio;
+    points4[i] = Point(x,y);
+  }
+}
+
+bool sortCorners ( vector<Point>& corners, Point center ) {
+
+  bool ret = false;
+  vector<Point> top, bot;
+
+  for (int i = 0; i < (int)corners.size(); i++) {
+    if (corners[i].y < center.y)
+      top.push_back(corners[i]);
+    else
+      bot.push_back(corners[i]);
+  }
+
+  if ( top.size() == 2 && bot.size() == 2 ) {
+
+    corners.clear();
+    ret = true;
+
+    Point tl = top[0].x > top[1].x ? top[1] : top[0];
+    Point tr = top[0].x > top[1].x ? top[0] : top[1];
+    Point bl = bot[0].x > bot[1].x ? bot[1] : bot[0];
+    Point br = bot[0].x > bot[1].x ? bot[0] : bot[1];
+
+    corners.push_back(tl);
+    corners.push_back(tr);
+    corners.push_back(br);
+    corners.push_back(bl);
+  }
+
+  return ret;
+}
+
+bool corners_magick_do ( vector<Point>& corners /*points4*/ ) {
+
+  bool are4pointsfine = false;
+  center = Point(0,0); /*yep, also stoned solving :) yep!*/
+  // Get mass center
+  for ( int i = 0; i < (int)corners.size(); ++i )
+    center += corners[i];
+  center *= ( 1. / corners.size() );
+
+  are4pointsfine = sortCorners ( corners, center );
+  return are4pointsfine;
+}
+
+void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
+
+  Size size_mat = mat.size();
+  corners_magick_do(points4 /*ref*/); /*sorts corner points4*/
+
+  vector<Point2f> points4f;
+  // this here is probably closest to the size of the original invoice... well, let's try... tension :)
+  RotatedRect rect_minAreaRect = minAreaRect(points4);
+
+  RNG rng(12345);
+  Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
+
+  for ( int i=0; i<(int)points4.size(/*4*/); ++i ) {
+    points4f.push_back(points4[i]);
+  }
+
+  bool is_mat_width = size_mat.width>size_mat.height; /*is width larger*/
+  int small = min(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
+  int large = max(rect_minAreaRect.size.width, rect_minAreaRect.size.height);
+  !is_mat_width && (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
+  // Mat quad = Mat::zeros ( small, large, CV_8UC3 );
+  Mat quad = Mat::zeros ( small, large, CV_8U );
+
+  vector<Point2f> quad_pts;
+  quad_pts.push_back(Point2f(0, 0));
+  quad_pts.push_back(Point2f(quad.cols, 0));
+  quad_pts.push_back(Point2f(quad.cols, quad.rows));
+  quad_pts.push_back(Point2f(0, quad.rows));
+
+  if ( points4f.size()==4 ) {
+    Mat transmtx = getPerspectiveTransform ( points4f, quad_pts );
+    warpPerspective ( mat, quad, transmtx, quad.size() );
+  }
+  else {
+    // cout << "checking points4f... " << points4f << endl;
+  }
+}
+
 // should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat &picture ) {
 
-  drawContours ( picture, contours_poly2, -1, Scalar(94,206,165), 5 ) ;
+  drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
 
-  // TEMP
-  return;
-
-  int _angle90_count=0; std::vector<cv::Point> points4;
+  int _angle90_count=0; vector<Point> points4;
 
   // count the ~90 degree angles...
   for ( int i=0; i<(int)contours_poly2.size(); ++i ) {
+    relocate_poly( contours_poly2[i]);
     _angle90_count += get_angle_approx90_count ( contours_poly2[i], points4/*ref*/ );
     // points4 now should have the corners - go on with affine
   }
+  drawContours ( picture, contours_poly2, -1, Scalar(94,206,165), 5 ) ;
+
+  // TEMP
+  // return;
 
   // getPerspectiveTransform, warpPerspective
   // final_magic_crop_rotate, corners_magick_do, sortCorners - good luck, may the force be with you
+  final_magic_crop_rotate ( picture /*ref*/, points4 /*ref*/ );
 }
 
 void do_frame ( Mat cameraFeed ) {
