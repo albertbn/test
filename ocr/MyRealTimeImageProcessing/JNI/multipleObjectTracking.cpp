@@ -8,10 +8,12 @@
 #include <vector>
 #include <unistd.h>
 
-#include "Object.hpp"
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include "Object.hpp"
+#include "ocr/main.hpp"
 
 Point center;
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
@@ -114,8 +116,8 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
 float width_small = 640.0;
 float height_small = 480.0;
-float width = 2048.0;
-float height = 1536.0;
+float width = 3264.0;
+float height = 2448.0;
 
 float x_ratio = width/width_small;
 float y_ratio = height/height_small;
@@ -213,6 +215,7 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
   }
 
   imwrite ( IMG_PATH, quad ) ;
+  ocr_doit ( quad, outfile_ocr );
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR

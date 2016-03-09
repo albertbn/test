@@ -136,6 +136,20 @@ public class MyRealTimeImageProcessing extends Activity {
         if ( mCamera == null ) {
 
             mCamera = Camera.open(0);
+
+            //start focus
+            Camera.Parameters params = mCamera.getParameters();
+            Camera.Size size = getBestPreviewSize ( 3264,2448, params );
+
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+            // params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+
+            params.setPictureSize(size.width, size.height);
+            params.setJpegQuality(100);
+            mCamera.setParameters(params);
+            //end focus
+
             mPicture = getPictureCallback();
             camPreview.refreshCamera(mCamera);
         }
@@ -146,11 +160,16 @@ public class MyRealTimeImageProcessing extends Activity {
             @Override
             public void onClick ( View v ) {
 
-                Camera.Parameters params = mCamera.getParameters();
-                Camera.Size size = getBestPreviewSize ( 2048,1536, params );
-                params.setPictureSize(size.width, size.height);
-                params.setJpegQuality(100);
-                mCamera.setParameters(params);
+                // Camera.Parameters params = mCamera.getParameters();
+                // Camera.Size size = getBestPreviewSize ( 3264,2448, params );
+
+                // params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                // params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                // // params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+
+                // params.setPictureSize(size.width, size.height);
+                // params.setJpegQuality(100);
+                // mCamera.setParameters(params);
                 mCamera.takePicture ( null, null, mPicture ) ;
             }
         };
