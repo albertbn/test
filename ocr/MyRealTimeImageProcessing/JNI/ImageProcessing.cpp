@@ -11,23 +11,36 @@
 using namespace std;
 using namespace cv;
 
-string root_folder_path; /* doesn't end with / */
-Mat * mCanny = NULL;
+Mat * mCanny = NULL; /*not used for now*/
 
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
 		JNIEnv* env, jobject,
                 jstring jroot_folder_path,
+                jstring jimg_unique_no_ext,
 		jlong matAddr ) {
 
+  string root_folder_path; /* doesn't end with / */
+  string img_unique_no_ext;
+
   root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
+  img_unique_no_ext = (*env).GetStringUTFChars(jimg_unique_no_ext, 0);
+
+  string path_img = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
+  string path_ocr = root_folder_path + "/tessdata/img/ocr.txt";
+  string path_dump = root_folder_path + "/tessdata/img/dump.txt";
+
+  remove ( path_img.c_str() ) ;
+  remove ( path_ocr.c_str() ) ;
+  remove ( path_dump.c_str() ) ;
 
   Mat mat = *((Mat*)matAddr);
 
-  save_middle_class(mat);
+  save_middle_class ( mat, path_img, path_ocr, path_dump );
 
   (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
+  (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
 
   return true;
 }

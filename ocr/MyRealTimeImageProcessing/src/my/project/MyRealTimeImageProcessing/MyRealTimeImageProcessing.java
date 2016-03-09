@@ -182,7 +182,7 @@ public class MyRealTimeImageProcessing extends Activity {
     return(result);
   }
 
-    public native boolean saveMiddleClass ( String root_folder_path, long inputImage );
+    public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
     void tweak_bytes ( byte[] data ) {
 
         Mat mat=new Mat();
@@ -190,10 +190,12 @@ public class MyRealTimeImageProcessing extends Activity {
         Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
         bmp=null;
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
-        saveMiddleClass( mat.getNativeObjAddr() );
+        String root_folder =  new File("/sdcard").toString();
+        saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
+
         //here - send the mat as in the fd app
-        File pictureFile = getOutputMediaFile();
-        Imgcodecs.imwrite ( pictureFile.toString(), mat );
+        // File pictureFile = getOutputMediaFile();
+        // Imgcodecs.imwrite ( pictureFile.toString(), mat );
     }
 
     //callback - trace - from captureListener > onClick > cam.takePicture

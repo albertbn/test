@@ -2,6 +2,7 @@
 // g++ -g -rdynamic $(pkg-config --cflags --libs opencv)  -o colour Object.cpp multipleObjectTracking.cpp
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,6 +15,10 @@
 
 Point center;
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
+string IMG_PATH;
+ofstream outfile;
+ofstream outfile_ocr;
+
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
 //minimum and maximum object area
@@ -172,11 +177,11 @@ bool corners_magick_do ( vector<Point>& corners /*points4*/ ) {
 void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
 
   Size size_mat = mat.size();
-  corners_magick_do(points4 /*ref*/); /*sorts corner points4*/
+  corners_magick_do ( points4 /*ref*/ ); /*sorts corner points4*/
 
   vector<Point2f> points4f;
   // this here is probably closest to the size of the original invoice... well, let's try... tension :)
-  RotatedRect rect_minAreaRect = minAreaRect(points4);
+  RotatedRect rect_minAreaRect = minAreaRect ( points4 );
 
   RNG rng(12345);
   Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
@@ -199,17 +204,23 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
   quad_pts.push_back(Point2f(0, quad.rows));
 
   if ( points4f.size()==4 ) {
+    outfile << "ok, doing pers transform and warp..." << points4f << endl;
     Mat transmtx = getPerspectiveTransform ( points4f, quad_pts );
     warpPerspective ( mat, quad, transmtx, quad.size() );
   }
   else {
-    // cout << "checking points4f... " << points4f << endl;
+    outfile << "checking points4f... not 4 of number " << points4f << endl;
   }
+
+  imwrite ( IMG_PATH, mat ) ;
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR
-void save_middle_class ( Mat &picture ) {
+void save_middle_class ( Mat &picture, string path_img, string path_ocr, string path_dump ) {
 
+  IMG_PATH = path_img;
+  outfile.open ( path_ocr.c_str(), ios_base::app );
+  outfile_ocr.open ( path_dump.c_str(), ios_base::app );
   // white small size
   // drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
 
@@ -229,6 +240,9 @@ void save_middle_class ( Mat &picture ) {
   // getPerspectiveTransform, warpPerspective
   // final_magic_crop_rotate, corners_magick_do, sortCorners - good luck, may the force be with you
   final_magic_crop_rotate ( picture /*ref*/, points4 /*ref*/ );
+
+   outfile_ocr.close();
+   outfile.close();
 }
 
 void do_frame ( Mat cameraFeed ) {

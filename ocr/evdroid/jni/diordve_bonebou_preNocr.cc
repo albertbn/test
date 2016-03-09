@@ -85,7 +85,6 @@ JNIEXPORT void JNICALL Java_diordve_bonebou_preNocr_doit (
   outfile.open ( (path_sd_card + "/tessdata/dump.txt").c_str(), ios_base::app );
   outfile_ocr.open ( (path_sd_card + "/tessdata/dump_ocr.txt").c_str(), ios_base::app );
 
-
   // TEMP test
   Mat mat = imread ( path_sd_card + "/tessdata/heb.jpg" ); /*yep!*/
 
