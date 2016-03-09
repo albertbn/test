@@ -11,17 +11,23 @@
 using namespace std;
 using namespace cv;
 
+string root_folder_path; /* doesn't end with / */
 Mat * mCanny = NULL;
 
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
 		JNIEnv* env, jobject,
+                jstring jroot_folder_path,
 		jlong matAddr ) {
+
+  root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
 
   Mat mat = *((Mat*)matAddr);
 
   save_middle_class(mat);
+
+  (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
 
   return true;
 }

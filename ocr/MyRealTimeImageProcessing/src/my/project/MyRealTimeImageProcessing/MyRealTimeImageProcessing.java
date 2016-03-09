@@ -182,7 +182,7 @@ public class MyRealTimeImageProcessing extends Activity {
     return(result);
   }
 
-    public native boolean saveMiddleClass ( long inputImage );
+    public native boolean saveMiddleClass ( String root_folder_path, long inputImage );
     void tweak_bytes ( byte[] data ) {
 
         Mat mat=new Mat();
