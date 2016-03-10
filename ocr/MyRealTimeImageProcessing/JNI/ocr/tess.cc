@@ -29,20 +29,20 @@ inline string to_string ( const T& t ) {
 void init_ocr ( ) {
 
   GenericVector<STRING> vars_vec;
-  // vars_vec.push_back("load_system_dawg");
+  vars_vec.push_back("load_system_dawg");
   // vars_vec.push_back("load_freq_dawg");
-  // vars_vec.push_back("load_punc_dawg");
-  // vars_vec.push_back("load_number_dawg");
+  vars_vec.push_back("load_punc_dawg");
+  vars_vec.push_back("load_number_dawg");
   // vars_vec.push_back("load_unambig_dawg");
   // vars_vec.push_back("load_bigram_dawg");
   // vars_vec.push_back("load_fixed_length_dawgs");
   // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
+  vars_values.push_back("F");
   // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
-  // vars_values.push_back("F");
+  vars_values.push_back("F");
+  vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");

@@ -114,8 +114,11 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
 float width_small = 640.0;
 float height_small = 480.0;
-float width = 3264.0;
-float height = 2448.0;
+// float width = 3264.0;
+// float height = 2448.0;
+float width = 2048.0;
+float height = 1536.0;
+
 
 float x_ratio = width/width_small;
 float y_ratio = height/height_small;
@@ -213,13 +216,13 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
   }
 
   imwrite ( IMG_PATH, quad ) ;
-  // ocr_doit ( quad );
+  ocr_doit ( quad );
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat &picture ) {
 
-  // cvtColor(picture, picture, CV_BGR2GRAY);
+  cvtColor(picture, picture, CV_BGR2GRAY);
 
   // white small size
   // drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;

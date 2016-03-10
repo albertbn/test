@@ -55,8 +55,8 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
   outfile_ocr.close();
   outfile.close();
 
-  (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
-  (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
+  // (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
+  // (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
 
   return true;
 }

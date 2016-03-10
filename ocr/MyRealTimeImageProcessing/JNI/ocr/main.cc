@@ -36,8 +36,9 @@
 // int threshold_type = THRESH_BINARY;
 // int const max_BINARY_value = 255;
 
-int px_line_height = 90; /* TODO - dynamic */
-int px_expand_bound_line = 90; /* TODO - dynamic */
+int px_line_height = 70; /* TODO - dynamic */
+int px_expand_bound_line = 70; /* TODO - dynamic */
+int min_neighbours = 2;
 int px_trim_sides = 0; /* TODO - figure out how much to trim sides */
 
 // using namespace cv;
@@ -203,7 +204,7 @@ void ocr_doit ( Mat& im_orig ) {
   //   cv::rectangle(im,boxes[i],cv::Scalar(0,255,0),3,8,0);
   // }
 
-  DbScan dbscan ( boxes, px_line_height, 2 ); /*HERE - expected tuning or calculating of the eps param*/
+  DbScan dbscan ( boxes, px_line_height, min_neighbours ); /*HERE - expected tuning or calculating of the eps param*/
   dbscan.run();
 
   std::vector<Scalar> colors;
@@ -257,6 +258,8 @@ void ocr_doit ( Mat& im_orig ) {
 
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
+
+  outfile << "split into lines count: " << rect_lines.size()  << endl;
 
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
     // std::cout << "rect:\t" << rect_lines[i] << std::endl;
