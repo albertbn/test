@@ -1,4 +1,3 @@
-
 #ifdef ANDROID
 #include <baseapi.h>
 #include <genericvector.h>
@@ -8,7 +7,7 @@
 #endif // ANDROID
 
 #include "tess.hpp"
-// #include "../static_fields.hpp"
+#include "../static_fields.hpp"
 // #include "../common.hpp"
 
 tesseract::TessBaseAPI tess;
@@ -60,10 +59,10 @@ void init_ocr ( ) {
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 
-void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount, ofstream outfile_ocr ) {
+void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
 
   icount = 0; /*dummy leftover*/
-  
+
   // init_ocr();
   // unsigned int _clock_start = clock();
 

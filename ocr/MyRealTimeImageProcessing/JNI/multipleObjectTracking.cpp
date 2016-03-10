@@ -12,14 +12,12 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "static_fields.hpp"
 #include "Object.hpp"
 #include "ocr/main.hpp"
 
 Point center;
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
-string IMG_PATH;
-ofstream outfile;
-ofstream outfile_ocr;
 
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
@@ -215,15 +213,14 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
   }
 
   imwrite ( IMG_PATH, quad ) ;
-  ocr_doit ( quad, outfile_ocr );
+  // ocr_doit ( quad );
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR
-void save_middle_class ( Mat &picture, string path_img, string path_ocr, string path_dump ) {
+void save_middle_class ( Mat &picture ) {
 
-  IMG_PATH = path_img;
-  outfile.open ( path_dump.c_str(), ios_base::app );
-  outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
+  // cvtColor(picture, picture, CV_BGR2GRAY);
+
   // white small size
   // drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
 
@@ -243,9 +240,6 @@ void save_middle_class ( Mat &picture, string path_img, string path_ocr, string 
   // getPerspectiveTransform, warpPerspective
   // final_magic_crop_rotate, corners_magick_do, sortCorners - good luck, may the force be with you
   final_magic_crop_rotate ( picture /*ref*/, points4 /*ref*/ );
-
-   outfile_ocr.close();
-   outfile.close();
 }
 
 void do_frame ( Mat cameraFeed ) {

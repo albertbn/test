@@ -27,11 +27,10 @@
 // };
 
 #include <opencv2/opencv.hpp>
-#include "db_scan.hpp"
 #include "tess.hpp"
+#include "db_scan.hpp"
 #include "main.hpp"
-// #include "../static_fields.hpp"
-// #include "../common.hpp"
+#include "../static_fields.hpp"
 
 // int threshold_value = 60;
 // int threshold_type = THRESH_BINARY;
@@ -185,7 +184,7 @@ cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
     return cv::Scalar(bB,bG,bR); // R component
 }
 
-void ocr_doit ( Mat& im_orig, ofstream outfile_ocr ) {
+void ocr_doit ( Mat& im_orig ) {
 
   // init tess
   init_ocr();
@@ -261,7 +260,7 @@ void ocr_doit ( Mat& im_orig, ofstream outfile_ocr ) {
 
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
     // std::cout << "rect:\t" << rect_lines[i] << std::endl;
-    if(7==7) crop_b_tess ( im_orig, rect_lines[i], i, outfile_ocr );
+    if(7==7) crop_b_tess ( im_orig, rect_lines[i], i );
     // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
   }
 
