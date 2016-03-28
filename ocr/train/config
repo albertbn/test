@@ -1,0 +1,3 @@
+load_system_dawg F
+load_punc_dawg F
+load_number_dawg F

@@ -22,6 +22,7 @@ import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup.LayoutParams;
@@ -210,7 +211,7 @@ public class MyRealTimeImageProcessing extends Activity {
         Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
         bmp=null;
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
-        String root_folder =  new File("/sdcard").toString();
+        String root_folder =  Environment.getExternalStorageDirectory().getAbsolutePath();
         saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
 
         //here - send the mat as in the fd app
