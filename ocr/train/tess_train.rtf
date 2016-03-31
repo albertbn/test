@@ -26,13 +26,13 @@ tesseract -l heb heb.fuck.exp1.jpg heb.fuck.exp1 box.train\
 tesseract -l heb heb.fuck.exp2.jpg heb.fuck.exp2 box.train \
 tesseract -l heb heb.fuck.exp3.tiff heb.fuck.exp3 box.train \
 \
-//unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp1.box\
+//unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp2.box\
 \
 cp unicharset.orig unicharset\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 set_unicharset_properties -U input_unicharset -O output_unicharset --script_dir=./\
-mftraining -F font_properties -U unicharset -O heb.unicharset heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr heb.fuck.exp3.tr\
-cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr heb.fuck.exp3.tr \
+mftraining -F font_properties -U unicharset -O heb.unicharset heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr\
+cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr \
 mv normproto heb.normproto; mv inttemp heb.inttemp; mv pffmtable heb.pffmtable; mv shapetable heb.shapetable;  \
 combine_tessdata heb. ; cp heb.traineddata /usr/local/Cellar/tesseract/3.04.01/share/tessdata\
 \
