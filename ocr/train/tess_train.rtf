@@ -13,13 +13,14 @@
 \cf0 \cb1 \expnd0\expndtw0\kerning0
 combine_tessdata -u heb.traineddata ./heb.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 
 \f1\fs22 \cf0 \kerning1\expnd0\expndtw0 \CocoaLigature0 convert -density 300 heb.lucida.exp0.pdf -background white +matte heb.lucida.exp0.tiff
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1 \
 \pard\pardeftab720\sl380
-\cf2 \'97\'97\'97\'97\
+\cf2 \expnd0\expndtw0\kerning0
+\'97\'97\'97\'97\
 //! should train with the original heb.traineddata (originally provided by tess)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 cp /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata/
@@ -43,18 +44,37 @@ tesseract -l heb
 \
 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 \
+//! should train with the original heb.traineddata (originally provided by tess)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
+\cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 cp /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata/
+\f2\b\fs22 \cf4 orig.heb.traineddata 
+\f0\b0\fs28 \cf0 /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata/
+\f2\b\fs22 \cf4 heb.traineddata
+\f0\b0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\pardeftab720\sl380
+\cf2 \expnd0\expndtw0\kerning0
+\
 tesseract -l heb heb.fuck.exp0.jpg heb.fuck.exp0 box.train\
 tesseract -l heb heb.fuck.exp1.jpg heb.fuck.exp1 box.train\
 tesseract -l heb heb.fuck.exp2.jpg heb.fuck.exp2 box.train \
 //tesseract -l heb heb.fuck.exp3.tiff heb.fuck.exp3 box.train \
+tesseract -l heb heb.lucida.exp0.tiff heb.lucida.exp0 box.train \
 \
-unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp2.box\
+unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp2.box 
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.lucida.exp0.box
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
 \
 cp unicharset.orig unicharset\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 set_unicharset_properties -U input_unicharset -O output_unicharset --script_dir=./\
-mftraining -F font_properties -U unicharset -O heb.unicharset heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr\
-cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr\
+mftraining -F font_properties -U unicharset -O heb.unicharset heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr 
+\f1\fs22 heb.lucida.exp0.tr
+\f0\fs28  \
+cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr 
+\f1\fs22 heb.lucida.exp0.tr
+\f0\fs28 \
 mv normproto heb.normproto; mv inttemp heb.inttemp; mv pffmtable heb.pffmtable; mv shapetable heb.shapetable;  \
 combine_tessdata heb. ; cp heb.traineddata /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata\
 \
@@ -65,7 +85,6 @@ tesseract -l heb smc.jpg testfull\
 
 \f1\fs22 \cf0 open -a TextEdit test.txt
 \f0\fs28 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1 \
 }
