@@ -1,9 +1,9 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fnil\fcharset0 Menlo-Bold;
 \f3\fnil\fcharset0 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red38\green38\blue38;\red245\green245\blue245;\red47\green180\blue29;
 }
-\margl1440\margr1440\vieww21880\viewh11300\viewkind0
+\paperw12240\paperh15840\margl1440\margr1440\vieww21860\viewh17500\viewkind0
 \deftab720
 \pard\pardeftab720\sl380
 
@@ -22,10 +22,10 @@ combine_tessdata -u heb.traineddata ./heb.\
 \pard\pardeftab720\sl380
 \cf2 \expnd0\expndtw0\kerning0
 \'97\'97\'97\'97\
-//! should train with the original heb.traineddata (originally provided by tess)\
+//generate box files with your custom trained already (kinda bootstrap)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
-\cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 cp /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata/
-\f2\b\fs22 \cf4 orig.heb.traineddata 
+\cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 cp 
+\f2\b\fs22 \cf4 heb.traineddata 
 \f0\b0\fs28 \cf0 /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata/
 \f2\b\fs22 \cf4 heb.traineddata
 \f0\b0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
@@ -33,6 +33,7 @@ combine_tessdata -u heb.traineddata ./heb.\
 \pard\pardeftab720\sl380
 \cf2 \expnd0\expndtw0\kerning0
 \
+tesseract -l heb heb.fuck.exp3.tiff heb.fuck.exp3 batch.nochop makebox\
 tesseract -l heb heb.fuck.exp0.jpg heb.fuck.exp0 batch.nochop makebox\
 tesseract -l heb heb.fuck.exp3.tiff heb.fuck.exp3 batch.nochop makebox\
 tesseract -l heb 
@@ -101,7 +102,9 @@ cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr
 mv normproto heb.normproto; mv inttemp heb.inttemp; mv pffmtable heb.pffmtable; mv shapetable heb.shapetable;  \
 combine_tessdata heb. ; cp heb.traineddata /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata\
 \
-tesseract -l heb smc.jpg test config\
+tesseract -l heb smc.jpg test config; 
+\f1\fs22 open -a TextEdit test.txt
+\f0\fs28 \
 tesseract -l heb smc.jpg testfull\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
