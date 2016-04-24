@@ -1,6 +1,6 @@
 
 // compile
-// g++ -o orient_scritp_heb orient_scritp_heb.cc -llept -ltesseract && ./orient_scritp_heb
+// g++ -o orient_scritp_heb orient_scritp_heb.cc -llept -ltesseract && ./orient_scritp_heb pics/heb.jpg
 
 // this folk is in c++, yep!
 
@@ -121,7 +121,6 @@ int main(int argc, char** argv)
 
   return 0;
 }
-
 
 // int main()
 // {
