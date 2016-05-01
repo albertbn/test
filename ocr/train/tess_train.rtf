@@ -24,7 +24,8 @@ combine_tessdata -u heb.traineddata ./heb.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 
 \f1\fs22 \cf0 \kerning1\expnd0\expndtw0 \CocoaLigature0 convert -density 300 heb.lucida.exp0.pdf -background white +matte heb.lucida.exp0.tiff\
-convert -density 300 heb.miriam.exp0.pdf -background white +matte heb.miriam.exp0.tiff
+convert -density 300 heb.miriam.exp0.pdf -background white +matte heb.miriam.exp0.tiff\
+convert -density 300 heb.miriam.exp1.pdf -background white +matte heb.miriam.exp1.tiff
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1 \
 \pard\pardeftab720\sl380
@@ -65,6 +66,13 @@ tesseract -l heb
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.zam_square.exp0
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  batch.nochop makebox\
+tesseract -l heb 
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.miriam.exp1.tiff
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.miriam.exp1
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  batch.nochop makebox\
 \
 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 here go to jail and edit the box files\'85\'85\'85..\
@@ -90,13 +98,6 @@ tesseract -l heb heb.fuck.exp1.jpg heb.fuck.exp1 box.train\
 tesseract -l heb heb.fuck.exp2.jpg heb.fuck.exp2 box.train \
 tesseract -l heb heb.fuck.exp3.tiff heb.fuck.exp3 box.train\
 tesseract -l heb heb.lucida.exp0.tiff heb.lucida.exp0 box.train \
-tesseract -l heb heb.
-\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
-\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\CocoaLigature1 .exp0.tiff heb.
-\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
-\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\CocoaLigature1 .exp0 box.train \
 tesseract -l heb 
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.zam_square.exp0
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
@@ -104,6 +105,21 @@ tesseract -l heb
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.zam_square.exp0
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  box.train \
+tesseract -l heb heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp0.tiff heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp0 box.train \
+tesseract -l heb heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp1.tiff heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp1 box.train \
+\
 \
 unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp2.box heb.fuck.exp3.box 
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.lucida.exp0.box heb.zam_square.exp0
@@ -112,37 +128,78 @@ unicharset_extractor heb.fuck.exp0.box heb.fuck.exp1.box heb.fuck.exp2.box heb.f
 \CocoaLigature1 heb.
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\CocoaLigature1 .exp0.box\
+\CocoaLigature1 .exp0.box heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp1.box\
+unicharset_extractor heb.
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .exp1.box\
 \
 cp unicharset.orig unicharset\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 set_unicharset_properties -U input_unicharset -O output_unicharset --script_dir=./\
+\
 mftraining -F font_properties -U unicharset -O heb.unicharset heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr heb.fuck.exp3.tr 
 \f1\fs22 heb.lucida.exp0.tr
 \f0\fs28  
 \f1\fs22 heb.zam_square.exp0.tr heb.miriam
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1 .
-\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp0.tr
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp0.tr heb.miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp1.tr\
+
+\f0\fs28 mftraining -F font_properties -U unicharset -O heb.unicharset 
+\f1\fs22 heb.miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp1.tr\
+
 \f0\fs28 \
 cntraining heb.fuck.exp0.tr heb.fuck.exp1.tr heb.fuck.exp2.tr heb.fuck.exp3.tr 
 \f1\fs22 heb.lucida.exp0.tr heb.zam_square.exp0.tr heb.miriam
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1 .
-\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp0.tr
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp0.tr heb.miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp1.tr\
+
+\f0\fs28 cntraining 
+\f1\fs22 heb.miriam
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 .
+\f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 exp1.tr\
+
 \f0\fs28 \
 mv normproto heb.normproto; mv inttemp heb.inttemp; mv pffmtable heb.pffmtable; mv shapetable heb.shapetable;  \
 combine_tessdata heb. ; cp heb.traineddata /usr/local/Cellar/tesseract/3.04.01_1/share/tessdata\
 \
 tesseract -l heb smc.jpg test config; 
-\f1\fs22 open -a TextEdit test.txt
-\f0\fs28 \
-tesseract -l heb smc.jpg testfull\
+\f1\fs22 open -a TextEdit test.txt\
+
+\f0\fs28 tesseract -l heb 
+\f1\fs22 img/half_free.jpg
+\f0\fs28  test config; 
+\f1\fs22 open -a TextEdit test.txt\
+
+\f0\fs28 tesseract -l heb smc.jpg testfull\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 
-\f1\fs22 \cf0 open -a TextEdit test.txt
+\f1\fs22 \cf0 open -a TextEdit test.txt\
+\
+/usr/local/Cellar/tesseract/3.04.01_1/share/tessdata\
+\
+//orig trained
 \f0\fs28 \
 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\CocoaLigature1 \
+cp orig.heb.traineddata heb.traineddata \
+\
+//custom trained\
+cp custom.heb.traineddata heb.traineddata\CocoaLigature1 \
+\
 }
