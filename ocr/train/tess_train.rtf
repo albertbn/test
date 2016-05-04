@@ -73,6 +73,7 @@ tesseract -l heb
 \f1\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.miriam.exp1
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  batch.nochop makebox\
+tesseract -l heb heb.miriam_hf.exp0.jpg heb.miriam_hf.exp0 batch.nochop makebox\
 \
 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 here go to jail and edit the box files\'85\'85\'85..\
@@ -196,10 +197,12 @@ tesseract -l heb smc.jpg test config;
 \
 //orig trained
 \f0\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 \cf2 \cb3 \expnd0\expndtw0\kerning0
 cp orig.heb.traineddata heb.traineddata \
 \
 //custom trained\
-cp custom.heb.traineddata heb.traineddata\CocoaLigature1 \
+cp custom.heb.traineddata heb.traineddata\expnd0\expndtw0\kerning0
+\CocoaLigature1 \
 \
 }
