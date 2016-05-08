@@ -1,0 +1,13 @@
+
+2016-05-08, Albert
+
+for test mode edit the file:
+
+JNI/multipleObjectTracking.cpp - line ~231/232 save_middle_class()
+
+//re-mark/un-mark the call to test_ocr_pic_hardcoded() + the return;
+
+
+/Users/albert/test/ocr/MyRealTimeImageProcessing/JNI/ImageProcessing.cpp - switch back to .jpg (.png is for test)
+
+ //remove ( IMG_PATH.c_str() ) ;

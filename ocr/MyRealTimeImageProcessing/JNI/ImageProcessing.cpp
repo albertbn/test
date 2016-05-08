@@ -36,11 +36,12 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
   img_unique_no_ext = (*env).GetStringUTFChars(jimg_unique_no_ext, 0);
 
   path_sd_card = root_folder_path;
-  IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
+  // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
+  IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".png";
   string path_dump = root_folder_path + "/tessdata/dump.txt";
   string path_ocr = root_folder_path + "/tessdata/ocr.txt";
 
-  remove ( IMG_PATH.c_str() ) ;
+  //  remove ( IMG_PATH.c_str() ) ;
   remove ( path_dump.c_str() ) ;
   remove ( path_ocr.c_str() ) ;
 

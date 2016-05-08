@@ -1,4 +1,3 @@
-
 // g++ -g -rdynamic $(pkg-config --cflags --libs opencv)  -o colour Object.cpp multipleObjectTracking.cpp
 
 #include <iostream>
@@ -219,8 +218,20 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
   ocr_doit ( quad );
 }
 
+void test_ocr_pic_hardcoded ( ) {
+
+  outfile << "trying to read: " << IMG_PATH << endl;
+
+  Mat mat_pic_hardcoded_smc = imread ( IMG_PATH, 0 ) ;
+  ocr_doit ( mat_pic_hardcoded_smc );
+}
+
 // should modify the taken picture as a mat and eventually get to the OCR
 void save_middle_class ( Mat &picture ) {
+
+  // TEMP test the OCR with hard coded pic
+  test_ocr_pic_hardcoded();
+  return;
 
   cvtColor(picture, picture, CV_BGR2GRAY);
 
