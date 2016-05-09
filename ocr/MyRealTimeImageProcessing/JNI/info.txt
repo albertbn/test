@@ -1,0 +1,3 @@
+
+2016-05-09, Albert
+the main file is ImageProcessing.cpp - for now the debug mode is managed from there, including the hard test file extension - .jpg or .png
