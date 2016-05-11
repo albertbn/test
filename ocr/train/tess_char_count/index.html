@@ -24,16 +24,19 @@
 
 .ltr {direction:ltr;}
   </style>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script type="text/javascript" src="./jscript.js"></script>
   <script type="text/javascript" src="./script.js"></script>
 
 </head>
 <body>
 
-  <div>
     <h1>Character counter, used for tesseract training</h1>
+    <button class="btn_save" style="font-weight:bold; width:790px; padding:10px;">&nbsp;&nbsp;&nbsp;SAVE&nbsp;&nbsp;&nbsp;</button><br><br><br>
+  <div>
     <textarea rows="35" cols="110" class="fl txt">paste here the text you wanna check</textarea>
-    <button class="fl btn_stats" style="margin-left:30px;">get stats</button>
+
+    <button class="fl btn_stats" style="margin-left:30px" >get stats</button>
 
     <div class="fl ltr out" style="margin-left:30px;"></div>
 

@@ -6,11 +6,68 @@ var sort_dir_value = 'asc'; /*or desc*/
 var sort_icon_asc = '&#x2C4;';
 var sort_icon_desc = '&#x2C5;';
 
-$( function(){
-  bind_btn_stats();
-  $(".btn_stats").click();
-  bind_txt_change();
+$ ( function() {
+
+    bind_btn_stats();
+    $(".btn_stats").click();
+    bind_txt_change();
+    bind_btn_save();
+    load_proj();
+
+    rtl && $('.txt').css('direction','rtl');
 });
+
+var proj = qry('proj') || 'jimarata';
+var rtl = qry('rtl') || 0;
+
+function load_proj ( ) {
+
+    var post_data = {
+        proj: proj
+    };
+
+    $.post('server/load.php', post_data,
+           function(data) {
+
+               if ( data.err ) {
+                   //err
+                   console.error ( data.err );
+               }
+               //ok
+               else {
+                   console.log ( 'proj should be loaded OK', new Date );
+                   $(".txt").val(data.text);
+                   $(".txt").change();
+               }
+           }
+          );
+}
+
+function bind_btn_save ( ) {
+
+    $('.btn_save').click ( function(){
+
+        var post_data = {
+            proj: proj,
+            text: $(".txt").val()
+        };
+
+        $.post('server/save.php', post_data,
+               function(data) {
+
+                   if ( data.err ) {
+
+                       //err
+                       console.error ( data.err );
+                   }
+                   //ok
+                   else {
+                       console.log ( 'saved OK', new Date );
+                   }
+               }
+              );
+    });
+}
 
 function bind_txt_change(){
 
