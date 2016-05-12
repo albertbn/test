@@ -1,3 +1,7 @@
+//
+//
+//
+
 var arr;
 
 var sort_by = 'value'; /*or key*/
@@ -15,7 +19,21 @@ $ ( function() {
     load_proj();
 
     rtl && $('.txt').css('direction','rtl');
+    bind_ctrlS();
 });
+
+function bind_ctrlS(){
+
+    var key;
+    $(window).keydown(function(eevent) {
+
+        if ( !( ((key=eevent.which) === 115 || key==83) && (eevent.ctrlKey || eevent.metaKey)) && !(eevent.which === 19)) return true;
+        // alert("Ctrl/Cmd-S pressed");
+        eevent.preventDefault();
+        $('.btn_save').click();
+        return false;
+    });
+}
 
 var proj = qry('proj') || 'jimarata';
 var rtl = qry('rtl') || 0;
@@ -62,6 +80,7 @@ function bind_btn_save ( ) {
                    }
                    //ok
                    else {
+                       $(".txt").change();
                        console.log ( 'saved OK', new Date );
                    }
                }
