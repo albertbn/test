@@ -9,7 +9,9 @@ $file = "../proj/$proj.txt";
 $text= $_REQUEST['text']; !strlen($text) && ($text="test");
 
 // echo $text;
-// $text = json_decode($text);
+$p = '/\\\\"/';
+$r = '"';
+$text = preg_replace ( $p, $r, $text );
 
 $fileHandle = fopen($file, "w") or die("Unable to open file!");
 fwrite($fileHandle, $text);
