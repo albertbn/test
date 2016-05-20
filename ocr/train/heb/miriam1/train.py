@@ -1,13 +1,19 @@
 #
-# python train.py heb.miriam.exp0.tiff heb.engCourierNew.exp0.tiff
-# heb.kadosh.exp0.jpg heb.kadosh.exp1.jpg heb.kadosh.exp2.jpg
-# python train.py heb.miriam.exp0.tiff heb.courierNew.exp0.tiff heb.half_free.exp0.jpg heb.supersal.exp0.jpg heb.lahmanina.exp0.jpg heb.half_free.exp0.jpg
+#
 #
 import os
 import sys
 import re
 
-arr_fonts_ext = sys.argv[1:]
+# arr_fonts_ext = sys.argv[1:]
+# ! DON'T forget to add fonts to font_properties
+arr_fonts_ext = [
+    'heb.engCourierNew.exp0.tiff ',
+    'heb.miriam.exp0.tiff', 'heb.courierNew.exp0.tiff'
+    ,'heb.kadosh.exp0.jpg', 'heb.kadosh.exp1.jpg', 'heb.kadosh.exp2.jpg'
+    ,'heb.half_free.exp0.jpg', 'heb.supersal.exp0.jpg', 'heb.lahmanina.exp0.jpg'
+]
+
 r_ext = re.compile('.(jpe?g|tiff?|png)', re.I)
 arr_fonts = [ re.sub(r_ext, '', x) for x in arr_fonts_ext ]
 
