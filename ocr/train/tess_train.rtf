@@ -34,6 +34,11 @@ convert -density 300
 \f1\fs22 \cf0 \cb1  -background white +matte 
 \f2\fs24 \cf4 \cb0 heb.engCourierNew.exp0
 \f1\fs22 \cf0 \cb1 .tiff\
+convert -density 300 
+\f2\fs24 \cf4 \cb0 heb.arial.exp0.pdf
+\f1\fs22 \cf0 \cb1  -background white +matte 
+\f2\fs24 \cf4 \cb0 heb.arial.exp0
+\f1\fs22 \cf0 \cb1 .tiff\
 convert -density 300 heb.lucida.exp0.pdf -background white +matte heb.lucida.exp0.tiff\
 convert -density 300 heb.miriam.exp1.pdf -background white +matte heb.miriam.exp1.tiff
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
@@ -65,6 +70,14 @@ tesseract -l heb -psm 4
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  
 \f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.courierNew.exp0
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  batch.nochop makebox\
+tesseract -l heb -psm 4 
+\f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.arial.exp0
+\f1\fs22 \cf0 \cb1 .tiff
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  
+\f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.arial.exp0
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  batch.nochop makebox\
 tesseract -psm 4 
@@ -261,7 +274,8 @@ http://albertbenatov.com/tess/?proj=tess_heb_full&rtl=1}}\
 {\field{\*\fldinst{HYPERLINK "http://albertbenatov.com/tess/?proj=tess&rtl=1"}}{\fldrslt \cf2 \expnd0\expndtw0\kerning0
 http://albertbenatov.com/tess/?proj=tess&rtl=1}}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
-{\field{\*\fldinst{HYPERLINK "http://albertbenatov.com/tess/?proj=tess_eng"}}{\fldrslt \cf2 http://albertbenatov.com/tess/?proj=tess_eng}}\
+{\field{\*\fldinst{HYPERLINK "http://albertbenatov.com/tess/?proj=tess_eng"}}{\fldrslt \cf2 \expnd0\expndtw0\kerning0
+http://albertbenatov.com/tess/?proj=tess_eng}}\
 \pard\pardeftab720\sl364
 
 \f4\fs26 \cf6 \expnd0\expndtw0\kerning0
