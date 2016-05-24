@@ -20,8 +20,8 @@ if do_train:
     # arr_fonts_ext = sys.argv[1:]
     # ! DON'T forget to add fonts to font_properties
     arr_fonts_ext = [
-        'heb.engCourierNew.exp0.tiff ',
-        'heb.miriam.exp0.tiff', 'heb.courierNew.exp0.tiff'
+        # 'heb.engCourierNew.exp0.tiff ',
+        'heb.miriam.exp0.tiff', 'heb.courierNew.exp0.tiff', 'heb.arial.exp0.tiff'
         ,'heb.kadosh.exp0.jpg', 'heb.kadosh.exp1.jpg', 'heb.kadosh.exp2.jpg'
         ,'heb.half_free.exp0.jpg', 'heb.supersal.exp0.jpg', 'heb.lahmanina.exp0.jpg'
     ]
