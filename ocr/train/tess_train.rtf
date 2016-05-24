@@ -39,6 +39,11 @@ convert -density 300
 \f1\fs22 \cf0 \cb1  -background white +matte 
 \f2\fs24 \cf4 \cb0 heb.arial.exp0
 \f1\fs22 \cf0 \cb1 .tiff\
+convert -density 300 
+\f2\fs24 \cf4 \cb0 heb.david.exp0.pdf
+\f1\fs22 \cf0 \cb1  -background white +matte 
+\f2\fs24 \cf4 \cb0 heb.david.exp0
+\f1\fs22 \cf0 \cb1 .tiff\
 convert -density 300 heb.lucida.exp0.pdf -background white +matte heb.lucida.exp0.tiff\
 convert -density 300 heb.miriam.exp1.pdf -background white +matte heb.miriam.exp1.tiff
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
@@ -78,6 +83,14 @@ tesseract -l heb -psm 4
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  
 \f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.arial.exp0
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  batch.nochop makebox\
+tesseract -l heb -psm 4 
+\f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.david.exp0
+\f1\fs22 \cf0 \cb1 .tiff
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  
+\f2\fs24 \cf4 \cb0 \kerning1\expnd0\expndtw0 \CocoaLigature0 heb.david.exp0
 \f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \CocoaLigature1  batch.nochop makebox\
 tesseract -psm 4 
