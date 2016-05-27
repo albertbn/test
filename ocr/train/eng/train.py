@@ -20,7 +20,7 @@ if do_train:
     # arr_fonts_ext = sys.argv[1:]
     # ! DON'T forget to add fonts to font_properties
     arr_fonts_ext = [
-        'eng.arial.exp0.tiff', 'eng.lucida.exp0.tiff'
+        'eng.arial.exp0.tiff', 'eng.lucida.exp0.tiff', 'eng.miriam.exp0.tiff'
     ]
 
     r_ext = re.compile('.(jpe?g|tiff?|png)', re.I)
