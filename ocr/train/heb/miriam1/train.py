@@ -69,6 +69,6 @@ imgs = [f for f in listdir(imgs_path) if isfile(join(imgs_path, f))]
 
 for img in imgs:
     # print 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt')
-    os.system ( 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
+    os.system ( 'tesseract -l heb+eng '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
 
 print
