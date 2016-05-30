@@ -13,7 +13,8 @@ do_train = len(sys.argv[1:]) and sys.argv[1] is '1'
 # do_tess_finally = len(sys.argv[1:])>1 and sys.argv[2] is '1'
 
 # if false, does only tess and open the result file for checking (at the end of file currently, 2016-05-23, Albert)
-imgs_path = '../../img/'
+# imgs_path = '../../img/'
+imgs_path = '../../img-iphone-hq/'
 
 if do_train:
 

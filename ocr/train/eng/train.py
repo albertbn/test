@@ -13,7 +13,8 @@ do_train = len(sys.argv[1:]) and sys.argv[1] is '1'
 # do_tess_finally = len(sys.argv[1:])>1 and sys.argv[2] is '1'
 
 # if false, does only tess and open the result file for checking (at the end of file currently, 2016-05-23, Albert)
-imgs_path = '../img/'
+# imgs_path = '../../img/'
+imgs_path = '../../img-iphone-hq/'
 
 if do_train:
 
@@ -60,12 +61,12 @@ if do_train:
 
     print
 
-# finally do tess for each file in the img dir and open results...
-imgs = [f for f in listdir(imgs_path) if isfile(join(imgs_path, f))]
-# print imgs
+# # finally do tess for each file in the img dir and open results...
+# imgs = [f for f in listdir(imgs_path) if isfile(join(imgs_path, f))]
+# # print imgs
 
-for img in imgs:
-    # print 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt')
-    os.system ( 'tesseract -l heb+eng '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
+# for img in imgs:
+#     # print 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt')
+#     os.system ( 'tesseract -l heb+eng '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
 
-print
+# print
