@@ -14,8 +14,8 @@ Object::Object(string name) {
 
   if ( name=="white" ) {
 
-    setHSVmin(Scalar(0,0,128));
-    setHSVmax(Scalar(256,27,256));
+    setHSVmin(Scalar(0,0,180));
+    setHSVmax(Scalar(256,38,256));
 
     setColor(Scalar(255,0,0));
   }

@@ -252,7 +252,8 @@ void do_frame ( Mat cameraFeed ) {
   trackFilteredObject(white,threshold,HSV,cameraFeed);
 }
 
-int maina ( ) {
+int main ( ) {
+// int maina ( ) {
 
   //if we would like to calibrate our filter values, set to true.
   // bool calibrationMode = true;
@@ -279,8 +280,8 @@ int maina ( ) {
   capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
   //start an infinite loop where webcam feed is copied to cameraFeed matrix
   //all of our operations will be performed within this loop
-  // waitKey(1000);
-  usleep(1000*1000);
+  waitKey(1000);
+  // usleep(1000*1000);
   // TEMP
   // return 0;
   while(1){
@@ -335,8 +336,8 @@ int maina ( ) {
 
     //delay 30ms so that screen can refresh.
     //image will not appear without this waitKey() command
-    // waitKey(30);
-    usleep(30*1000);
+    waitKey(30);
+    // usleep(30*1000);
   }
   return 0;
 }

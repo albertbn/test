@@ -101,13 +101,13 @@ void drawObject ( vector<Object> theObjects,Mat &frame, Mat &temp, vector< vecto
   for ( int i =0; i<(int)theObjects.size(); i++ ) {
     cv::drawContours(frame,contours,i,theObjects.at(i).getColor(),3,8,hierarchy);
     cv::circle(frame,cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()),5,theObjects.at(i).getColor());
-    cv::putText(
-                frame,
-                intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),
-                cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),
-                1,1,
-                theObjects.at(i).getColor()
-                );
+    // cv::putText(
+    //             frame,
+    //             intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),
+    //             cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),
+    //             1,1,
+    //             theObjects.at(i).getColor()
+    //             );
     cv::putText(frame,theObjects.at(i).getType(),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()-20),1,2,theObjects.at(i).getColor());
   }
 }
@@ -137,6 +137,7 @@ void morphOps ( Mat &thresh ) {
   dilate(thresh,thresh,dilateElement);
 }
 
+//calibration
 void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
   vector <Object> objects;
   Mat temp;
@@ -187,6 +188,7 @@ void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
   }
 }
 
+//real
 void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed){
 
   vector <Object> objects;
@@ -237,7 +239,8 @@ void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed
   }
 }
 
-int maina ( ) {
+int main ( ) {
+// int maina ( ) {
 
   //if we would like to calibrate our filter values, set to true.
   // bool calibrationMode = true;
@@ -264,10 +267,10 @@ int maina ( ) {
   capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
   //start an infinite loop where webcam feed is copied to cameraFeed matrix
   //all of our operations will be performed within this loop
-  // waitKey(1000);
-  LOGD ( "before sleep 1000 in maina \n" );
-  usleep(1000*1000);
-  LOGD ( "after sleep 1000 in maina \n" );
+  waitKey(1000);
+  // LOGD ( "before sleep 1000 in maina \n" );
+  // usleep(1000*1000);
+  // LOGD ( "after sleep 1000 in maina \n" );
   // TEMP
   // return 0;
   while(1){
@@ -277,7 +280,7 @@ int maina ( ) {
     src = cameraFeed;
 
     if ( !src.data ) {
-      LOGD ( "!!!no src camera feed in maina\n" );
+      // LOGD ( "!!!no src camera feed in maina\n" );
       // return -1;
       continue;
     }
@@ -353,11 +356,11 @@ int maina ( ) {
 
     //delay 30ms so that screen can refresh.
     //image will not appear without this waitKey() command
-    // waitKey(30);
-    LOGD ( "before 30ms sleep in maina\n" );
-    usleep(30*1000);
-    LOGD ( "after 30ms sleep in maina\n" );
+    waitKey(30);
+    // LOGD ( "before 30ms sleep in maina\n" );
+    // usleep(30*1000);
+    // LOGD ( "after 30ms sleep in maina\n" );
   }
-  LOGD ( "before end return in maina\n" );
+  // LOGD ( "before end return in maina\n" );
   return 0;
 }
