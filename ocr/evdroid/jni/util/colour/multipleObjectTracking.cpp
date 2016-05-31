@@ -1,4 +1,3 @@
-
 // g++ -g -rdynamic $(pkg-config --cflags --libs opencv)  -o colour Object.cpp multipleObjectTracking.cpp
 
 //Written by  Kyle Hounslow 2013
@@ -117,7 +116,10 @@ void drawObject ( vector<Object> theObjects,Mat &frame ) {
   for(int i =0; i<(int)theObjects.size(); i++){
 
     cv::circle(frame,cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()),10,cv::Scalar(0,0,255));
-    cv::putText(frame,intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+    cv::putText(frame,
+                intToString(theObjects.at(i).getXPos())+ " , " + intToString(theObjects.at(i).getYPos()),
+                cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+
     cv::putText(frame,theObjects.at(i).getType(),cv::Point(theObjects.at(i).getXPos(),theObjects.at(i).getYPos()-30),1,2,theObjects.at(i).getColor());
   }
 }
@@ -138,7 +140,7 @@ void morphOps ( Mat &thresh ) {
 }
 
 //calibration
-void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
+void trackFilteredObject ( Mat &threshold, Mat &cameraFeed ) {
   vector <Object> objects;
   Mat temp;
   threshold.copyTo(temp);
@@ -163,18 +165,17 @@ void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
             //if the area is the same as the 3/2 of the image size, probably just a bad filter
             //we only want the object with the largest area so we safe a reference area each
             //iteration and compare it to the area in the next iteration.
-            if(area>MIN_OBJECT_AREA)
-              {
-                Object object;
+            if ( area>MIN_OBJECT_AREA ) {
+              Object object;
 
-                object.setXPos(moment.m10/area);
-                object.setYPos(moment.m01/area);
+              object.setXPos(moment.m10/area);
+              object.setYPos(moment.m01/area);
 
-                objects.push_back(object);
+              objects.push_back(object);
 
-                objectFound = true;
+              objectFound = true;
 
-              }
+            }
             else objectFound = false;
           }
         //let user know you found an object
@@ -189,7 +190,7 @@ void trackFilteredObject ( Mat threshold,Mat HSV, Mat &cameraFeed ) {
 }
 
 //real
-void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed){
+void trackFilteredObject ( Object &theObject, Mat &threshold, Mat &cameraFeed){
 
   vector <Object> objects;
   Mat temp;
@@ -198,7 +199,7 @@ void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed
   vector< vector<Point> > contours;
   vector<Vec4i> hierarchy;
   //find contours of filtered image using openCV findContours function
-  findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+  findContours ( temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
   //use moments method to find our filtered object
   // double refArea = 0;
   bool objectFound = false;
@@ -240,7 +241,7 @@ void trackFilteredObject(Object theObject,Mat threshold,Mat HSV, Mat &cameraFeed
 }
 
 int main ( ) {
-// int maina ( ) {
+  // int maina ( ) {
 
   //if we would like to calibrate our filter values, set to true.
   // bool calibrationMode = true;
@@ -295,7 +296,7 @@ int main ( ) {
 
       //if in calibration mode, we track objects based on the HSV slider values.
       cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
-      inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),threshold);
+      inRange ( HSV, Scalar(H_MIN,S_MIN,V_MIN), Scalar(H_MAX,S_MAX,V_MAX), threshold );
       morphOps(threshold);
       imshow(windowName2,threshold);
 
@@ -309,7 +310,7 @@ int main ( ) {
       /// Create a Trackbar for user to enter threshold
       createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold);
       /// Show the image
-      trackFilteredObject(threshold,HSV,cameraFeed);
+      trackFilteredObject(threshold, cameraFeed);
     }
     else {
       //create some temp fruit objects so that
@@ -318,9 +319,9 @@ int main ( ) {
       Object white("white");
       //white
       cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
-      inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
-      morphOps(threshold);
-      trackFilteredObject(white,threshold,HSV,cameraFeed);
+      inRange ( HSV, white.getHSVmin(), white.getHSVmax(), threshold );
+      morphOps ( threshold );
+      trackFilteredObject ( white, threshold, cameraFeed );
 
       // Object blue("blue"), yellow("yellow"), red("red"), green("green");
       // //first find blue objects

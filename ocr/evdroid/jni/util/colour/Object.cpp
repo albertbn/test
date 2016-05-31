@@ -1,4 +1,3 @@
-
 #include "Object.hpp"
 
 Object::Object() {
@@ -7,7 +6,7 @@ Object::Object() {
   setColor(Scalar(0,0,0));
 }
 
-Object::Object(string name) {
+Object::Object( string name ) {
 
   setType(name);
 
@@ -45,6 +44,7 @@ Object::Object(string name) {
     setColor(Scalar(0,255,0));
 
   }
+
   if(name=="yellow"){
 
     //TODO: use "calibration mode" to find HSV min
@@ -57,7 +57,8 @@ Object::Object(string name) {
     setColor(Scalar(0,255,255));
 
   }
-  if(name=="red"){
+
+  if(name=="red") {
 
     //TODO: use "calibration mode" to find HSV min
     //and HSV max values
