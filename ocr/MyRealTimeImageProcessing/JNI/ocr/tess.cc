@@ -50,10 +50,10 @@ void init_ocr ( ) {
 
 #ifdef ANDROID
   // tess.Init ( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT );
-  tess.Init( path_sd_card.c_str(), "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  tess.Init ( path_sd_card.c_str(), "heb+eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false );
 #else
   // tess.Init ( NULL, "heb", tesseract::OEM_DEFAULT ); /*regular exe computer*/
-  tess.Init( NULL, "heb", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false);
+  tess.Init ( NULL, "heb+eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false );
 #endif // ANDROID
 
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/

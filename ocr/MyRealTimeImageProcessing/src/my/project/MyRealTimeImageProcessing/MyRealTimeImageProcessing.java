@@ -146,6 +146,7 @@ public class MyRealTimeImageProcessing extends Activity {
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             // params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+            // params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 
             params.setPictureSize(size.width, size.height);
             params.setJpegQuality(100);
