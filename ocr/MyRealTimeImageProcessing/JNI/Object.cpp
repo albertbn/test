@@ -14,8 +14,12 @@ Object::Object ( string name ) {
 
   if ( name=="white" ) {
 
-    setHSVmin(Scalar(0,0,128));
-    setHSVmax(Scalar(256,27,256));
+    // setHSVmin(Scalar(0,0,128));
+    // setHSVmax(Scalar(256,27,256));
+
+    // 2016-06-01, Albert
+    setHSVmin(Scalar(0,0,100));
+    setHSVmax(Scalar(256,38,256));
 
     setColor(Scalar(0,0,0));
   }

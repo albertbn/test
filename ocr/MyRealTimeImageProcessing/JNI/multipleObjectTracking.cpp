@@ -230,13 +230,10 @@ void test_ocr_pic_hardcoded ( ) {
 void save_middle_class ( Mat &picture ) {
 
   // TEMP test the OCR with hard coded pic
-  test_ocr_pic_hardcoded();
-  return;
+  // test_ocr_pic_hardcoded();
+  // return;
 
   cvtColor(picture, picture, CV_BGR2GRAY);
-
-  // white small size
-  // drawContours ( picture, contours_poly2, -1, Scalar(255,255,255), 5 ) ;
 
   int _angle90_count=0; vector<Point> points4;
 

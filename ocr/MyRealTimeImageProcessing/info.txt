@@ -1,6 +1,9 @@
 
 2016-05-08, Albert
 
+ndk-build clean
+ndk-build -j9
+
 for test mode edit the file:
 
 JNI/multipleObjectTracking.cpp - line ~231/232 save_middle_class()
