@@ -1,4 +1,9 @@
 
+2016-06-05, Albert
+go on, print to dump.txt in andrew the tess version, to be sure we re-compiled the tess-two, then test with high-res maybe, make the split always one and go...
+
+// ========
+
 2016-05-08, Albert
 
 ndk-build clean
