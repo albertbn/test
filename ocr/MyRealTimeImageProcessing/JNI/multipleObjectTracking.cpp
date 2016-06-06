@@ -113,10 +113,10 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
 
 float width_small = 640.0;
 float height_small = 480.0;
-// float width = 3264.0;
-// float height = 2448.0;
-float width = 2048.0;
-float height = 1536.0;
+float width = 3264.0;
+float height = 2448.0;
+// float width = 2048.0;
+// float height = 1536.0;
 
 
 float x_ratio = width/width_small;

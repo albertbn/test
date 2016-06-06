@@ -6,7 +6,7 @@
 
 using namespace cv;
 
-DbScan::DbScan ( std::vector<Rect>& _data, double _eps, int _mnpts ) : data ( _data ){
+DbScan::DbScan ( std::vector<Rect>& _data, double _eps, int _mnpts ) : data ( _data ) {
   C=-1;
   for ( int i=0;i<(int)data.size();i++ ) {
     labels[i]=-99;

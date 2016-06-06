@@ -56,6 +56,8 @@ void init_ocr ( ) {
   tess.Init ( NULL, "heb+eng", tesseract::OEM_DEFAULT , NULL, 0, &vars_vec, &vars_values, false );
 #endif // ANDROID
 
+  outfile << "tess version: " << tess.Version() << '\n';
+
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 

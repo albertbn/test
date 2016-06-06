@@ -140,8 +140,8 @@ public class MyRealTimeImageProcessing extends Activity {
 
             //start focus
             Camera.Parameters params = mCamera.getParameters();
-            // Camera.Size size = getBestPreviewSize ( 3264,2448, params );
-            Camera.Size size = getBestPreviewSize ( 2048,1536, params );
+            Camera.Size size = getBestPreviewSize ( 3264,2448, params );
+            // Camera.Size size = getBestPreviewSize ( 2048,1536, params );
 
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
