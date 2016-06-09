@@ -45,9 +45,12 @@ containing a value of this type.
         public static final int button_capture=0x7f050004;
         public static final int frameLayout1=0x7f050003;
         public static final int front=0x7f050002;
+        public static final int rl_video_preview_wrap1=0x7f050005;
+        public static final int tv_dump=0x7f050006;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
+        public static final int mail=0x7f030000;
+        public static final int main=0x7f030001;
     }
     public static final class string {
         public static final int app_name=0x7f040001;

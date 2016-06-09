@@ -15,6 +15,16 @@
 #include "Object.hpp"
 #include "ocr/main.hpp"
 
+const float width_small = 480.0;
+const float height_small = 640.0;
+// const float width = 3264.0;
+// const height = 2448.0;
+const float width = 1536.0;
+const float height = 2048.0;
+
+const float x_ratio = width/width_small;
+const float y_ratio = height/height_small;
+
 Point center;
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 
@@ -110,17 +120,6 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
     drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
   }
 }
-
-float width_small = 640.0;
-float height_small = 480.0;
-// float width = 3264.0;
-// float height = 2448.0;
-float width = 2048.0;
-float height = 1536.0;
-
-
-float x_ratio = width/width_small;
-float y_ratio = height/height_small;
 
 void relocate_poly ( vector<Point> &points4 ) {
 
@@ -253,6 +252,8 @@ void save_middle_class ( Mat &picture ) {
   final_magic_crop_rotate ( picture /*ref*/, points4 /*ref*/ );
 }
 
+// this folk is responsible for modifying the video preview (each img frame)
+// by colour detecting and drawing a green frame
 void do_frame ( Mat cameraFeed ) {
 
   Mat threshold;

@@ -5,6 +5,7 @@ package my.project.MyRealTimeImageProcessing;
 
 import java.io.IOException;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -31,6 +32,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     boolean bProcessing = false;
 
     Handler mHandler = new Handler(Looper.getMainLooper());
+
+    String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public CameraPreview (
                          int PreviewlayoutWidth,
@@ -142,7 +145,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int[] pixels );
-    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels );
+    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels, String root_folder_path );
 
     Runnable DoImageProcessing = new Runnable() {
 
@@ -150,7 +153,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
                 bProcessing = true;
                 // ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
-                colourDetect ( PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels );
+                // call native JNI c++
+                colourDetect ( PreviewSizeWidth, PreviewSizeHeight,  FrameData, pixels, root_folder_path );
 
                 bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
                 MyCameraPreview.setImageBitmap(bitmap);

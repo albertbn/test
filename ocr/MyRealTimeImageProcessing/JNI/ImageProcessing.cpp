@@ -62,35 +62,54 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
   return true;
 }
 
+char COLOUR_FRAME_COUNT = 65;
+char COLOUR_FRAME_COUNT_MAX = 76;
+
 // do_frame ( mFrame );
 // new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 JNIEnv* env, jobject,
-                jint width, jint height, jbyteArray yuv, jintArray bgra ) {
+                jint width, jint height,
+                jbyteArray yuv, jintArray bgra,
+                jstring jroot_folder_path ) {
+
+  string root_folder_path; /* doesn't end with / */
+
+  root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
+  root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
 
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
   jint*  _bgra = env->GetIntArrayElements(bgra, 0);
 
   // Prepare a cv::Mat that points to the YUV420sp data.
-  Mat myuv(height + height/2, width, CV_8UC1, (uchar *)_yuv);
+  Mat myuv(height + height/2, width, CV_8UC1, (uchar *)_yuv); /*orig*/
+  // Mat myuv ( width+width/2, height, CV_8UC1, (uchar *)_yuv );
   // Prepare a cv::Mat that points to the BGRA output data.
-  Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra);
+  Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra); /*orig*/
+  // Mat mbgra ( width, height, CV_8UC4, (uchar *)_bgra );
+
+  if ( COLOUR_FRAME_COUNT<=COLOUR_FRAME_COUNT_MAX ) {
+    imwrite ( root_folder_path, myuv ) ;
+    root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
+    imwrite ( root_folder_path, mbgra ) ;
+  }
 
   // Convert the color format from the camera's
   // NV21 "YUV420sp" format to an Android BGRA color image.
-  cvtColor(myuv, mbgra, CV_YUV420sp2BGRA);
+  cvtColor(myuv, mbgra, CV_YUV420sp2BGRA); /*UNMARK*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
   // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
-  do_frame ( mbgra );
+  do_frame ( mbgra ); /*UNMARK*/
 
   // Release the native lock we placed on the Java arrays.
   env->ReleaseIntArrayElements(bgra, _bgra, 0);
   env->ReleaseByteArrayElements(yuv, _yuv, 0);
 
+  // delete[] _yuv; delete[] _bgra;
   return true;
 }
 

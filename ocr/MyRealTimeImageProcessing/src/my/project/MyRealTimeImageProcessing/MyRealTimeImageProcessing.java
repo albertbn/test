@@ -1,21 +1,22 @@
 package my.project.MyRealTimeImageProcessing;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+//import java.io.FileNotFoundException;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.core.Core;
+//import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.core.CvType;
+//import org.opencv.imgcodecs.Imgcodecs;
+//import org.opencv.core.CvType;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.imgproc.Imgproc;
@@ -25,10 +26,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.Surface;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
+//import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -37,11 +40,16 @@ import android.graphics.BitmapFactory;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.hardware.Camera.PictureCallback;
-import android.content.pm.PackageManager;
+//import android.hardware.Camera.PictureCallback;
+//import android.content.pm.PackageManager;
 import android.widget.Button;
 
 public class MyRealTimeImageProcessing extends Activity {
+
+    int PreviewSizeWidth = 480;
+    int PreviewSizeHeight = 640;
+    int PHOTO_WIDTH = 1536; /*2448*/
+    int PHOTO_HEIGHT =  2048; /*3264*/
 
     Camera mCamera;
     CameraPreview camPreview;
@@ -49,9 +57,8 @@ public class MyRealTimeImageProcessing extends Activity {
     Button capture;
     Context myContext;
     ImageView MyCameraPreview = null;
-    FrameLayout mainLayout;
-    int PreviewSizeWidth = 640;
-    int PreviewSizeHeight= 480;
+    // FrameLayout mainLayout;
+    RelativeLayout rl_video_preview_wrap1;
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
 
@@ -94,9 +101,9 @@ public class MyRealTimeImageProcessing extends Activity {
         camHolder.addCallback(camPreview);
         camHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        mainLayout = (FrameLayout) findViewById(R.id.frameLayout1);
-        mainLayout.addView(camView, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
-        mainLayout.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
+        rl_video_preview_wrap1 = (RelativeLayout) findViewById(R.id.rl_video_preview_wrap1);
+        rl_video_preview_wrap1.addView(camView, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
+        rl_video_preview_wrap1.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
         capture = (Button) findViewById(R.id.button_capture);
         capture.setOnClickListener(captrureListener);
     }
@@ -112,6 +119,39 @@ public class MyRealTimeImageProcessing extends Activity {
         //when on Pause, release camera in order to be used from other applications
         releaseCamera();
     }
+
+        public static void setCameraDisplayOrientation ( Activity activity,
+                                                     int cameraId,
+                                                     android.hardware.Camera camera
+                                                         ) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(cameraId, info);
+            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            int degrees = 0;
+            switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+            }
+
+            int result;
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                result = (info.orientation + degrees) % 360;
+                result = (360 - result) % 360; // compensate the mirror
+            } else { // back-facing
+                result = (info.orientation - degrees + 360) % 360;
+            }
+            camera.setDisplayOrientation(result);
+        }
 
     @Override
     public void onResume ( ) {
@@ -138,10 +178,11 @@ public class MyRealTimeImageProcessing extends Activity {
 
             mCamera = Camera.open(0);
 
+            setCameraDisplayOrientation ( this, CameraInfo.CAMERA_FACING_BACK, mCamera );
+
             //start focus
             Camera.Parameters params = mCamera.getParameters();
-            // Camera.Size size = getBestPreviewSize ( 3264,2448, params );
-            Camera.Size size = getBestPreviewSize ( 2048,1536, params );
+            Camera.Size size = getBestPreviewSize ( PHOTO_WIDTH, PHOTO_HEIGHT, params );
 
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
