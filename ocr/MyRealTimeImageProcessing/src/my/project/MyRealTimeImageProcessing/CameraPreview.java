@@ -3,7 +3,7 @@
  */
 package my.project.MyRealTimeImageProcessing;
 
-import java.io.IOException;
+import java.io.*;
 
 import android.os.Environment;
 import android.os.Handler;
@@ -14,7 +14,12 @@ import android.view.SurfaceView;
 import android.widget.ImageView;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.YuvImage;
+import android.graphics.Rect;
+import android.graphics.Matrix;
+
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 
@@ -27,28 +32,36 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     int[] pixels = null;
     byte[] FrameData = null;
     int imageFormat;
+
     int PreviewSizeWidth;
     int PreviewSizeHeight;
+
+    Parameters parameters;
+    int width;
+    int height;
+
     boolean bProcessing = false;
 
     Handler mHandler = new Handler(Looper.getMainLooper());
 
-    String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    static String path_log = root_folder_path+"/tessdata/img/log.txt";
+    // char ccount='A';
 
     public CameraPreview (
                          int PreviewlayoutWidth,
                          int PreviewlayoutHeight,
-                         ImageView CameraPreview,
+                         ImageView cameraPreviewInstance,
                          Camera camera,
                          SurfaceHolder holder) {
+
         mCamera = camera;
         mHolder = holder;
 
         PreviewSizeWidth = PreviewlayoutWidth;
         PreviewSizeHeight = PreviewlayoutHeight;
-        MyCameraPreview = CameraPreview;
-        bitmap = Bitmap.createBitmap(PreviewSizeWidth, PreviewSizeHeight, Bitmap.Config.ARGB_8888);
-        pixels = new int[PreviewSizeWidth * PreviewSizeHeight];
+
+        MyCameraPreview = cameraPreviewInstance;
     }
 
     // Indian thanks and bows man - that's about all I needed
@@ -71,9 +84,10 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     @Override
     public void surfaceChanged ( SurfaceHolder arg0, int arg1, int arg2, int arg3 ) {
 
-        Parameters parameters = mCamera.getParameters();
+        parameters = mCamera.getParameters ( ) ;
         // Set the camera preview size
-        parameters.setPreviewSize(PreviewSizeWidth, PreviewSizeHeight);
+        parameters.setPreviewSize ( PreviewSizeWidth, PreviewSizeHeight );
+
         imageFormat = parameters.getPreviewFormat();
         mCamera.setParameters(parameters);
         mCamera.startPreview();
@@ -152,13 +166,75 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
             public void run() {
                 Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
                 bProcessing = true;
-                // ImageProcessing(PreviewSizeWidth, PreviewSizeHeight, FrameData, pixels);
-                // call native JNI c++
-                colourDetect ( PreviewSizeWidth, PreviewSizeHeight,  FrameData, pixels, root_folder_path );
+                byte[] data = FrameData;
 
-                bitmap.setPixels(pixels, 0, PreviewSizeWidth, 0, 0, PreviewSizeWidth, PreviewSizeHeight);
-                MyCameraPreview.setImageBitmap(bitmap);
+                if ( bitmap==null || pixels==null ) {
+
+                    parameters = mCamera.getParameters();
+                    width = parameters.getPreviewSize().width;
+                    height = parameters.getPreviewSize().height;
+                    pixels = new int [ width * height ];
+                    bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
+                }
+
+                // bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
+
+                // if ( ccount<'F' )  {
+
+                //     // log ("fuck u");
+                //     // log ("fuck u"+ (++ccount));
+
+                //     try {
+
+                //          // int width = PreviewSizeWidth, height = PreviewSizeHeight;
+
+                //         //convert the byte[] to Bitmap through YuvImage;
+                //         //make sure the previewFormat is NV21 (I set it so somewhere before)
+                //         YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
+                //         // ByteArrayOutputStream out = new ByteArrayOutputStream();
+                //         // yuv.compressToJpeg(new Rect(0, 0, width, height), 70, out);
+                //         // Bitmap bmp = BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size());
+
+                //         BufferedOutputStream bos =
+                //             new BufferedOutputStream ( new FileOutputStream(root_folder_path+"/tessdata/img/" + (ccount++) + ".jpg") );
+                //         yuv.compressToJpeg ( new Rect(0, 0, width, height), 100, bos );
+
+                //         bos.flush();
+                //         bos.close();
+                //     }
+                //     catch ( IOException ioex ) {
+                //         // throw ioex;
+                //         // log("fuck u err");
+                //     }
+                // }
+                // call native JNI c++
+                colourDetect ( width, height, data, pixels, root_folder_path );
+                bitmap.setPixels ( pixels, 0, width, 0, 0, width, height );
+
+                // Matrix matrix = new Matrix();
+                // matrix.postRotate(90);
+                // bitmap = Bitmap.createBitmap ( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
+
+                MyCameraPreview.setImageBitmap ( bitmap ) ;
                 bProcessing = false;
             }
         };
+
+    static void log ( String s ) {
+
+        BufferedWriter bw = null;
+
+        try {
+            bw = new BufferedWriter ( new FileWriter(path_log, "append mode? no time to check"!=null ) );
+            bw.write(s);
+            bw.newLine();
+            bw.flush();
+        } catch (IOException ex) {
+            // throw ex;
+        } finally {
+            if (bw != null) try {
+                    bw.close();
+                } catch (IOException ex2) { }
+        }
+    }
 }

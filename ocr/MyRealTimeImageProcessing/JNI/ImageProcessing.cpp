@@ -62,8 +62,8 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
   return true;
 }
 
-char COLOUR_FRAME_COUNT = 65;
-char COLOUR_FRAME_COUNT_MAX = 76;
+char COLOUR_FRAME_COUNT = 'A';
+char COLOUR_FRAME_COUNT_MAX = 'H';
 
 // do_frame ( mFrame );
 // new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
@@ -75,10 +75,11 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 jbyteArray yuv, jintArray bgra,
                 jstring jroot_folder_path ) {
 
-  string root_folder_path; /* doesn't end with / */
+  // string root_folder_path; /* doesn't end with / */
 
-  root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
-  root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
+  // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
+  // root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
+
 
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
@@ -91,15 +92,16 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra); /*orig*/
   // Mat mbgra ( width, height, CV_8UC4, (uchar *)_bgra );
 
-  if ( COLOUR_FRAME_COUNT<=COLOUR_FRAME_COUNT_MAX ) {
-    imwrite ( root_folder_path, myuv ) ;
-    root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
-    imwrite ( root_folder_path, mbgra ) ;
-  }
+  // if ( COLOUR_FRAME_COUNT<=COLOUR_FRAME_COUNT_MAX ) {
+  //   imwrite ( root_folder_path, myuv ) ;
+  //   root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
+  //   imwrite ( root_folder_path, mbgra ) ;
+  // }
 
+  // return false;
   // Convert the color format from the camera's
   // NV21 "YUV420sp" format to an Android BGRA color image.
-  cvtColor(myuv, mbgra, CV_YUV420sp2BGRA); /*UNMARK*/
+  cvtColor ( myuv, mbgra, CV_YUV420sp2BGRA ); /*UNMARK*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
   // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;

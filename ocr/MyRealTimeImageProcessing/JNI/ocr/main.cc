@@ -188,12 +188,12 @@ cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
 void ocr_doit ( Mat& im_orig ) {
 
   // init tess
-  init_ocr();
+  init_ocr ( );
 
   // tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
   // orientation_check(im_orig);
   if ( im_orig.cols>im_orig.rows )
-    rot90(im_orig,1);
+    rot90 ( im_orig, 1 );
 
 
   Mat im = im_orig.clone();
