@@ -19,6 +19,10 @@ import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
 import android.graphics.Rect;
 import android.graphics.Matrix;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -39,6 +43,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     Parameters parameters;
     int width;
     int height;
+    // Matrix matrix;
 
     boolean bProcessing = false;
 
@@ -57,6 +62,9 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
         mCamera = camera;
         mHolder = holder;
+
+        // matrix = new Matrix();
+        // matrix.postRotate(90);
 
         PreviewSizeWidth = PreviewlayoutWidth;
         PreviewSizeHeight = PreviewlayoutHeight;
@@ -174,7 +182,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                     width = parameters.getPreviewSize().width;
                     height = parameters.getPreviewSize().height;
                     pixels = new int [ width * height ];
-                    bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
+                    bitmap = Bitmap.createBitmap ( height, width, Bitmap.Config.ARGB_8888 ) ;
+
                 }
 
                 // bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
@@ -209,13 +218,24 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 // }
                 // call native JNI c++
                 colourDetect ( width, height, data, pixels, root_folder_path );
-                bitmap.setPixels ( pixels, 0, width, 0, 0, width, height );
+                // signature:
+                // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
+                // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
+                bitmap = bitmap.copy(bitmap.getConfig(), true);
+                Canvas canvas = new Canvas(bitmap);
+                Paint paint = new Paint();
+                paint.setColor(Color.YELLOW);
+                paint.setStyle(Style.STROKE);
+                //paint.setStrokeWidth(0.5f);
+                paint.setAntiAlias(true);
 
                 // Matrix matrix = new Matrix();
                 // matrix.postRotate(90);
                 // bitmap = Bitmap.createBitmap ( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
 
                 MyCameraPreview.setImageBitmap ( bitmap ) ;
+                canvas.drawCircle( height/2, width/2, height/2, paint);
+
                 bProcessing = false;
             }
         };

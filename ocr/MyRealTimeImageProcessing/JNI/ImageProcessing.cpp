@@ -8,6 +8,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 
+#include "ocr/tess.hpp" /*used for rotate - rot90*/
 #include "static_fields.hpp"
 #include "multipleObjectTracking.hpp"
 
@@ -67,6 +68,9 @@ char COLOUR_FRAME_COUNT_MAX = 'H';
 
 // do_frame ( mFrame );
 // new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
+
+// go on from - passing vec_vec_point back and forth to Java and JNI, yep?:
+// http://stackoverflow.com/questions/22319168/opencv-java-code-pass-point-object-to-native-codec
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
@@ -102,6 +106,8 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // Convert the color format from the camera's
   // NV21 "YUV420sp" format to an Android BGRA color image.
   cvtColor ( myuv, mbgra, CV_YUV420sp2BGRA ); /*UNMARK*/
+
+  // rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
   // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
