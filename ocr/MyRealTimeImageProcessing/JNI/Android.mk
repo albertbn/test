@@ -72,6 +72,7 @@ OPENCV_INSTALL_MODULES:=on
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := ImageProcessing.cpp
+LOCAL_SRC_FILES  += converters.cpp
 LOCAL_SRC_FILES  += Object.cpp
 LOCAL_SRC_FILES  += multipleObjectTracking.cpp
 LOCAL_SRC_FILES  += ocr/db_scan.cc

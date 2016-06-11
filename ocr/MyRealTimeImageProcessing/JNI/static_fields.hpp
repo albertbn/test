@@ -19,6 +19,8 @@ extern ofstream outfile_ocr;
 extern string path_sd_card;
 extern string IMG_PATH;
 
+extern vector < vector<Point> > contours_poly2;
+
 #endif // __cplusplus
 #endif /*STATIC_FIELDS*/
 

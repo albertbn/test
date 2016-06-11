@@ -26,7 +26,6 @@ const float x_ratio = width/width_small;
 const float y_ratio = height/height_small;
 
 Point center;
-vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS=50;
@@ -109,7 +108,7 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
       Moments moment = moments((Mat)contours[index]);
       double area = moment.m00;
 
-      if(area>MIN_OBJECT_AREA){
+      if ( area>MIN_OBJECT_AREA ) {
         // here - go to moon - yep indeed
         approxPolyDP ( Mat(contours[index]), contours_poly[index], 40, true );
         contours_poly2.push_back(contours_poly[index]);
@@ -117,7 +116,7 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
     }
 
     // credits: thanks PowHu for alpha 255, http://stackoverflow.com/questions/15916751/cvscalar-not-displaying-expected-color
-    drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
+    // drawContours ( cameraFeed, contours_poly2, -1, Scalar(94,206,165,255), 5 ) ;
   }
 }
 

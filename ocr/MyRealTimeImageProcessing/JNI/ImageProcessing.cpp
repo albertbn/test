@@ -11,6 +11,7 @@
 #include "ocr/tess.hpp" /*used for rotate - rot90*/
 #include "static_fields.hpp"
 #include "multipleObjectTracking.hpp"
+#include "converters.hpp"
 
 using namespace std;
 using namespace cv;
@@ -19,6 +20,8 @@ ofstream outfile;
 ofstream outfile_ocr;
 string path_sd_card;
 string IMG_PATH;
+
+vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 
 Mat * mCanny = NULL; /*not used for now*/
 
@@ -66,9 +69,17 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
 char COLOUR_FRAME_COUNT = 'A';
 char COLOUR_FRAME_COUNT_MAX = 'H';
 
+// extern "C" JNIEXPORT void JNICALL Java_org_example_yourpackage_YourJavaWrapper_findMostFencyMatOfPoints(JNIEnv*, jobject, jlong inputMatAddress, jlong outPutMatAddress)
+// {
+//     cv::Mat& vectorVectorPointMat = *(cv::Mat*) inputMatAddress;
+//     std::vector< std::vector< cv::Point > > contours;
+//     Mat_to_vector_vector_Point(vectorVectorPointMat, contours);
+//     cv::Mat& largestSquareMat = *(cv::Mat*) outPutMatAddress;
+//     vector_vector_Point_to_Mat(contours, largestSquareMat);
+// }
+
 // do_frame ( mFrame );
 // new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
-
 // go on from - passing vec_vec_point back and forth to Java and JNI, yep?:
 // http://stackoverflow.com/questions/22319168/opencv-java-code-pass-point-object-to-native-codec
 extern "C"
@@ -77,13 +88,15 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 JNIEnv* env, jobject,
                 jint width, jint height,
                 jbyteArray yuv, jintArray bgra,
+                jlong jout_vec_vec_point,
                 jstring jroot_folder_path ) {
 
   // string root_folder_path; /* doesn't end with / */
-
   // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
   // root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
-
+  // root_folder_path = root_folder_path + "/tessdata/img/dump.txt";
+  //open streams
+  // outfile.open ( root_folder_path.c_str(), ios_base::app );
 
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
@@ -107,11 +120,17 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // NV21 "YUV420sp" format to an Android BGRA color image.
   cvtColor ( myuv, mbgra, CV_YUV420sp2BGRA ); /*UNMARK*/
 
-  // rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
+  rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
   // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
   do_frame ( mbgra ); /*UNMARK*/
+
+  cv::Mat& mat_out_vec_vec_point = *(cv::Mat*) jout_vec_vec_point;
+  vector_vector_Point_to_Mat ( contours_poly2, mat_out_vec_vec_point);
+
+  // outfile << "count of poly2 is: " << contours_poly2.size() << '\n';
+  // outfile.close();
 
   // Release the native lock we placed on the Java arrays.
   env->ReleaseIntArrayElements(bgra, _bgra, 0);

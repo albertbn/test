@@ -4,6 +4,8 @@
 package my.project.MyRealTimeImageProcessing;
 
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import android.os.Environment;
 import android.os.Handler;
@@ -26,6 +28,13 @@ import android.graphics.Paint.Style;
 
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
+
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.utils.Converters;
+import org.opencv.android.Utils;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Scalar;
 
 public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
@@ -167,7 +176,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int[] pixels );
-    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels, String root_folder_path );
+    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
 
     Runnable DoImageProcessing = new Runnable() {
 
@@ -182,9 +191,9 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                     width = parameters.getPreviewSize().width;
                     height = parameters.getPreviewSize().height;
                     pixels = new int [ width * height ];
-                    bitmap = Bitmap.createBitmap ( height, width, Bitmap.Config.ARGB_8888 ) ;
-
                 }
+
+                Mat mat_out_vec_vec_point = new Mat();
 
                 // bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
 
@@ -217,24 +226,43 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 //     }
                 // }
                 // call native JNI c++
-                colourDetect ( width, height, data, pixels, root_folder_path );
+                colourDetect ( width, height, data, pixels,
+                               mat_out_vec_vec_point.nativeObj, /*!*/
+                               root_folder_path /*!*/ );
+
+                List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( );
+                Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );
+
+                mat_out_vec_vec_point.release();
+
+                bitmap = Bitmap.createBitmap ( height, width, Bitmap.Config.ARGB_8888 ) ;
+
                 // signature:
                 // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
                 // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
-                bitmap = bitmap.copy(bitmap.getConfig(), true);
-                Canvas canvas = new Canvas(bitmap);
-                Paint paint = new Paint();
-                paint.setColor(Color.YELLOW);
-                paint.setStyle(Style.STROKE);
-                //paint.setStrokeWidth(0.5f);
-                paint.setAntiAlias(true);
+                // bitmap = bitmap.copy ( bitmap.getConfig(), true );
+                // Canvas canvas = new Canvas(bitmap);
+                // Paint paint = new Paint();
+                // paint.setColor(Color.YELLOW);
+                // paint.setStyle(Style.STROKE);
+                // //paint.setStrokeWidth(0.5f);
+                // paint.setAntiAlias(true);
 
                 // Matrix matrix = new Matrix();
                 // matrix.postRotate(90);
                 // bitmap = Bitmap.createBitmap ( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
 
+                Mat mat = new Mat();
+                Utils.bitmapToMat ( bitmap, mat );
+                // log ("size of c_poly2 is" + contours_poly2.size());
+                for  ( int i = 0; i < contours_poly2.size(); ++i ) {
+                    Imgproc.drawContours(mat, contours_poly2, i, new Scalar(255,255,255,255), 3);
+                }
+                Utils.matToBitmap ( mat, bitmap );
+                mat.release();
+
                 MyCameraPreview.setImageBitmap ( bitmap ) ;
-                canvas.drawCircle( height/2, width/2, height/2, paint);
+                // canvas.drawCircle( height/2, width/2, height/2, paint);
 
                 bProcessing = false;
             }
