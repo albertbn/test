@@ -256,7 +256,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 Utils.bitmapToMat ( bitmap, mat );
                 // log ("size of c_poly2 is" + contours_poly2.size());
                 for  ( int i = 0; i < contours_poly2.size(); ++i ) {
-                    Imgproc.drawContours(mat, contours_poly2, i, new Scalar(255,255,255,255), 3);
+                    Imgproc.drawContours(mat, contours_poly2, i, new Scalar(164,240,64,255), 5);
                 }
                 Utils.matToBitmap ( mat, bitmap );
                 mat.release();

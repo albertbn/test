@@ -33,7 +33,9 @@ import android.view.WindowManager;
 //import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.text.method.ScrollingMovementMethod;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,6 +59,7 @@ public class MyRealTimeImageProcessing extends Activity {
     Button capture;
     Context myContext;
     ImageView MyCameraPreview = null;
+    TextView tv = null;
     // FrameLayout mainLayout;
     RelativeLayout rl_video_preview_wrap1;
 
@@ -106,6 +109,9 @@ public class MyRealTimeImageProcessing extends Activity {
         rl_video_preview_wrap1.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
         capture = (Button) findViewById(R.id.button_capture);
         capture.setOnClickListener(captrureListener);
+
+        tv = (TextView) findViewById(R.id.tv_dump);
+        tv.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override

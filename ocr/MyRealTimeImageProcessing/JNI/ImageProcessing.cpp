@@ -21,9 +21,25 @@ ofstream outfile_ocr;
 string path_sd_card;
 string IMG_PATH;
 
+// of landscape pic
+// const int width = 640;
+const int height = 720;
+
 vector < vector<Point> > contours_poly2; /*this is a static filed, that could be accessed from outside???*/
 
-Mat * mCanny = NULL; /*not used for now*/
+void fn_transform_point ( Point& point ) {
+
+  double x(point.x);
+  point.x = height-point.y;
+  point.y = x;
+}
+void fn_transform_vec_point ( vector<Point>& vec_point ) {
+  for_each (vec_point.begin(), vec_point.end(), fn_transform_point);
+}
+
+void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
+  for_each ( contours_rotate.begin(), contours_rotate.end(), fn_transform_vec_point );
+}
 
 extern "C"
 jboolean
@@ -66,18 +82,6 @@ Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleCl
   return true;
 }
 
-char COLOUR_FRAME_COUNT = 'A';
-char COLOUR_FRAME_COUNT_MAX = 'H';
-
-// extern "C" JNIEXPORT void JNICALL Java_org_example_yourpackage_YourJavaWrapper_findMostFencyMatOfPoints(JNIEnv*, jobject, jlong inputMatAddress, jlong outPutMatAddress)
-// {
-//     cv::Mat& vectorVectorPointMat = *(cv::Mat*) inputMatAddress;
-//     std::vector< std::vector< cv::Point > > contours;
-//     Mat_to_vector_vector_Point(vectorVectorPointMat, contours);
-//     cv::Mat& largestSquareMat = *(cv::Mat*) outPutMatAddress;
-//     vector_vector_Point_to_Mat(contours, largestSquareMat);
-// }
-
 // do_frame ( mFrame );
 // new hope, go on from here: https://github.com/MasteringOpenCV/code/blob/master/Chapter1_AndroidCartoonifier/Cartoonifier_Android/jni/jni_part.cpp
 // go on from - passing vec_vec_point back and forth to Java and JNI, yep?:
@@ -104,69 +108,26 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
 
   // Prepare a cv::Mat that points to the YUV420sp data.
   Mat myuv(height + height/2, width, CV_8UC1, (uchar *)_yuv); /*orig*/
-  // Mat myuv ( width+width/2, height, CV_8UC1, (uchar *)_yuv );
-  // Prepare a cv::Mat that points to the BGRA output data.
   Mat mbgra(height, width, CV_8UC4, (uchar *)_bgra); /*orig*/
-  // Mat mbgra ( width, height, CV_8UC4, (uchar *)_bgra );
 
-  // if ( COLOUR_FRAME_COUNT<=COLOUR_FRAME_COUNT_MAX ) {
-  //   imwrite ( root_folder_path, myuv ) ;
-  //   root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
-  //   imwrite ( root_folder_path, mbgra ) ;
-  // }
-
-  // return false;
-  // Convert the color format from the camera's
-  // NV21 "YUV420sp" format to an Android BGRA color image.
+  // Convert the color format from the camera's NV21 "YUV420sp" format to an Android BGRA color image.
   cvtColor ( myuv, mbgra, CV_YUV420sp2BGRA ); /*UNMARK*/
 
-  rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
+  // rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
-  // cv::circle ( mbgra, Point(200,200), 70, cv::Scalar(255,255,255) ) ;
   do_frame ( mbgra ); /*UNMARK*/
 
-  cv::Mat& mat_out_vec_vec_point = *(cv::Mat*) jout_vec_vec_point;
-  vector_vector_Point_to_Mat ( contours_poly2, mat_out_vec_vec_point);
+  vector < vector<Point> > contours_rotated ( contours_poly2 );
+  rotate_contours_90(contours_rotated);
 
-  // outfile << "count of poly2 is: " << contours_poly2.size() << '\n';
-  // outfile.close();
+  cv::Mat& mat_out_vec_vec_point = *(cv::Mat*) jout_vec_vec_point;
+  // vector_vector_Point_to_Mat ( contours_poly2, mat_out_vec_vec_point);
+  vector_vector_Point_to_Mat ( contours_rotated, mat_out_vec_vec_point );
 
   // Release the native lock we placed on the Java arrays.
   env->ReleaseIntArrayElements(bgra, _bgra, 0);
   env->ReleaseByteArrayElements(yuv, _yuv, 0);
 
-  // delete[] _yuv; delete[] _bgra;
   return true;
-}
-
-extern "C"
-jboolean
-Java_my_project_MyRealTimeImageProcessing_CameraPreview_ImageProcessing (
-                JNIEnv* env, jobject thiz,
-                jint width, jint height,
-                jbyteArray NV21FrameData, jintArray outPixels) {
-
-        jbyte * pNV21FrameData = env->GetByteArrayElements(NV21FrameData, 0);
-        jint * poutPixels = env->GetIntArrayElements(outPixels, 0);
-
-        if ( mCanny == NULL )
-        {
-                mCanny = new Mat(height, width, CV_8UC1);
-        }
-
-        Mat mGray(height, width, CV_8UC1, (unsigned char *)pNV21FrameData);
-        Mat mResult(height, width, CV_8UC4, (unsigned char *)poutPixels);
-
-        IplImage srcImg = mGray;
-        IplImage CannyImg = *mCanny;
-        IplImage ResultImg = mResult;
-
-        cvCanny(&srcImg, &CannyImg, 80, 100, 3);
-        cvCvtColor(&CannyImg, &ResultImg, CV_GRAY2BGRA);
-
-        env->ReleaseByteArrayElements(NV21FrameData, pNV21FrameData, 0);
-        env->ReleaseIntArrayElements(outPixels, poutPixels, 0);
-
-        return true;
 }
