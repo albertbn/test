@@ -29,10 +29,15 @@ vector < vector<Point> > contours_poly2; /*this is a static filed, that could be
 
 void fn_transform_point ( Point& point ) {
 
-  double x(point.x);
-  point.x = height-point.y;
-  point.y = x;
+  // double x(point.x);
+  // point.x = height-point.y;
+  // point.y = x;
+
+  // (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
+  point.x^=point.y; point.y^=point.x; point.x^=point.y;
+  point.x = height-point.x;
 }
+
 void fn_transform_vec_point ( vector<Point>& vec_point ) {
   for_each (vec_point.begin(), vec_point.end(), fn_transform_point);
 }

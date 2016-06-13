@@ -56,7 +56,8 @@ public class MyRealTimeImageProcessing extends Activity {
     Camera mCamera;
     CameraPreview camPreview;
     PictureCallback mPicture;
-    Button capture;
+    Button capture, flash;
+    Boolean is_torch_on = false;
     Context myContext;
     ImageView MyCameraPreview = null;
     TextView tv = null;
@@ -109,6 +110,9 @@ public class MyRealTimeImageProcessing extends Activity {
         rl_video_preview_wrap1.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
         capture = (Button) findViewById(R.id.button_capture);
         capture.setOnClickListener(captrureListener);
+
+        flash = (Button) findViewById(R.id.button_flash);
+        flash.setOnClickListener(flash_listener);
 
         tv = (TextView) findViewById(R.id.tv_dump);
         tv.setMovementMethod(new ScrollingMovementMethod());
@@ -205,7 +209,24 @@ public class MyRealTimeImageProcessing extends Activity {
         }
     }
 
-    //set form onCreate
+    //set from onCreate
+    OnClickListener flash_listener = new OnClickListener() {
+            @Override
+            public void onClick ( View v ) {
+                Camera.Parameters params = mCamera.getParameters();
+                if(is_torch_on){
+                    is_torch_on=false;
+                    params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                }
+                else{
+                    is_torch_on=true;
+                    params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                }
+                mCamera.setParameters(params);
+            }
+        };
+
+    //set from onCreate
     OnClickListener captrureListener = new OnClickListener() {
             @Override
             public void onClick ( View v ) {
