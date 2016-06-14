@@ -19,7 +19,7 @@ Object::Object ( string name ) {
 
     // 2016-06-01, Albert
     // setHSVmin(Scalar(0,0,100));
-    setHSVmin(Scalar(0,0,100));
+    setHSVmin(Scalar(0,0,-100));
     setHSVmax(Scalar(256,100,256));
 
     setColor(Scalar(0,0,0));

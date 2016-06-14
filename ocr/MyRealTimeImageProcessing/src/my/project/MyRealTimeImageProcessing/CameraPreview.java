@@ -195,36 +195,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
                 Mat mat_out_vec_vec_point = new Mat();
 
-                // bitmap = Bitmap.createBitmap ( width, height, Bitmap.Config.ARGB_8888 ) ;
 
-                // if ( ccount<'F' )  {
-
-                //     // log ("fuck u");
-                //     // log ("fuck u"+ (++ccount));
-
-                //     try {
-
-                //          // int width = PreviewSizeWidth, height = PreviewSizeHeight;
-
-                //         //convert the byte[] to Bitmap through YuvImage;
-                //         //make sure the previewFormat is NV21 (I set it so somewhere before)
-                //         YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
-                //         // ByteArrayOutputStream out = new ByteArrayOutputStream();
-                //         // yuv.compressToJpeg(new Rect(0, 0, width, height), 70, out);
-                //         // Bitmap bmp = BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size());
-
-                //         BufferedOutputStream bos =
-                //             new BufferedOutputStream ( new FileOutputStream(root_folder_path+"/tessdata/img/" + (ccount++) + ".jpg") );
-                //         yuv.compressToJpeg ( new Rect(0, 0, width, height), 100, bos );
-
-                //         bos.flush();
-                //         bos.close();
-                //     }
-                //     catch ( IOException ioex ) {
-                //         // throw ioex;
-                //         // log("fuck u err");
-                //     }
-                // }
                 // call native JNI c++
                 colourDetect ( width, height, data, pixels,
                                mat_out_vec_vec_point.nativeObj, /*!*/
@@ -240,17 +211,6 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 // signature:
                 // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
                 // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
-                // bitmap = bitmap.copy ( bitmap.getConfig(), true );
-                // Canvas canvas = new Canvas(bitmap);
-                // Paint paint = new Paint();
-                // paint.setColor(Color.YELLOW);
-                // paint.setStyle(Style.STROKE);
-                // //paint.setStrokeWidth(0.5f);
-                // paint.setAntiAlias(true);
-
-                // Matrix matrix = new Matrix();
-                // matrix.postRotate(90);
-                // bitmap = Bitmap.createBitmap ( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
 
                 Mat mat = new Mat();
                 Utils.bitmapToMat ( bitmap, mat );
