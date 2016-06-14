@@ -47,8 +47,8 @@ void fn_transform_point ( Point& point ) {
 
   // (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
   point.x^=point.y; point.y^=point.x; point.x^=point.y;
-  // point.x = 720-point.x;
-  point.x = get_height_preview()-point.x;
+  point.x = 720-point.x;
+  // point.x = get_height_preview()-point.x;
 }
 
 void fn_transform_vec_point ( vector<Point>& vec_point ) {
@@ -114,20 +114,21 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 jlong jout_vec_vec_point,
                 jstring jroot_folder_path ) {
 
-  string root_folder_path; /* doesn't end with / */
-  // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
-  root_folder_path = env->GetStringUTFChars(jroot_folder_path, 0); /*yep! pointer*/
-  // root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
-  root_folder_path = root_folder_path + "/tessdata/img/dump.txt";
-  outfile.open ( root_folder_path.c_str(), ios_base::app );
+  // string root_folder_path; /* doesn't end with / */
+  // // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
+  // root_folder_path = env->GetStringUTFChars(jroot_folder_path, 0); /*yep! pointer*/
+  // // root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
+  // root_folder_path = root_folder_path + "/tessdata/img/dump.txt";
+  // outfile.open ( root_folder_path.c_str(), ios_base::app );
 
   set_width_preview((int)width);
   set_height_preview((int)height);
 
-  outfile << "width: " << width << '\n';
-  outfile << "height: " << height << '\n';
-  outfile << "width_preview: " << get_width_preview() << '\n';
-  outfile << "height_preview: " << get_height_preview() << '\n';
+  // outfile << "width: " << width << '\n';
+  // outfile << "height: " << height << '\n';
+  // outfile << "width_preview: " << get_width_preview() << '\n';
+  // outfile << "height_preview: " << get_height_preview() << '\n'
+    ;
 
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
@@ -152,8 +153,8 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // vector_vector_Point_to_Mat ( contours_poly2, mat_out_vec_vec_point);
   vector_vector_Point_to_Mat ( contours_rotated, mat_out_vec_vec_point );
 
-  outfile.close();
-  (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
+  // outfile.close();
+  // (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
 
   // Release the native lock we placed on the Java arrays.
   env->ReleaseIntArrayElements(bgra, _bgra, 0);

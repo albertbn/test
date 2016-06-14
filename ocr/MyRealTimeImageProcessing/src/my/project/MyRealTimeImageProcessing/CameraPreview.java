@@ -38,136 +38,133 @@ import org.opencv.core.Scalar;
 
 public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
+    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    static String path_log = root_folder_path+"/tessdata/img/log.txt";
+    static Scalar colour_obj_contours_scalar = new Scalar(164,240,64,255); /*green*/
+    static final int line_width_px_obj_contours = 5;
+
     SurfaceHolder mHolder;
-    Camera mCamera = null;
-    ImageView MyCameraPreview = null;
+    ImageView cam_preview_img_view = null;
     Bitmap bitmap = null;
     int[] pixels = null;
-    byte[] FrameData = null;
+    byte[] frame_data_bytes = null;
     int imageFormat;
 
-    int PreviewSizeWidth;
-    int PreviewSizeHeight;
+    int preview_size_width;
+    int preview_size_height;
 
     Parameters parameters;
     int width;
     int height;
-    // Matrix matrix;
 
-    boolean bProcessing = false;
+    Boolean is_processing = false;
 
     Handler mHandler = new Handler(Looper.getMainLooper());
 
-    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
-    static String path_log = root_folder_path+"/tessdata/img/log.txt";
-    // char ccount='A';
+    Camera mCamera = null;
+    void set_mCamera ( Camera camera ) {
+        //method to set a camera instance
+        this.mCamera = camera;
+    }
 
     public CameraPreview (
-                         int PreviewlayoutWidth,
-                         int PreviewlayoutHeight,
-                         ImageView cameraPreviewInstance,
+                         int preview_layout_width,
+                         int preview_layout_height,
+                         ImageView cam_preview_im_view_instance,
                          Camera camera,
                          SurfaceHolder holder) {
 
-        mCamera = camera;
-        mHolder = holder;
+        this.mCamera = camera;
+        this.mHolder = holder;
 
-        // matrix = new Matrix();
-        // matrix.postRotate(90);
+        this.preview_size_width = preview_layout_width;
+        this.preview_size_height = preview_layout_height;
 
-        PreviewSizeWidth = PreviewlayoutWidth;
-        PreviewSizeHeight = PreviewlayoutHeight;
-
-        MyCameraPreview = cameraPreviewInstance;
+        this.cam_preview_img_view = cam_preview_im_view_instance;
     }
 
     // Indian thanks and bows man - that's about all I needed
     @Override
     public void onPreviewFrame ( byte[] arg0, Camera arg1 ) {
         // At preview mode, the frame data will push to here.
-        if (imageFormat == ImageFormat.NV21) {
+        // if (imageFormat == ImageFormat.NV21) {
             //We only accept the NV21(YUV420) format.
-            if ( !bProcessing ) {
-                FrameData = arg0;
-                mHandler.post(DoImageProcessing);
+            if ( !this.is_processing ) {
+                this.frame_data_bytes = arg0;
+                this.mHandler.post(this.do_image_processing);
             }
-        }
+        // }
     }
 
-    public void onPause() {
-        mCamera.stopPreview();
+    public void onPause ( ) {
+        this.mCamera.stopPreview ( );
     }
 
     @Override
     public void surfaceChanged ( SurfaceHolder arg0, int arg1, int arg2, int arg3 ) {
 
-        parameters = mCamera.getParameters ( ) ;
-        // Set the camera preview size
-        parameters.setPreviewSize ( PreviewSizeWidth, PreviewSizeHeight );
+        this.parameters = this.mCamera.getParameters ( ) ;
+        this.parameters.setPreviewSize ( this.preview_size_width, this.preview_size_height );
 
-        imageFormat = parameters.getPreviewFormat();
-        mCamera.setParameters(parameters);
-        mCamera.startPreview();
+        this.imageFormat = this.parameters.getPreviewFormat();
+        this.mCamera.setParameters(this.parameters);
+        this.mCamera.startPreview();
     }
 
     @Override
     public void surfaceCreated ( SurfaceHolder arg0 ) {
-        // mCamera = Camera.open();
-        // if(mCamera==null) mCamera = Camera.open(0);
+
         try {
             // If did not set the SurfaceHolder, the preview area will be black.
-            mCamera.setPreviewDisplay(arg0);
-            mCamera.setPreviewCallback(this);
+            this.mCamera.setPreviewDisplay(arg0);
+            this.mCamera.setPreviewCallback(this);
         }
-        catch (IOException e) {
-            mCamera.stopPreview();
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
+        catch ( IOException e ) {
+            this.mCamera.stopPreview();
+            this.mCamera.setPreviewCallback(null);
+            this.mCamera.release();
+            this.mCamera = null;
         }
     }
 
     @Override
     public void surfaceDestroyed ( SurfaceHolder arg0 ) {
+
         try {
-            mCamera.stopPreview();
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
+            this.mCamera.stopPreview();
+            this.mCamera.setPreviewCallback(null);
+            this.mCamera.release();
+            this.mCamera = null;
         }
-        catch(Exception ex){}
+        catch ( Exception ex ) { }
     }
 
     public void refreshCamera ( Camera camera ) {
 
-        if (mHolder.getSurface() == null) {
+        if ( this.mHolder.getSurface()==null ) {
             // preview surface does not exist
             return;
         }
         // stop preview before making changes
         try {
-            mCamera.stopPreview();
+            this.mCamera.stopPreview();
         } catch ( Exception e ) {
             // ignore: tried to stop a non-existent preview
         }
         // set preview size and make any resize, rotate or
         // reformatting changes here
         // start preview with new settings
-        setCamera(camera);
+        this.set_mCamera ( camera );
+
         try {
-            mCamera.setPreviewDisplay(mHolder);
-            mCamera.startPreview();
-        } catch (Exception e) {
-            Log.d("MyRealTimeImageProcessing", "Error starting camera preview: " + e.getMessage());
+            this.mCamera.setPreviewDisplay ( this.mHolder );
+            this.mCamera.startPreview();
+        } catch ( Exception e ) {
+            Log.d("evdroid", "Error starting camera preview: " + e.getMessage());
         }
     }
 
-    public void setCamera ( Camera camera ) {
-        //method to set a camera instance
-        mCamera = camera;
-    }
-
-    // Native JNI
+    // Native JNI - load libraries
     static {
         System.loadLibrary("pngt");
         System.loadLibrary("lept");
@@ -175,56 +172,55 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         System.loadLibrary("ImageProcessing");
     }
 
-    public native boolean ImageProcessing ( int width, int height, byte[] NV21FrameData, int[] pixels );
-    public native boolean colourDetect ( int width, int height, byte[] NV21FrameData, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
+    public native boolean ImageProcessing ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels );
+    public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
 
-    Runnable DoImageProcessing = new Runnable() {
+    CameraPreview self = this;
+    Runnable do_image_processing = new Runnable() {
 
             public void run() {
-                Log.i("MyRealTimeImageProcessing", "DoImageProcessing():");
-                bProcessing = true;
-                byte[] data = FrameData;
+                Log.i("evdroid", "do_image_processing():");
+                self.is_processing = true;
 
-                if ( bitmap==null || pixels==null ) {
+                if ( self.bitmap==null || self.pixels==null ) {
 
-                    parameters = mCamera.getParameters();
-                    width = parameters.getPreviewSize().width;
-                    height = parameters.getPreviewSize().height;
-                    pixels = new int [ width * height ];
+                    self.parameters = self.mCamera.getParameters();
+                    self.width = self.parameters.getPreviewSize().width;
+                    self.height = self.parameters.getPreviewSize().height;
+                    self.pixels = new int [ self.width * self.height ];
                 }
 
                 Mat mat_out_vec_vec_point = new Mat();
 
-
                 // call native JNI c++
-                colourDetect ( width, height, data, pixels,
+                colourDetect ( width, height, self.frame_data_bytes, pixels,
                                mat_out_vec_vec_point.nativeObj, /*!*/
                                root_folder_path /*!*/ );
 
-                List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( );
+                List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( ); /*will have the points for the object outlines, they will be drawn by drawContours*/
                 Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );
 
                 mat_out_vec_vec_point.release();
 
-                bitmap = Bitmap.createBitmap ( height, width, Bitmap.Config.ARGB_8888 ) ;
+                self.bitmap = Bitmap.createBitmap ( self.height, self.width, Bitmap.Config.ARGB_8888 ) ; /*mind the height and width reversed - PORTRAIT mode*/
 
                 // signature:
                 // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
                 // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
 
                 Mat mat = new Mat();
-                Utils.bitmapToMat ( bitmap, mat );
+                Utils.bitmapToMat ( self.bitmap, mat );
                 // log ("size of c_poly2 is" + contours_poly2.size());
                 for  ( int i = 0; i < contours_poly2.size(); ++i ) {
-                    Imgproc.drawContours(mat, contours_poly2, i, new Scalar(164,240,64,255), 5);
+                    Imgproc.drawContours(mat, contours_poly2, i, colour_obj_contours_scalar, line_width_px_obj_contours);
                 }
-                Utils.matToBitmap ( mat, bitmap );
+                Utils.matToBitmap ( mat, self.bitmap );
                 mat.release();
 
-                MyCameraPreview.setImageBitmap ( bitmap ) ;
+                cam_preview_img_view.setImageBitmap ( self.bitmap ) ;
                 // canvas.drawCircle( height/2, width/2, height/2, paint);
 
-                bProcessing = false;
+                is_processing = false;
             }
         };
 
