@@ -36,6 +36,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.method.ScrollingMovementMethod;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -63,6 +65,8 @@ public class MyRealTimeImageProcessing extends Activity {
     TextView tv = null;
     // FrameLayout mainLayout;
     RelativeLayout rl_video_preview_wrap1;
+
+    SeekBar seekBar;
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
 
@@ -116,6 +120,9 @@ public class MyRealTimeImageProcessing extends Activity {
 
         tv = (TextView) findViewById(R.id.tv_dump);
         tv.setMovementMethod(new ScrollingMovementMethod());
+
+        seekBar = (SeekBar) findViewById(R.id.seekBar1);
+        seekBar.setOnSeekBarChangeListener(sb_listen);
     }
 
     @Override
@@ -130,38 +137,38 @@ public class MyRealTimeImageProcessing extends Activity {
         releaseCamera();
     }
 
-        public static void setCameraDisplayOrientation ( Activity activity,
+    public static void setCameraDisplayOrientation ( Activity activity,
                                                      int cameraId,
                                                      android.hardware.Camera camera
-                                                         ) {
-            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-            android.hardware.Camera.getCameraInfo(cameraId, info);
-            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-            int degrees = 0;
-            switch (rotation) {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
-            case Surface.ROTATION_90:
-                degrees = 90;
-                break;
-            case Surface.ROTATION_180:
-                degrees = 180;
-                break;
-            case Surface.ROTATION_270:
-                degrees = 270;
-                break;
-            }
-
-            int result;
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                result = (info.orientation + degrees) % 360;
-                result = (360 - result) % 360; // compensate the mirror
-            } else { // back-facing
-                result = (info.orientation - degrees + 360) % 360;
-            }
-            camera.setDisplayOrientation(result);
+                                                     ) {
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+        case Surface.ROTATION_0:
+            degrees = 0;
+            break;
+        case Surface.ROTATION_90:
+            degrees = 90;
+            break;
+        case Surface.ROTATION_180:
+            degrees = 180;
+            break;
+        case Surface.ROTATION_270:
+            degrees = 270;
+            break;
         }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360; // compensate the mirror
+        } else { // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
+    }
 
     @Override
     public void onResume ( ) {
@@ -208,6 +215,32 @@ public class MyRealTimeImageProcessing extends Activity {
             camPreview.refreshCamera(mCamera);
         }
     }
+
+    //=============
+    OnSeekBarChangeListener sb_listen = new OnSeekBarChangeListener() {
+
+            int progress = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+                progress = progresValue;
+                // Toast.makeText(getApplicationContext(), "Changing seekbar's progress: "+progress, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Toast.makeText(getApplicationContext(), "Started tracking seekbar", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // textView.setText("Covered: " + progress + "/" + seekBar.getMax());
+                // Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+
+    //=============
 
     //set from onCreate
     OnClickListener flash_listener = new OnClickListener() {

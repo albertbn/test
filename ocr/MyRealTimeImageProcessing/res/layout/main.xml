@@ -29,7 +29,28 @@
             android:layout_below="@id/rl_video_preview_wrap1"
             android:text="save the middle class"
             android:layout_gravity="bottom"
+            />
+
+        <TextView
+        android:id="@+id/h_low_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="29dp"
+        android:layout_marginTop="14dp"
+        android:layout_below="@id/button_capture"
         />
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_gravity="center"
+            android:layout_below="@id/h_low"
+            android:max="255"/>
 
         <TextView
             android:id="@+id/tv_dump"
@@ -39,7 +60,8 @@
             android:padding="16dp"
             android:maxLines="25"
             android:text="שלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\nשלום בני זונות לכו להיזדיין\n\n \n\ngdffdgd\n\nfdgfdgfd"
-             android:scrollbars="vertical"
+            android:scrollbars="vertical"
+            android:visibility="gone"
         />
     </RelativeLayout>
 </FrameLayout>

@@ -47,7 +47,8 @@ containing a value of this type.
         public static final int frameLayout1=0x7f050003;
         public static final int front=0x7f050002;
         public static final int rl_video_preview_wrap1=0x7f050005;
-        public static final int tv_dump=0x7f050007;
+        public static final int seekBar1=0x7f050007;
+        public static final int tv_dump=0x7f050008;
     }
     public static final class layout {
         public static final int mail=0x7f030000;
