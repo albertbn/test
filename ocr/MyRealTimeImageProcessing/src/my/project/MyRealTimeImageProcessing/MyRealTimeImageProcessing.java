@@ -1,11 +1,11 @@
+//
+//
+//
 package my.project.MyRealTimeImageProcessing;
 
-import java.io.File;
 //import java.io.FileNotFoundException;
 //import java.io.FileOutputStream;
 //import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -50,26 +50,32 @@ import android.widget.Button;
 
 public class MyRealTimeImageProcessing extends Activity {
 
-    int PreviewSizeWidth = 480;
-    int PreviewSizeHeight = 640;
-    int PHOTO_WIDTH = 1536; /*2448*/
-    int PHOTO_HEIGHT =  2048; /*3264*/
+    final int PREVIEW_SIZE_WIDTH = 480;
+    final int PREVIEW_SIZE_HEIGHT = 640;
+    final int PHOTO_WIDTH = 1536; /*2448*/
+    final int PHOTO_HEIGHT =  2048; /*3264*/
+
+    //HRS for white is (0,0,255)
+    final int H_MIN=0, S_MIN=0, V_MIN=200;
+    final int H_MAX=10, S_MAX=10, V_MAX=255;
 
     Camera mCamera;
-    CameraPreview camPreview;
+    CameraPreview cam_preview;
     PictureCallback mPicture;
+    Context context;
+    ImageView iv_cam_preview = null;
+
+    RelativeLayout rl_video_preview_wrap1;
     Button capture, flash;
     Boolean is_torch_on = false;
-    Context myContext;
-    ImageView MyCameraPreview = null;
     TextView tv = null;
-    // FrameLayout mainLayout;
-    RelativeLayout rl_video_preview_wrap1;
 
-    SeekBar seekBar;
+    SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
+    TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
+
+    MyRealTimeImageProcessing self = this;
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
-
             @Override
         public void onManagerConnected(int status) {
             switch (status) {
@@ -89,75 +95,91 @@ public class MyRealTimeImageProcessing extends Activity {
         super.onCreate(savedInstanceState);
 
         //Set this APK Full screen
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        self.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // from andrew cam example - other project
-        myContext = this;
+        self.context = this;
 
         //Set this APK no title
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main);
+        self.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        self.setContentView(R.layout.main);
 
         // Create my camera preview
-        MyCameraPreview = new ImageView(this);
+        self.iv_cam_preview = new ImageView(this);
 
-        SurfaceView camView = new SurfaceView(this);
-        SurfaceHolder camHolder = camView.getHolder();
-        camPreview = new CameraPreview(PreviewSizeWidth, PreviewSizeHeight, MyCameraPreview, mCamera, camHolder);
+        SurfaceView surface_cam_view = new SurfaceView(this);
+        SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
+        self.cam_preview = new CameraPreview(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
+                h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text );
 
-        camHolder.addCallback(camPreview);
-        camHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        surface_cam_view_holder.addCallback(self.cam_preview);
+        surface_cam_view_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        rl_video_preview_wrap1 = (RelativeLayout) findViewById(R.id.rl_video_preview_wrap1);
-        rl_video_preview_wrap1.addView(camView, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
-        rl_video_preview_wrap1.addView(MyCameraPreview, new LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
-        capture = (Button) findViewById(R.id.button_capture);
-        capture.setOnClickListener(captrureListener);
+        self.rl_video_preview_wrap1 = (RelativeLayout) self.findViewById(R.id.rl_video_preview_wrap1);
+        self.rl_video_preview_wrap1.addView(surface_cam_view, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
+        self.rl_video_preview_wrap1.addView(self.iv_cam_preview, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
+        self.capture = (Button) self.findViewById(R.id.button_capture);
+        self.capture.setOnClickListener(self.captureListener);
 
-        flash = (Button) findViewById(R.id.button_flash);
-        flash.setOnClickListener(flash_listener);
+        self.flash = (Button) self.findViewById(R.id.button_flash);
+        self.flash.setOnClickListener(self.flash_listener);
 
-        tv = (TextView) findViewById(R.id.tv_dump);
-        tv.setMovementMethod(new ScrollingMovementMethod());
+        self.tv = (TextView) self.findViewById(R.id.tv_dump);
+        self.tv.setMovementMethod(new ScrollingMovementMethod());
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar1);
-        seekBar.setOnSeekBarChangeListener(sb_listen);
+        self.set_sliders();
+    }
+
+    void set_sliders() {
+        //slider displays
+        self.h_low_text = (TextView) self.findViewById(R.id.h_low_text); self.h_high_text = (TextView) self.findViewById(R.id.h_high_text);
+        self.s_low_text = (TextView) self.findViewById(R.id.s_low_text); self.s_high_text = (TextView) self.findViewById(R.id.s_high_text);
+        self.v_low_text = (TextView) self.findViewById(R.id.v_low_text); self.v_high_text = (TextView) self.findViewById(R.id.v_high_text);
+
+        self.seek_bar_h_low = (SeekBar) self.findViewById( R.id.seek_bar_h_low ); self.seek_bar_h_high = (SeekBar) self.findViewById( R.id.seek_bar_h_high );
+        self.seek_bar_s_low = (SeekBar) self.findViewById( R.id.seek_bar_s_low ); self.seek_bar_s_high = (SeekBar) self.findViewById( R.id.seek_bar_s_high );
+        self.seek_bar_v_low = (SeekBar) self.findViewById( R.id.seek_bar_v_low ); self.seek_bar_v_high = (SeekBar) self.findViewById( R.id.seek_bar_v_high );
+        self.seek_bar_h_low.setOnSeekBarChangeListener(self.sb_listen); self.seek_bar_h_high.setOnSeekBarChangeListener(self.sb_listen);
+        self.seek_bar_s_low.setOnSeekBarChangeListener(self.sb_listen); self.seek_bar_s_high.setOnSeekBarChangeListener(self.sb_listen);
+        self.seek_bar_v_low.setOnSeekBarChangeListener(self.sb_listen); self.seek_bar_v_high.setOnSeekBarChangeListener(self.sb_listen);
+        //set initial HSV stuff (HSV white is 0,0,255)
+        self.seek_bar_h_low.setProgress(self.H_MIN); self.seek_bar_h_high.setProgress(self.H_MAX);
+        self.seek_bar_s_low.setProgress(self.S_MIN); self.seek_bar_s_high.setProgress(self.S_MAX);
+        self.seek_bar_v_low.setProgress(self.V_MIN); self.seek_bar_v_high.setProgress(self.V_MAX);
     }
 
     @Override
     protected void onPause ( ) {
 
-        if ( camPreview != null)
-            camPreview.onPause();
+        if ( self.cam_preview != null)
+            self.cam_preview.onPause();
         super.onPause();
 
-        // from andrew cam example - other project
         //when on Pause, release camera in order to be used from other applications
-        releaseCamera();
+        self.release_camera();
     }
 
-    public static void setCameraDisplayOrientation ( Activity activity,
+    static void setCameraDisplayOrientation ( Activity activity,
                                                      int cameraId,
                                                      android.hardware.Camera camera
-                                                     ) {
-        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(cameraId, info);
+    ) {
+        CameraInfo info = new CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
-        case Surface.ROTATION_0:
-            degrees = 0;
-            break;
-        case Surface.ROTATION_90:
-            degrees = 90;
-            break;
-        case Surface.ROTATION_180:
-            degrees = 180;
-            break;
-        case Surface.ROTATION_270:
-            degrees = 270;
-            break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
 
         int result;
@@ -180,103 +202,104 @@ public class MyRealTimeImageProcessing extends Activity {
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
         } else {
             // Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+            self.mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
 
-        if ( !hasCamera(myContext) ) {
+        if ( !self.has_camera(self.context) ) {
             Toast toast =
-                Toast.makeText(myContext,
-                               "Sorry, your phone does not have a camera!",
-                               Toast.LENGTH_LONG);
+                Toast.makeText(self.context, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
             toast.show();
-            finish();
+            self.finish();
         }
-        if ( mCamera == null ) {
+        if ( self.mCamera == null ) {
 
-            mCamera = Camera.open(0);
+            self.mCamera = Camera.open(0);
 
-            setCameraDisplayOrientation ( this, CameraInfo.CAMERA_FACING_BACK, mCamera );
+            setCameraDisplayOrientation ( this, CameraInfo.CAMERA_FACING_BACK, self.mCamera );
 
             //start focus
             Camera.Parameters params = mCamera.getParameters();
-            Camera.Size size = getBestPreviewSize ( PHOTO_WIDTH, PHOTO_HEIGHT, params );
+            Camera.Size size = getBestPreviewSize ( self.PHOTO_WIDTH, self.PHOTO_HEIGHT, params );
 
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-            // params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-            // params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 
             params.setPictureSize(size.width, size.height);
             params.setJpegQuality(100);
-            mCamera.setParameters(params);
+            self.mCamera.setParameters(params);
             //end focus
 
-            mPicture = getPictureCallback();
-            camPreview.refreshCamera(mCamera);
+            self.mPicture = getPictureCallback();
+            self.cam_preview.refreshCamera(self.mCamera);
         }
     }
 
     //=============
+
     OnSeekBarChangeListener sb_listen = new OnSeekBarChangeListener() {
 
-            int progress = 0;
+        int progress = 0;
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
-                progress = progresValue;
-                // Toast.makeText(getApplicationContext(), "Changing seekbar's progress: "+progress, Toast.LENGTH_SHORT).show();
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+            progress = progressValue;
+
+            switch ( seekBar.getId() ){
+                case R.id.h_low_text:
+                    self.h_low_text.setText(progress); break;
+                case R.id.h_high_text:
+                    self.h_high_text.setText(progress); break;
+                case R.id.s_low_text:
+                    self.s_low_text.setText(progress); break;
+                case R.id.s_high_text:
+                    self.s_high_text.setText(progress); break;
+                case R.id.v_low_text:
+                    self.v_low_text.setText(progress); break;
+                case R.id.v_high_text:
+                    self.v_high_text.setText(progress); break;
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Toast.makeText(getApplicationContext(), "Started tracking seekbar", Toast.LENGTH_SHORT).show();
-            }
+            // Toast.makeText(getApplicationContext(), "Changing seekbar progress: "+progress, Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // textView.setText("Covered: " + progress + "/" + seekBar.getMax());
-                // Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
-            }
-        };
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            // Toast.makeText(getApplicationContext(), "Started tracking seekbar", Toast.LENGTH_SHORT).show();
+        }
 
-
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            // textView.setText("Covered: " + progress + "/" + seekBar.getMax());
+            // Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
+        }
+    };
     //=============
 
     //set from onCreate
     OnClickListener flash_listener = new OnClickListener() {
             @Override
             public void onClick ( View v ) {
-                Camera.Parameters params = mCamera.getParameters();
-                if(is_torch_on){
-                    is_torch_on=false;
+                Camera.Parameters params = self.mCamera.getParameters();
+                if(self.is_torch_on){
+                    self.is_torch_on=false;
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
                 }
                 else{
-                    is_torch_on=true;
+                    self.is_torch_on=true;
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 }
-                mCamera.setParameters(params);
+                self.mCamera.setParameters(params);
             }
-        };
+    };
 
     //set from onCreate
-    OnClickListener captrureListener = new OnClickListener() {
-            @Override
-            public void onClick ( View v ) {
-
-                // Camera.Parameters params = mCamera.getParameters();
-                // Camera.Size size = getBestPreviewSize ( 3264,2448, params );
-
-                // params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                // params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                // // params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-
-                // params.setPictureSize(size.width, size.height);
-                // params.setJpegQuality(100);
-                // mCamera.setParameters(params);
-                mCamera.takePicture ( null, null, mPicture ) ;
-            }
-        };
+    OnClickListener captureListener = new OnClickListener() {
+        @Override
+        public void onClick ( View v ) {
+            mCamera.takePicture ( null, null, mPicture ) ;
+        }
+    };
 
     // credits: https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Preview/src/com/commonsware/android/camera/PreviewDemo.java
     Camera.Size getBestPreviewSize (
@@ -287,7 +310,8 @@ public class MyRealTimeImageProcessing extends Activity {
     Camera.Size result=null;
 
     for ( Camera.Size size : parameters.getSupportedPictureSizes() ) {
-      if ( size.width<=width && size.height<=height ) {
+
+        if ( size.width<=width && size.height<=height ) {
         if (result==null) {
           result=size;
         }
@@ -302,72 +326,47 @@ public class MyRealTimeImageProcessing extends Activity {
       }
     }
 
-    return(result);
+    return result;
   }
 
-    public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
+    public native Boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
     void tweak_bytes ( byte[] data ) {
 
         Mat mat=new Mat();
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
         Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
         bmp=null;
-        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
         String root_folder =  Environment.getExternalStorageDirectory().getAbsolutePath();
         saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
-
-        //here - send the mat as in the fd app
-        // File pictureFile = getOutputMediaFile();
-        // Imgcodecs.imwrite ( pictureFile.toString(), mat );
     }
 
     //callback - trace - from captureListener > onClick > cam.takePicture
     PictureCallback getPictureCallback ( ) {
+
         PictureCallback picture = new PictureCallback ( ) {
 
-                @Override
-                public void onPictureTaken ( byte[] data, Camera camera ) {
+            @Override
+            public void onPictureTaken ( byte[] data, Camera camera ) {
 
-                    tweak_bytes ( data ) ; return;
-                }
-            };
+                self.tweak_bytes(data) ; return;
+            }
+        };
+
         return picture;
     }
 
-    //create file path where the .jpg will be saved
-    static File getOutputMediaFile() {
-
-        //make a new file directory inside the "sdcard" folder
-        File mediaStorageDir = new File("/sdcard/", "JCG Camera");
-
-        //if this "JCGCamera folder does not exist
-        if (!mediaStorageDir.exists()) {
-            //if you cannot make this folder return
-            if (!mediaStorageDir.mkdirs()) {
-                return null;
-            }
-        }
-
-        //take the current timeStamp
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        //and make a media file:
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-
-        return mediaFile;
-    }
-
-    void releaseCamera ( ) {
+    void release_camera() {
         // stop and release camera
-        if (mCamera != null) {
-            mCamera.stopPreview();
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
+        if (self.mCamera != null) {
+            self.mCamera.stopPreview();
+            self.mCamera.setPreviewCallback(null);
+            self.mCamera.release();
+            self.mCamera = null;
         }
     }
 
-    boolean hasCamera ( Context context ) {
+    Boolean has_camera ( Context context ) {
         //check if the device has camera
         // return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         return true; /*fuck you*/

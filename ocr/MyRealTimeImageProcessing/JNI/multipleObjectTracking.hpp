@@ -12,7 +12,7 @@
 #endif // SKIP_INCLUDES
 
 void save_middle_class ( cv::Mat &picture );
-void do_frame ( cv::Mat cameraFeed );
+void do_frame ( cv::Mat& cameraFeed, cv::Scalar_<int> hsv_min, cv::Scalar_<int> hsv_maxd );
 
 int maina();
 

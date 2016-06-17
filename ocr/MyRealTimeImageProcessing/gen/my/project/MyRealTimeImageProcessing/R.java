@@ -46,9 +46,20 @@ containing a value of this type.
         public static final int button_flash=0x7f050006;
         public static final int frameLayout1=0x7f050003;
         public static final int front=0x7f050002;
+        public static final int h_high_text=0x7f05000a;
+        public static final int h_low_text=0x7f050008;
         public static final int rl_video_preview_wrap1=0x7f050005;
-        public static final int seekBar1=0x7f050007;
-        public static final int tv_dump=0x7f050008;
+        public static final int s_high_text=0x7f05000e;
+        public static final int s_low_text=0x7f05000c;
+        public static final int seek_bar_h_high=0x7f050009;
+        public static final int seek_bar_h_low=0x7f050007;
+        public static final int seek_bar_s_high=0x7f05000d;
+        public static final int seek_bar_s_low=0x7f05000b;
+        public static final int seek_bar_v_high=0x7f050011;
+        public static final int seek_bar_v_low=0x7f05000f;
+        public static final int tv_dump=0x7f050013;
+        public static final int v_high_text=0x7f050012;
+        public static final int v_low_text=0x7f050010;
     }
     public static final class layout {
         public static final int mail=0x7f030000;

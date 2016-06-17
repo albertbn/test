@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -66,13 +67,18 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         //method to set a camera instance
         this.mCamera = camera;
     }
+    // set by the main activity caller
+    TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
+
+    CameraPreview self = this;
 
     public CameraPreview (
                          int preview_layout_width,
                          int preview_layout_height,
                          ImageView cam_preview_im_view_instance,
                          Camera camera,
-                         SurfaceHolder holder) {
+                         SurfaceHolder holder,
+                         TextView h_low_text, TextView h_high_text, TextView s_low_text, TextView s_high_text, TextView v_low_text, TextView v_high_text) {
 
         this.mCamera = camera;
         this.mHolder = holder;
@@ -81,6 +87,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         this.preview_size_height = preview_layout_height;
 
         this.cam_preview_img_view = cam_preview_im_view_instance;
+
+        self.h_low_text=h_low_text; self.h_high_text=h_high_text; self.s_low_text=s_low_text; self.s_high_text=s_high_text; self.v_low_text=v_low_text; self.v_high_text=v_high_text;
     }
 
     // Indian thanks and bows man - that's about all I needed
@@ -172,10 +180,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         System.loadLibrary("ImageProcessing");
     }
 
-    public native boolean ImageProcessing ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels );
-    public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
+    public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
 
-    CameraPreview self = this;
     Runnable do_image_processing = new Runnable() {
 
             public void run() {
@@ -192,10 +198,14 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
                 Mat mat_out_vec_vec_point = new Mat();
 
+                int[] hsv6 = new int[6];
+                hsv6[0] = Integer.parseInt ( h_low_text.getText().toString() ); hsv6[1] = Integer.parseInt ( s_low_text.getText().toString() ); hsv6[2] = Integer.parseInt ( v_low_text.getText().toString() );
+                hsv6[3] = Integer.parseInt ( h_high_text.getText().toString() ); hsv6[4] = Integer.parseInt ( s_high_text.getText().toString() ); hsv6[5] = Integer.parseInt ( v_high_text.getText().toString() );
+//                        h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text
                 // call native JNI c++
                 colourDetect ( width, height, self.frame_data_bytes, pixels,
                                mat_out_vec_vec_point.nativeObj, /*!*/
-                               root_folder_path /*!*/ );
+                               root_folder_path /*!*/, hsv6 );
 
                 List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( ); /*will have the points for the object outlines, they will be drawn by drawContours*/
                 Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );

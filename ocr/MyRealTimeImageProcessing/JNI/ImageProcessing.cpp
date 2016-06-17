@@ -5,6 +5,7 @@
 
 #include <fstream>
 
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 
@@ -112,7 +113,8 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 jint width, jint height,
                 jbyteArray yuv, jintArray bgra,
                 jlong jout_vec_vec_point,
-                jstring jroot_folder_path ) {
+                jstring jroot_folder_path,
+                jintArray hsv6 ) {
 
   // string root_folder_path; /* doesn't end with / */
   // // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
@@ -133,6 +135,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
   jint*  _bgra = env->GetIntArrayElements(bgra, 0);
+  jint*  _hsv6 = env->GetIntArrayElements(hsv6, 0);
 
   // Prepare a cv::Mat that points to the YUV420sp data.
   Mat myuv ( get_height_preview(), width, CV_8UC1, (uchar *)_yuv ); /*orig*/
@@ -144,7 +147,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // rot90 ( mbgra, 1 ); /*TODO - do it dynamic*/
 
   // OpenCV can now access/modify the BGRA image if we want ...
-  do_frame ( mbgra ); /*UNMARK*/
+  do_frame ( mbgra, Scalar(_hsv6[0], _hsv6[1], _hsv6[2]), Scalar(_hsv6[3],_hsv6[4],_hsv6[5]) ); /*UNMARK*/
 
   vector < vector<Point> > contours_rotated ( contours_poly2 );
   rotate_contours_90(contours_rotated); /*since app is in portrait mode - TODO - maybe do a dynamic check here for exif/orient*/
@@ -159,6 +162,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // Release the native lock we placed on the Java arrays.
   env->ReleaseIntArrayElements(bgra, _bgra, 0);
   env->ReleaseByteArrayElements(yuv, _yuv, 0);
+  env->ReleaseIntArrayElements(hsv6, _hsv6, 0);
 
   return true;
 }

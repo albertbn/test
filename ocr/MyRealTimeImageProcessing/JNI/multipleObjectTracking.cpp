@@ -225,7 +225,7 @@ void test_ocr_pic_hardcoded ( ) {
 }
 
 // should modify the taken picture as a mat and eventually get to the OCR
-void save_middle_class ( Mat &picture ) {
+void save_middle_class ( Mat& picture ) {
 
   // TEMP test the OCR with hard coded pic
   // test_ocr_pic_hardcoded();
@@ -253,19 +253,20 @@ void save_middle_class ( Mat &picture ) {
 
 // this folk is responsible for modifying the video preview (each img frame)
 // by colour detecting and drawing a green frame
-void do_frame ( Mat cameraFeed ) {
+void do_frame ( Mat& cameraFeed, Scalar_<int> hsv_min, Scalar_<int> hsv_max ) {
 
-  Mat threshold;
   Mat HSV;
+  Mat threshold;
 
-  Object white("white");
+  //Object white("white");
   //white
   // opencv cvtColor: http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html
   // test and know
-  cvtColor(cameraFeed,HSV,COLOR_BGR2HSV); /*not clear if image comes rgb(a) or bgr from java - bgr it is, yep!*/
+  cvtColor(cameraFeed, HSV, COLOR_BGR2HSV); /*not clear if image comes rgb(a) or bgr from java - bgr it is, yep!*/
   // cvtColor(cameraFeed,HSV,CV_RGB2HSV); /*not clear if image comes rgb(a) or bgr from java*/
 
-  inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
+  // inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
+  inRange(HSV, hsv_min, hsv_max, threshold);
   morphOps(threshold);
   trackFilteredObject ( threshold, cameraFeed );
 }

@@ -12,11 +12,11 @@
         <RelativeLayout
             android:id="@+id/rl_video_preview_wrap1"
             android:layout_width="wrap_content"
-            android:layout_height="650px"
-            ></RelativeLayout>
+            android:layout_height="640px" />
+
         <Button
             android:id="@+id/button_flash"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:text="flash it"
             android:layout_alignParentRight="true"
@@ -24,34 +24,75 @@
 
         <Button
             android:id="@+id/button_capture"
-            android:layout_width="match_parent"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/rl_video_preview_wrap1"
-            android:text="save the middle class"
-            android:layout_gravity="bottom"
+            android:layout_below="@id/button_flash"
+            android:text="roll it"
+            android:layout_alignParentRight="true"
             />
-
-        <TextView
-        android:id="@+id/h_low_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="29dp"
-        android:layout_marginTop="14dp"
-        android:layout_below="@id/button_capture"
-        />
-
+    <!--=============-->
+    <!--start sliders-->
+    <!--=============-->
+        <!--hue low-->
         <SeekBar
-            android:id="@+id/seekBar1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_gravity="center"
-            android:layout_below="@id/h_low"
-            android:max="255"/>
+            android:id="@+id/seek_bar_h_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp" android:layout_marginRight="32dp"
+            android:layout_gravity="center" android:layout_below="@id/rl_video_preview_wrap1" android:max="180"/>
+        <TextView
+            android:id="@+id/h_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/rl_video_preview_wrap1" android:text="hue low" />
+        <!--hue high-->
+        <SeekBar
+            android:id="@+id/seek_bar_h_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" android:layout_gravity="center"
+            android:layout_below="@id/seek_bar_h_low" android:max="180"/>
+        <TextView
+            android:id="@+id/h_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/seek_bar_h_low" android:text="hue high" />
 
+        <!--sat low-->
+        <SeekBar
+            android:id="@+id/seek_bar_s_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp" android:layout_marginRight="32dp"
+            android:layout_gravity="center" android:layout_below="@id/seek_bar_h_high" android:max="255"/>
+        <TextView
+            android:id="@+id/s_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/seek_bar_h_high" android:text="sat low" />
+        <!--sat high-->
+        <SeekBar
+            android:id="@+id/seek_bar_s_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" android:layout_gravity="center"
+            android:layout_below="@id/seek_bar_s_low" android:max="255"/>
+        <TextView
+            android:id="@+id/s_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/seek_bar_s_low" android:text="sat high" />
+
+        <!--val low-->
+        <SeekBar
+            android:id="@+id/seek_bar_v_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp" android:layout_marginRight="32dp"
+            android:layout_gravity="center" android:layout_below="@id/seek_bar_s_high" android:max="255"/>
+        <TextView
+            android:id="@+id/v_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/seek_bar_s_high" android:text="val low" />
+        <!--val high-->
+        <SeekBar
+            android:id="@+id/seek_bar_v_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" android:layout_gravity="center"
+            android:layout_below="@id/seek_bar_v_low" android:max="255" />
+        <TextView
+            android:id="@+id/v_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="5dp"
+            android:layout_below="@id/seek_bar_v_low" android:text="val high" />
+
+    <!--=============-->
+    <!--end sliders-->
+    <!--=============-->
         <TextView
             android:id="@+id/tv_dump"
             android:layout_width="match_parent"
