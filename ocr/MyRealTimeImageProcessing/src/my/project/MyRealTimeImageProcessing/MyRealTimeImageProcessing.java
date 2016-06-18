@@ -56,8 +56,8 @@ public class MyRealTimeImageProcessing extends Activity {
     final int PHOTO_HEIGHT =  2048; /*3264*/
 
     //HRS for white is (0,0,255)
-    final int H_MIN=0, S_MIN=0, V_MIN=200;
-    final int H_MAX=10, S_MAX=10, V_MAX=255;
+    final int H_MIN=1, S_MIN=1, V_MIN=121;
+    final int H_MAX=179, S_MAX=153, V_MAX=255;
 
     Camera mCamera;
     CameraPreview cam_preview;
@@ -109,8 +109,9 @@ public class MyRealTimeImageProcessing extends Activity {
 
         SurfaceView surface_cam_view = new SurfaceView(this);
         SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
-        self.cam_preview = new CameraPreview(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
-                h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text );
+        self.set_sliders(); /*set sliders before the camprev init*/
+        self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
+                                             self.seek_bar_h_low, self.seek_bar_h_high, self.seek_bar_s_low, self.seek_bar_s_high, self.seek_bar_v_low, self.seek_bar_v_high );
 
         surface_cam_view_holder.addCallback(self.cam_preview);
         surface_cam_view_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -127,7 +128,6 @@ public class MyRealTimeImageProcessing extends Activity {
         self.tv = (TextView) self.findViewById(R.id.tv_dump);
         self.tv.setMovementMethod(new ScrollingMovementMethod());
 
-        self.set_sliders();
     }
 
     void set_sliders() {
@@ -240,28 +240,31 @@ public class MyRealTimeImageProcessing extends Activity {
 
         int progress = 0;
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
-            progress = progressValue;
+                progress = progressValue;
+                String s_progress = Integer.toString(progress);
 
-            switch ( seekBar.getId() ){
-                case R.id.h_low_text:
-                    self.h_low_text.setText(progress); break;
-                case R.id.h_high_text:
-                    self.h_high_text.setText(progress); break;
-                case R.id.s_low_text:
-                    self.s_low_text.setText(progress); break;
-                case R.id.s_high_text:
-                    self.s_high_text.setText(progress); break;
-                case R.id.v_low_text:
-                    self.v_low_text.setText(progress); break;
-                case R.id.v_high_text:
-                    self.v_high_text.setText(progress); break;
+                switch ( seekBar.getId() ){
+                case R.id.seek_bar_h_low:
+                    self.h_low_text.setText(s_progress); break;
+                case R.id.seek_bar_h_high:
+                    self.h_high_text.setText(s_progress); break;
+                case R.id.seek_bar_s_low:
+                    self.s_low_text.setText(s_progress); break;
+                case R.id.seek_bar_s_high:
+                    self.s_high_text.setText(s_progress); break;
+                case R.id.seek_bar_v_low:
+                    self.v_low_text.setText(s_progress); break;
+                case R.id.seek_bar_v_high:
+                    self.v_high_text.setText(s_progress); break;
+                default:
+                    self.h_low_text.setText(Integer.toString(progress)+','+ Integer.toString(seekBar.getId())+','+ Integer.toString(seekBar.getId())); break;
+                }
+
+                // Toast.makeText(getApplicationContext(), "Changing seekbar progress: "+progress, Toast.LENGTH_SHORT).show();
             }
-
-            // Toast.makeText(getApplicationContext(), "Changing seekbar progress: "+progress, Toast.LENGTH_SHORT).show();
-        }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {

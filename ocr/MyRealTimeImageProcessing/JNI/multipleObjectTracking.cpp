@@ -31,6 +31,7 @@ Point center;
 const int MAX_NUM_OBJECTS=50;
 //minimum and maximum object area
 const int MIN_OBJECT_AREA = 20*20;
+// const int MIN_OBJECT_AREA = 5*5;
 
 static double angle ( Point pt1, Point pt2, Point pt0 ) {
 
@@ -253,12 +254,12 @@ void save_middle_class ( Mat& picture ) {
 
 // this folk is responsible for modifying the video preview (each img frame)
 // by colour detecting and drawing a green frame
-void do_frame ( Mat& cameraFeed, Scalar_<int> hsv_min, Scalar_<int> hsv_max ) {
+void do_frame ( Mat& cameraFeed, cv::Scalar hsv_min, cv::Scalar hsv_max ) {
 
   Mat HSV;
   Mat threshold;
 
-  //Object white("white");
+  // Object white("white");
   //white
   // opencv cvtColor: http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html
   // test and know

@@ -113,8 +113,9 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 jint width, jint height,
                 jbyteArray yuv, jintArray bgra,
                 jlong jout_vec_vec_point,
-                jstring jroot_folder_path,
-                jintArray hsv6 ) {
+                jstring jroot_folder_path
+                ,jintArray hsv6
+                                                                      ) {
 
   // string root_folder_path; /* doesn't end with / */
   // // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
@@ -148,6 +149,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
 
   // OpenCV can now access/modify the BGRA image if we want ...
   do_frame ( mbgra, Scalar(_hsv6[0], _hsv6[1], _hsv6[2]), Scalar(_hsv6[3],_hsv6[4],_hsv6[5]) ); /*UNMARK*/
+  // do_frame ( mbgra, Scalar(0,0,200),  Scalar(10,10,255) ); /*UNMARK*/
 
   vector < vector<Point> > contours_rotated ( contours_poly2 );
   rotate_contours_90(contours_rotated); /*since app is in portrait mode - TODO - maybe do a dynamic check here for exif/orient*/

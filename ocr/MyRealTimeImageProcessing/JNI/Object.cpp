@@ -19,8 +19,8 @@ Object::Object ( string name ) {
 
     // 2016-06-01, Albert
     // white in HSV is: (0º,0%,100%) (0,0,255)
-    setHSVmin(Scalar(0,0,-100));
-    setHSVmax(Scalar(256,100,256));
+    setHSVmin(Scalar(0,0,180));
+    setHSVmax(Scalar(10,10,255));
 
     setColor(Scalar(0,0,0));
   }

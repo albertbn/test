@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.SeekBar;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,7 +68,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         this.mCamera = camera;
     }
     // set by the main activity caller
-    TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
+    SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
+
 
     CameraPreview self = this;
 
@@ -78,7 +79,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                          ImageView cam_preview_im_view_instance,
                          Camera camera,
                          SurfaceHolder holder,
-                         TextView h_low_text, TextView h_high_text, TextView s_low_text, TextView s_high_text, TextView v_low_text, TextView v_high_text) {
+                         SeekBar seek_bar_h_low, SeekBar seek_bar_h_high, SeekBar seek_bar_s_low, SeekBar seek_bar_s_high, SeekBar seek_bar_v_low, SeekBar seek_bar_v_high
+                         ) {
 
         this.mCamera = camera;
         this.mHolder = holder;
@@ -88,7 +90,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
         this.cam_preview_img_view = cam_preview_im_view_instance;
 
-        self.h_low_text=h_low_text; self.h_high_text=h_high_text; self.s_low_text=s_low_text; self.s_high_text=s_high_text; self.v_low_text=v_low_text; self.v_high_text=v_high_text;
+        self.seek_bar_h_low=seek_bar_h_low; self.seek_bar_h_high=seek_bar_h_high; self.seek_bar_s_low=seek_bar_s_low; self.seek_bar_s_high=seek_bar_s_high; self.seek_bar_v_low=seek_bar_v_low; self.seek_bar_v_high=seek_bar_v_high;
     }
 
     // Indian thanks and bows man - that's about all I needed
@@ -181,6 +183,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
 
     public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
+    // public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
 
     Runnable do_image_processing = new Runnable() {
 
@@ -199,9 +202,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 Mat mat_out_vec_vec_point = new Mat();
 
                 int[] hsv6 = new int[6];
-                hsv6[0] = Integer.parseInt ( h_low_text.getText().toString() ); hsv6[1] = Integer.parseInt ( s_low_text.getText().toString() ); hsv6[2] = Integer.parseInt ( v_low_text.getText().toString() );
-                hsv6[3] = Integer.parseInt ( h_high_text.getText().toString() ); hsv6[4] = Integer.parseInt ( s_high_text.getText().toString() ); hsv6[5] = Integer.parseInt ( v_high_text.getText().toString() );
-//                        h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text
+                hsv6[0] = self.seek_bar_h_low.getProgress(); hsv6[1] = self.seek_bar_s_low.getProgress(); hsv6[2] = self.seek_bar_v_low.getProgress();
+                hsv6[3] = self.seek_bar_h_high.getProgress(); hsv6[4] = self.seek_bar_s_high.getProgress(); hsv6[5] = self.seek_bar_v_high.getProgress();
                 // call native JNI c++
                 colourDetect ( width, height, self.frame_data_bytes, pixels,
                                mat_out_vec_vec_point.nativeObj, /*!*/
