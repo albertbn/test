@@ -35,6 +35,7 @@ int get_height_preview(){
   return height_preview;
 }
 void set_height_preview ( int value ) {
+  // height_preview = value*1.5; /*! don't *1.5 - comes already so!!!???*/
   height_preview = value; /*! don't *1.5 - comes already so!!!???*/
 }
 
@@ -48,8 +49,8 @@ void fn_transform_point ( Point& point ) {
 
   // (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
   point.x^=point.y; point.y^=point.x; point.x^=point.y;
-  point.x = 720-point.x;
-  // point.x = get_height_preview()-point.x;
+  // point.x = 720-point.x;
+  point.x = get_height_preview()-point.x;
 }
 
 void fn_transform_vec_point ( vector<Point>& vec_point ) {
@@ -64,40 +65,40 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
-                JNIEnv* env, jobject,
-                jstring jroot_folder_path,
-                jstring jimg_unique_no_ext,
-                jlong matAddr ) {
+                JNIEnv* env, jobject
+                // ,jstring jroot_folder_path1
+                // ,jstring jimg_unique_no_ext
+                // ,jlong matAddr
+                                                                                     ) {
 
-  string root_folder_path; /* doesn't end with / */
-  string img_unique_no_ext;
+  // string root_folder_path; /* doesn't end with / */
+  // string img_unique_no_ext;
 
-  root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
-  img_unique_no_ext = (*env).GetStringUTFChars(jimg_unique_no_ext, 0);
+  // root_folder_path = env->GetStringUTFChars(jroot_folder_path, 0);
+  // img_unique_no_ext = env->GetStringUTFChars(jimg_unique_no_ext, 0);
 
-  path_sd_card = root_folder_path;
-  IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
-  // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".png";
-  string path_dump = root_folder_path + "/tessdata/dump.txt";
-  string path_ocr = root_folder_path + "/tessdata/ocr.txt";
+  // path_sd_card = root_folder_path;
+  // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
+  // // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".png";
+  // string path_dump = root_folder_path + "/tessdata/dump.txt";
+  // string path_ocr = root_folder_path + "/tessdata/ocr.txt";
 
   //  remove ( IMG_PATH.c_str() ) ;
-  remove ( path_dump.c_str() ) ;
-  remove ( path_ocr.c_str() ) ;
+  // remove ( path_dump.c_str() ) ;
+  // remove ( path_ocr.c_str() ) ;
 
-  //open streams
-  outfile.open ( path_dump.c_str(), ios_base::app );
-  outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
+  // //open streams
+  // outfile.open ( path_dump.c_str(), ios_base::app );
+  // outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
 
-  Mat mat = *((Mat*)matAddr);
+  // // Mat mat = *((Mat*)matAddr);
+  // // save_middle_class ( mat );
 
-  save_middle_class ( mat );
+  // outfile_ocr.close();
+  // outfile.close();
 
-  outfile_ocr.close();
-  outfile.close();
-
-  (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
-  (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
+  // (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
+  // (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
 
   return true;
 }
@@ -117,8 +118,9 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 ,jintArray hsv6
                                                                       ) {
 
+  // delete[] jroot_folder_path;
+
   // string root_folder_path; /* doesn't end with / */
-  // // root_folder_path = (*env).GetStringUTFChars(jroot_folder_path, 0);
   // root_folder_path = env->GetStringUTFChars(jroot_folder_path, 0); /*yep! pointer*/
   // // root_folder_path = root_folder_path + "/tessdata/img/" + (++COLOUR_FRAME_COUNT) + ".jpg";
   // root_folder_path = root_folder_path + "/tessdata/img/dump.txt";
@@ -130,8 +132,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   // outfile << "width: " << width << '\n';
   // outfile << "height: " << height << '\n';
   // outfile << "width_preview: " << get_width_preview() << '\n';
-  // outfile << "height_preview: " << get_height_preview() << '\n'
-    ;
+  // outfile << "height_preview: " << get_height_preview() << '\n' ;
 
   // Get native access to the given Java arrays.
   jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);
@@ -139,7 +140,7 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
   jint*  _hsv6 = env->GetIntArrayElements(hsv6, 0);
 
   // Prepare a cv::Mat that points to the YUV420sp data.
-  Mat myuv ( get_height_preview(), width, CV_8UC1, (uchar *)_yuv ); /*orig*/
+  Mat myuv ( height*1.5, width, CV_8UC1, (uchar *)_yuv ); /*orig*/
   Mat mbgra ( height, width, CV_8UC4, (uchar *)_bgra ); /*orig*/
 
   // Convert the color format from the camera's NV21 "YUV420sp" format to an Android BGRA color image.

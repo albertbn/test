@@ -39,6 +39,9 @@ import org.opencv.core.Scalar;
 
 public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
+    // native libs loaded in main class caller
+    public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
+
     static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
     static String path_log = root_folder_path+"/tessdata/img/log.txt";
     static Scalar colour_obj_contours_scalar = new Scalar(164,240,64,255); /*green*/
@@ -174,17 +177,6 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         }
     }
 
-    // Native JNI - load libraries
-    static {
-        System.loadLibrary("pngt");
-        System.loadLibrary("lept");
-        System.loadLibrary("tess");
-        System.loadLibrary("ImageProcessing");
-    }
-
-    public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
-    // public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path );
-
     Runnable do_image_processing = new Runnable() {
 
             public void run() {
@@ -204,6 +196,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
                 int[] hsv6 = new int[6];
                 hsv6[0] = self.seek_bar_h_low.getProgress(); hsv6[1] = self.seek_bar_s_low.getProgress(); hsv6[2] = self.seek_bar_v_low.getProgress();
                 hsv6[3] = self.seek_bar_h_high.getProgress(); hsv6[4] = self.seek_bar_s_high.getProgress(); hsv6[5] = self.seek_bar_v_high.getProgress();
+
                 // call native JNI c++
                 colourDetect ( width, height, self.frame_data_bytes, pixels,
                                mat_out_vec_vec_point.nativeObj, /*!*/

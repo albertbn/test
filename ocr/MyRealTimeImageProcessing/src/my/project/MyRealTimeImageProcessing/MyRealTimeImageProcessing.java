@@ -50,6 +50,20 @@ import android.widget.Button;
 
 public class MyRealTimeImageProcessing extends Activity {
 
+    // Native JNI - load libraries
+    static {
+        System.loadLibrary("pngt");
+        System.loadLibrary("lept");
+        System.loadLibrary("tess");
+        System.loadLibrary("ImageProcessing");
+    }
+
+    // credits: http://stackoverflow.com/questions/9978011/android-ics-jni-error-attempt-to-use-stale-local-reference-0x1#12824591
+    // public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
+    public native boolean saveMiddleClass ( ); /*!not Boolean!!!*/
+
+    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+
     final int PREVIEW_SIZE_WIDTH = 480;
     final int PREVIEW_SIZE_HEIGHT = 640;
     final int PHOTO_WIDTH = 1536; /*2448*/
@@ -73,6 +87,7 @@ public class MyRealTimeImageProcessing extends Activity {
     SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
     TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
 
+    //sb_listen;
     MyRealTimeImageProcessing self = this;
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -110,7 +125,7 @@ public class MyRealTimeImageProcessing extends Activity {
         SurfaceView surface_cam_view = new SurfaceView(this);
         SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
         self.set_sliders(); /*set sliders before the camprev init*/
-        self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
+        self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_HEIGHT, self.PREVIEW_SIZE_WIDTH, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
                                              self.seek_bar_h_low, self.seek_bar_h_high, self.seek_bar_s_low, self.seek_bar_s_high, self.seek_bar_v_low, self.seek_bar_v_high );
 
         surface_cam_view_holder.addCallback(self.cam_preview);
@@ -248,17 +263,17 @@ public class MyRealTimeImageProcessing extends Activity {
 
                 switch ( seekBar.getId() ){
                 case R.id.seek_bar_h_low:
-                    self.h_low_text.setText(s_progress); break;
+                    self.h_low_text.setText("h_low: "+s_progress); break;
                 case R.id.seek_bar_h_high:
-                    self.h_high_text.setText(s_progress); break;
+                    self.h_high_text.setText("h_high: "+s_progress); break;
                 case R.id.seek_bar_s_low:
-                    self.s_low_text.setText(s_progress); break;
+                    self.s_low_text.setText("s_low: "+s_progress); break;
                 case R.id.seek_bar_s_high:
-                    self.s_high_text.setText(s_progress); break;
+                    self.s_high_text.setText("s_high: "+s_progress); break;
                 case R.id.seek_bar_v_low:
-                    self.v_low_text.setText(s_progress); break;
+                    self.v_low_text.setText("v_low: "+s_progress); break;
                 case R.id.seek_bar_v_high:
-                    self.v_high_text.setText(s_progress); break;
+                    self.v_high_text.setText("v_high: "+s_progress); break;
                 default:
                     self.h_low_text.setText(Integer.toString(progress)+','+ Integer.toString(seekBar.getId())+','+ Integer.toString(seekBar.getId())); break;
                 }
@@ -332,16 +347,18 @@ public class MyRealTimeImageProcessing extends Activity {
     return result;
   }
 
-    public native Boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
     void tweak_bytes ( byte[] data ) {
 
-        Mat mat=new Mat();
-        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-        Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
-        bmp=null;
-        Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
-        String root_folder =  Environment.getExternalStorageDirectory().getAbsolutePath();
-        saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
+        // Mat mat=new Mat();
+        // Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+        // Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
+        // bmp=null;
+        // Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
+        // String root_folder =  Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        // // saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
+        // saveMiddleClass ( root_folder_path, "smc" ) ;
+        saveMiddleClass ( ) ;
     }
 
     //callback - trace - from captureListener > onClick > cam.takePicture
