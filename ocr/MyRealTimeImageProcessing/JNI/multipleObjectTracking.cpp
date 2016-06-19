@@ -15,12 +15,12 @@
 #include "Object.hpp"
 #include "ocr/main.hpp"
 
-const float width_small = 480.0;
-const float height_small = 640.0;
+const float width_small = 640.0 ;
+const float height_small = 480.0;
 // const float width = 3264.0;
 // const height = 2448.0;
-const float width = 1536.0;
-const float height = 2048.0;
+const float width = 2048.0 ;
+const float height = 1536.0;
 
 const float x_ratio = width/width_small;
 const float y_ratio = height/height_small;
@@ -72,7 +72,7 @@ int get_angle_approx90_count ( vector<Point> approx, vector<Point>& circles /*po
 
 //==============
 
-void morphOps ( Mat &thresh ) {
+void morphOps ( Mat& thresh ) {
 
   //create structuring element that will be used to "dilate" and "erode" image.
   //the element chosen here is a 3px by 3px rectangle
@@ -87,7 +87,7 @@ void morphOps ( Mat &thresh ) {
   dilate(thresh,thresh,dilateElement);
 }
 
-void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
+void trackFilteredObject ( Mat& threshold ) {
 
   vector <Object> objects;
   Mat temp;
@@ -96,7 +96,7 @@ void trackFilteredObject ( Mat threshold, Mat &cameraFeed ) {
   contours_poly2.clear();
 
   vector<Vec4i> hierarchy;
-  findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+  findContours ( temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
   vector < vector<Point> > contours_poly(contours.size());
   if ( hierarchy.size() > 0 ) {
 
@@ -175,7 +175,7 @@ bool corners_magick_do ( vector<Point>& corners /*points4*/ ) {
   return are4pointsfine;
 }
 
-void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
+void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
 
   Size size_mat = mat.size();
   corners_magick_do ( points4 /*ref*/ ); /*sorts corner points4*/
@@ -208,13 +208,14 @@ void final_magic_crop_rotate ( Mat &mat, vector<Point> &points4 ) {
     outfile << "ok, doing pers transform and warp..." << points4f << endl;
     Mat transmtx = getPerspectiveTransform ( points4f, quad_pts );
     warpPerspective ( mat, quad, transmtx, quad.size() );
+
+    imwrite ( IMG_PATH, quad ) ;
+    ocr_doit ( quad );
   }
   else {
     outfile << "checking points4f... not 4 of number " << points4f << endl;
+    imwrite ( IMG_PATH, mat ) ;
   }
-
-  imwrite ( IMG_PATH, quad ) ;
-  ocr_doit ( quad );
 }
 
 void test_ocr_pic_hardcoded ( ) {
@@ -269,5 +270,5 @@ void do_frame ( Mat& cameraFeed, cv::Scalar hsv_min, cv::Scalar hsv_max ) {
   // inRange(HSV,white.getHSVmin(),white.getHSVmax(),threshold);
   inRange(HSV, hsv_min, hsv_max, threshold);
   morphOps(threshold);
-  trackFilteredObject ( threshold, cameraFeed );
+  trackFilteredObject ( threshold );
 }

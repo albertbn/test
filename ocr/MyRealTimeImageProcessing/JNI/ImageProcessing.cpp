@@ -43,13 +43,9 @@ vector < vector<Point> > contours_poly2; /*this is a static filed, that could be
 
 void fn_transform_point ( Point& point ) {
 
-  // double x(point.x);
-  // point.x = height-point.y;
-  // point.y = x;
+  // double x(point.x); // point.x = height-point.y; // point.y = x;
 
-  // (small=small^large) && (large=small^large) && (small=small^large); /*XOR swap*/
-  point.x^=point.y; point.y^=point.x; point.x^=point.y;
-  // point.x = 720-point.x;
+  point.x^=point.y; point.y^=point.x; point.x^=point.y; /*XOR swap*/
   point.x = get_height_preview()-point.x;
 }
 
@@ -66,39 +62,35 @@ extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
                 JNIEnv* env, jobject
-                // ,jstring jroot_folder_path1
-                // ,jstring jimg_unique_no_ext
-                // ,jlong matAddr
-                                                                                     ) {
+                ,jstring jroot_folder_path
+                ,jstring jimg_unique_no_ext
+                ,jlong matAddr
+ ) {
 
-  // string root_folder_path; /* doesn't end with / */
-  // string img_unique_no_ext;
+  string img_unique_no_ext = env->GetStringUTFChars(jimg_unique_no_ext, 0);
 
-  // root_folder_path = env->GetStringUTFChars(jroot_folder_path, 0);
-  // img_unique_no_ext = env->GetStringUTFChars(jimg_unique_no_ext, 0);
+  path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
+  IMG_PATH = path_sd_card + "/tessdata/img/" + img_unique_no_ext + ".jpg";
+  // IMG_PATH = path_sd_card + "/tessdata/img/" + img_unique_no_ext + ".png";
+  string path_dump = path_sd_card + "/tessdata/dump.txt";
+  string path_ocr = path_sd_card + "/tessdata/ocr.txt";
 
-  // path_sd_card = root_folder_path;
-  // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".jpg";
-  // // IMG_PATH = root_folder_path + "/tessdata/img/" + img_unique_no_ext + ".png";
-  // string path_dump = root_folder_path + "/tessdata/dump.txt";
-  // string path_ocr = root_folder_path + "/tessdata/ocr.txt";
+  remove ( IMG_PATH.c_str() ) ;
+  remove ( path_dump.c_str() ) ;
+  remove ( path_ocr.c_str() ) ;
 
-  //  remove ( IMG_PATH.c_str() ) ;
-  // remove ( path_dump.c_str() ) ;
-  // remove ( path_ocr.c_str() ) ;
+  //open streams
+  outfile.open ( path_dump.c_str(), ios_base::app );
+  outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
 
-  // //open streams
-  // outfile.open ( path_dump.c_str(), ios_base::app );
-  // outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
+  Mat mat = *( (Mat*)matAddr );
+  save_middle_class ( mat );
 
-  // // Mat mat = *((Mat*)matAddr);
-  // // save_middle_class ( mat );
+  outfile_ocr.close();
+  outfile.close();
 
-  // outfile_ocr.close();
-  // outfile.close();
-
-  // (*env).ReleaseStringUTFChars(jroot_folder_path, root_folder_path.c_str());
-  // (*env).ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
+  env->ReleaseStringUTFChars(jroot_folder_path, path_sd_card.c_str());
+  env->ReleaseStringUTFChars(jimg_unique_no_ext, img_unique_no_ext.c_str());
 
   return true;
 }

@@ -58,16 +58,17 @@ public class MyRealTimeImageProcessing extends Activity {
         System.loadLibrary("ImageProcessing");
     }
 
-    // credits: http://stackoverflow.com/questions/9978011/android-ics-jni-error-attempt-to-use-stale-local-reference-0x1#12824591
-    // public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );
-    public native boolean saveMiddleClass ( ); /*!not Boolean!!!*/
+    // credits: http://stackoverflow.com/questions/9978011/android-ics-jni-error-attempt-to-use-stale-local-reference-0x1#12824591 - NOT Boolean
+    public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );  /*!not Boolean!!!*/
+    // public native boolean saveMiddleClass ( ); /*!not Boolean!!!*/
 
-    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    final static String PHOTO_PREFIX = "smc";
+    final static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
 
     final int PREVIEW_SIZE_WIDTH = 480;
     final int PREVIEW_SIZE_HEIGHT = 640;
-    final int PHOTO_WIDTH = 1536; /*2448*/
-    final int PHOTO_HEIGHT =  2048; /*3264*/
+    final int PHOTO_WIDTH = 2048; /*2448*/
+    final int PHOTO_HEIGHT = 1536; /*3264*/
 
     //HRS for white is (0,0,255)
     final int H_MIN=1, S_MIN=1, V_MIN=121;
@@ -75,7 +76,7 @@ public class MyRealTimeImageProcessing extends Activity {
 
     Camera mCamera;
     CameraPreview cam_preview;
-    PictureCallback mPicture;
+    PictureCallback m_picture_callback;
     Context context;
     ImageView iv_cam_preview = null;
 
@@ -234,7 +235,7 @@ public class MyRealTimeImageProcessing extends Activity {
 
             //start focus
             Camera.Parameters params = mCamera.getParameters();
-            Camera.Size size = getBestPreviewSize ( self.PHOTO_WIDTH, self.PHOTO_HEIGHT, params );
+            Camera.Size size = self.getBestPreviewSize ( self.PHOTO_WIDTH, self.PHOTO_HEIGHT, params );
 
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
@@ -244,7 +245,7 @@ public class MyRealTimeImageProcessing extends Activity {
             self.mCamera.setParameters(params);
             //end focus
 
-            self.mPicture = getPictureCallback();
+            self.m_picture_callback = self.get_picture_callback();
             self.cam_preview.refreshCamera(self.mCamera);
         }
     }
@@ -315,7 +316,7 @@ public class MyRealTimeImageProcessing extends Activity {
     OnClickListener captureListener = new OnClickListener() {
         @Override
         public void onClick ( View v ) {
-            mCamera.takePicture ( null, null, mPicture ) ;
+            mCamera.takePicture ( null, null, m_picture_callback ) ;
         }
     };
 
@@ -349,31 +350,30 @@ public class MyRealTimeImageProcessing extends Activity {
 
     void tweak_bytes ( byte[] data ) {
 
-        // Mat mat=new Mat();
-        // Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-        // Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
-        // bmp=null;
-        // Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
-        // String root_folder =  Environment.getExternalStorageDirectory().getAbsolutePath();
+        Mat mat=new Mat();
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Utils.bitmapToMat(bmp, mat);   //converting a mat to bitmap
+        bmp=null;
+        Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
 
-        // // saveMiddleClass ( root_folder, "smc", mat.getNativeObjAddr() ) ;
-        // saveMiddleClass ( root_folder_path, "smc" ) ;
-        saveMiddleClass ( ) ;
+        // JNI native call
+        saveMiddleClass ( root_folder_path /*static*/, PHOTO_PREFIX, mat.getNativeObjAddr() ) ;
+        mat.release();
     }
 
     //callback - trace - from captureListener > onClick > cam.takePicture
-    PictureCallback getPictureCallback ( ) {
+    PictureCallback get_picture_callback ( ) {
 
-        PictureCallback picture = new PictureCallback ( ) {
+        PictureCallback picture_callback = new PictureCallback ( ) {
 
             @Override
             public void onPictureTaken ( byte[] data, Camera camera ) {
 
-                self.tweak_bytes(data) ; return;
+                self.tweak_bytes ( data );
             }
         };
 
-        return picture;
+        return picture_callback;
     }
 
     void release_camera() {
