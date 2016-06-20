@@ -63,7 +63,7 @@ public class MyRealTimeImageProcessing extends Activity {
     // public native boolean saveMiddleClass ( ); /*!not Boolean!!!*/
 
     final static String PHOTO_PREFIX = "smc";
-    final static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
 
     final int PREVIEW_SIZE_WIDTH = 480;
     final int PREVIEW_SIZE_HEIGHT = 640;
@@ -80,16 +80,58 @@ public class MyRealTimeImageProcessing extends Activity {
     Context context;
     ImageView iv_cam_preview = null;
 
-    RelativeLayout rl_video_preview_wrap1;
-    Button capture, flash;
-    Boolean is_torch_on = false;
-    TextView tv = null;
+    RelativeLayout rl_main_wrap_preview, rl_video_preview_wrap1, rl_wrap_sliders, rl_text_result;
+    Button capture, flash, button_calibrate, btn_text_good, btn_text_again;
+    Boolean is_torch_on, is_calibrate;
+    TextView tv;
 
     SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
     TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
 
     //sb_listen;
     MyRealTimeImageProcessing self = this;
+
+    void bind_buttons_n_textview(){
+
+        self.rl_main_wrap_preview = (RelativeLayout) self.findViewById(R.id.rl_main_wrap_preview);
+        self.rl_wrap_sliders = (RelativeLayout) self.findViewById(R.id.rl_wrap_sliders);
+        self.rl_text_result = (RelativeLayout) self.findViewById(R.id.rl_text_result);
+
+        self.capture = (Button) self.findViewById(R.id.button_capture);
+        self.capture.setOnClickListener(self.captureListener);
+
+        self.flash = (Button) self.findViewById(R.id.button_flash);
+        self.flash.setOnClickListener(self.flash_listener);
+
+        self.button_calibrate = (Button) self.findViewById(R.id.button_calibrate);
+        self.button_calibrate.setOnClickListener(
+
+                new OnClickListener() {
+                    @Override
+                    public void onClick ( View v ) {
+                        if(self.is_calibrate){
+                            self.is_calibrate=false; self.rl_wrap_sliders.setVisibility(View.GONE);
+                        }
+                        else {
+                            self.is_calibrate=true; self.rl_wrap_sliders.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+        );
+
+        OnClickListener listen_text = new OnClickListener() {
+            @Override
+            public void onClick ( View v ) {
+                self.rl_main_wrap_preview.setVisibility(View.VISIBLE);
+            }
+        };
+
+        self.btn_text_good = (Button) self.findViewById(R.id.btn_text_good); self.btn_text_good.setOnClickListener(listen_text);
+        self.btn_text_again = (Button) self.findViewById(R.id.btn_text_again); self.btn_text_again.setOnClickListener(listen_text);
+
+        self.tv = (TextView) self.findViewById(R.id.tv_dump);
+        self.tv.setMovementMethod(new ScrollingMovementMethod());
+    }
 
     BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
             @Override
@@ -135,15 +177,8 @@ public class MyRealTimeImageProcessing extends Activity {
         self.rl_video_preview_wrap1 = (RelativeLayout) self.findViewById(R.id.rl_video_preview_wrap1);
         self.rl_video_preview_wrap1.addView(surface_cam_view, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
         self.rl_video_preview_wrap1.addView(self.iv_cam_preview, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
-        self.capture = (Button) self.findViewById(R.id.button_capture);
-        self.capture.setOnClickListener(self.captureListener);
 
-        self.flash = (Button) self.findViewById(R.id.button_flash);
-        self.flash.setOnClickListener(self.flash_listener);
-
-        self.tv = (TextView) self.findViewById(R.id.tv_dump);
-        self.tv.setMovementMethod(new ScrollingMovementMethod());
-
+        self.bind_buttons_n_textview();
     }
 
     void set_sliders() {
@@ -357,7 +392,7 @@ public class MyRealTimeImageProcessing extends Activity {
         Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
 
         // JNI native call
-        saveMiddleClass ( root_folder_path /*static*/, PHOTO_PREFIX, mat.getNativeObjAddr() ) ;
+        saveMiddleClass (ROOT_FOLDER_PATH /*static*/, PHOTO_PREFIX, mat.getNativeObjAddr() ) ;
         mat.release();
     }
 
