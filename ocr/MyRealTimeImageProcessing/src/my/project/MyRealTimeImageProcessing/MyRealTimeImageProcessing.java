@@ -71,8 +71,8 @@ public class MyRealTimeImageProcessing extends Activity {
     final int PHOTO_HEIGHT = 1536; /*3264*/
 
     //HRS for white is (0,0,255)
-    final int H_MIN=1, S_MIN=1, V_MIN=121;
-    final int H_MAX=179, S_MAX=153, V_MAX=255;
+    final int H_MIN=1, S_MIN=1, V_MIN=0;
+    final int H_MAX=179, S_MAX=100, V_MAX=255;
 
     Camera mCamera;
     CameraPreview cam_preview;
