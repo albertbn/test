@@ -119,12 +119,16 @@ public class MyRealTimeImageProcessing extends Activity {
                 }
         );
 
-        OnClickListener listen_text = new OnClickListener() {
+        OnClickListener listen_text = new OnClickListener ( ) {
             @Override
             public void onClick ( View v ) {
                 self.rl_main_wrap_preview.setVisibility(View.VISIBLE);
+                if(self.is_calibrate) self.rl_wrap_sliders.setVisibility(View.VISIBLE);
+                self.rl_text_result.setVisibility(View.GONE);
             }
         };
+
+//        TODO - make different cases for text good and text again...
 
         self.btn_text_good = (Button) self.findViewById(R.id.btn_text_good); self.btn_text_good.setOnClickListener(listen_text);
         self.btn_text_again = (Button) self.findViewById(R.id.btn_text_again); self.btn_text_again.setOnClickListener(listen_text);
@@ -404,6 +408,9 @@ public class MyRealTimeImageProcessing extends Activity {
             @Override
             public void onPictureTaken ( byte[] data, Camera camera ) {
 
+                self.rl_main_wrap_preview.setVisibility(View.GONE);
+                self.rl_wrap_sliders.setVisibility(View.GONE);
+                self.rl_text_result.setVisibility(View.VISIBLE);
                 self.tweak_bytes ( data );
             }
         };
