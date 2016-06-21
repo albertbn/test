@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/frameLayout1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp" android:paddingRight="16dp"
+        >
+
+        <RelativeLayout
+        android:id="@+id/rl_main_wrap_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp" android:visibility="visible"
+        >
+
+        <RelativeLayout
+            android:id="@+id/rl_video_preview_wrap1"
+            android:layout_width="wrap_content"
+            android:layout_height="640px" />
+
+        <Button
+            android:id="@+id/btn_flash"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="flash it"
+            android:layout_alignParentRight="true"
+        />
+
+        <Button
+            android:id="@+id/btn_calibrate"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="calibrate"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_flash"
+        />
+
+        <Button
+            android:id="@+id/btn_capture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_video_preview_wrap1"
+            android:text="roll it and save the middle class"
+            />
+    </RelativeLayout>
+
+        <RelativeLayout
+        android:id="@+id/rl_wrap_sliders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_main_wrap_preview"
+            android:visibility="visible"
+        >
+    <!--=============-->
+    <!--start sliders-->
+    <!--=============-->
+        <!--hue low-->
+        <SeekBar
+            android:id="@+id/seek_bar_h_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
+            android:layout_gravity="center" android:max="180"/>
+        <TextView
+            android:id="@+id/h_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
+            android:text="hue low" />
+        <!--hue high-->
+        <SeekBar
+            android:id="@+id/seek_bar_h_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
+            android:layout_below="@id/seek_bar_h_low" android:max="180"/>
+        <TextView
+            android:id="@+id/h_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
+            android:layout_below="@id/seek_bar_h_low" android:text="hue high" />
+
+        <!--sat low-->
+        <SeekBar
+            android:id="@+id/seek_bar_s_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
+            android:layout_gravity="center" android:layout_below="@id/seek_bar_h_high" android:max="255"/>
+        <TextView
+            android:id="@+id/s_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
+            android:layout_below="@id/seek_bar_h_high" android:text="sat low" />
+        <!--sat high-->
+        <SeekBar
+            android:id="@+id/seek_bar_s_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
+            android:layout_below="@id/seek_bar_s_low" android:max="255"/>
+        <TextView
+            android:id="@+id/s_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
+            android:layout_below="@id/seek_bar_s_low" android:text="sat high" />
+
+        <!--val low-->
+        <SeekBar
+            android:id="@+id/seek_bar_v_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
+            android:layout_gravity="center" android:layout_below="@id/seek_bar_s_high" android:max="255"/>
+        <TextView
+            android:id="@+id/v_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
+            android:layout_below="@id/seek_bar_s_high" android:text="val low" />
+        <!--val high-->
+        <SeekBar
+            android:id="@+id/seek_bar_v_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
+            android:layout_below="@id/seek_bar_v_low" android:max="255" />
+        <TextView
+            android:id="@+id/v_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
+            android:layout_below="@id/seek_bar_v_low" android:text="val high" />
+
+    <!--=============-->
+    <!--end sliders-->
+    <!--=============-->
+
+    </RelativeLayout>
+
+        <RelativeLayout
+        android:id="@+id/rl_text_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+        <TextView
+            android:id="@+id/tv_dump"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:maxLines="25"
+            android:text="test"
+            android:scrollbars="vertical"
+            />
+        <Button
+            android:id="@+id/btn_text_good"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dump"
+            android:text=";) OK"
+            android:layout_alignParentLeft="true"
+            />
+
+        <Button
+            android:id="@+id/btn_text_again"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dump"
+            android:text="come again"
+            android:layout_alignParentRight="true"
+            />
+
+    </RelativeLayout>
+
+    </RelativeLayout>
+</FrameLayout>
