@@ -62,58 +62,58 @@
         <!--hue low-->
         <SeekBar
             android:id="@+id/seek_bar_h_low" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="15dp"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
             android:layout_gravity="center" android:max="180"/>
         <TextView
             android:id="@+id/h_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
             android:text="hue low" />
         <!--hue high-->
         <SeekBar
             android:id="@+id/seek_bar_h_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="15dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
             android:layout_below="@id/seek_bar_h_low" android:max="180"/>
         <TextView
             android:id="@+id/h_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
             android:layout_below="@id/seek_bar_h_low" android:text="hue high" />
 
         <!--sat low-->
         <SeekBar
             android:id="@+id/seek_bar_s_low" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="15dp"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
             android:layout_gravity="center" android:layout_below="@id/seek_bar_h_high" android:max="255"/>
         <TextView
             android:id="@+id/s_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
             android:layout_below="@id/seek_bar_h_high" android:text="sat low" />
         <!--sat high-->
         <SeekBar
             android:id="@+id/seek_bar_s_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="15dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
             android:layout_below="@id/seek_bar_s_low" android:max="255"/>
         <TextView
             android:id="@+id/s_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
             android:layout_below="@id/seek_bar_s_low" android:text="sat high" />
 
         <!--val low-->
         <SeekBar
             android:id="@+id/seek_bar_v_low" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="15dp"
+            android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
             android:layout_gravity="center" android:layout_below="@id/seek_bar_s_high" android:max="255"/>
         <TextView
             android:id="@+id/v_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
             android:layout_below="@id/seek_bar_s_high" android:text="val low" />
         <!--val high-->
         <SeekBar
             android:id="@+id/seek_bar_v_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="15dp"
+            android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
             android:layout_below="@id/seek_bar_v_low" android:max="255" />
         <TextView
             android:id="@+id/v_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="20dp"
+            android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
             android:layout_below="@id/seek_bar_v_low" android:text="val high" />
 
     <!--=============-->

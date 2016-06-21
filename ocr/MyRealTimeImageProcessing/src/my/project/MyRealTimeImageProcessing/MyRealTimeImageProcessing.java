@@ -82,7 +82,7 @@ public class MyRealTimeImageProcessing extends Activity {
 
     RelativeLayout rl_main_wrap_preview, rl_video_preview_wrap1, rl_wrap_sliders, rl_text_result;
     Button capture, flash, button_calibrate, btn_text_good, btn_text_again;
-    Boolean is_torch_on, is_calibrate;
+    boolean is_torch_on=false, is_calibrate=true;
     TextView tv;
 
     SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
