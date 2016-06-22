@@ -9,10 +9,7 @@ import android.hardware.Camera.PictureCallback;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.core.Mat;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -26,24 +23,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 public class MyRealTimeImageProcessing extends LayoutsNControls {
-
-    // Native JNI - load libraries
-    static {
-        System.loadLibrary("pngt");
-        System.loadLibrary("lept");
-        System.loadLibrary("tess");
-        System.loadLibrary("ImageProcessing");
-    }
-
-    // credits: http://stackoverflow.com/questions/9978011/android-ics-jni-error-attempt-to-use-stale-local-reference-0x1#12824591 - NOT Boolean
-    public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );  /*!not Boolean!!!*/
 
     final static String PHOTO_PREFIX = "smc"; /*prefix of the high resolution photo/picture taken*/
     final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -125,12 +109,12 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         SurfaceView surface_cam_view = new SurfaceView(this);
         SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
         self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_HEIGHT, self.PREVIEW_SIZE_WIDTH, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
-                                             self.seek_bar_h_low, self.seek_bar_h_high, self.seek_bar_s_low, self.seek_bar_s_high, self.seek_bar_v_low, self.seek_bar_v_high );
+                                             self.bar_h_low, self.bar_h_high, self.bar_s_low, self.bar_s_high, self.bar_v_low, self.bar_v_high);
 
         surface_cam_view_holder.addCallback(self.cam_preview);
         surface_cam_view_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        super.rl_video_preview_wrap1.addView(surface_cam_view, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
-        super.rl_video_preview_wrap1.addView(self.iv_cam_preview, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
+        super.lay_video_preview_wrap.addView(surface_cam_view, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
+        super.lay_video_preview_wrap.addView(self.iv_cam_preview, new LayoutParams(self.PREVIEW_SIZE_WIDTH, self.PREVIEW_SIZE_HEIGHT));
 
         super.btn_flash.setOnClickListener(self.flash_listener); /* uses camera, that's why not in base */
         super.btn_capture.setOnClickListener(self.capture_listener); /* uses camera, that's why not in base */
@@ -189,15 +173,15 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     }
 
     //set/used from onCreate
-    OnClickListener flash_listener = new OnClickListener() {
+    final OnClickListener flash_listener = new OnClickListener() {
             @Override
             public void onClick ( View v ) {
                 Camera.Parameters params = self.mCamera.getParameters();
-                if(self.is_torch_on){
+                if ( self.is_torch_on ) {
                     self.is_torch_on=false;
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
                 }
-                else{
+                else {
                     self.is_torch_on=true;
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 }
@@ -206,7 +190,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     };
 
     //set/used from onCreate
-    OnClickListener capture_listener = new OnClickListener() {
+    final OnClickListener capture_listener = new OnClickListener() {
         @Override
         public void onClick ( View v ) {
             mCamera.takePicture ( null, null, m_picture_callback ) ;
@@ -241,30 +225,18 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     return result;
   }
 
-    void tweak_bytes ( byte[] data ) {
-
-        Mat mat=new Mat();
-        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-        Utils.bitmapToMat(bmp, mat); bmp.recycle();
-        Imgproc.cvtColor ( mat, mat, Imgproc.COLOR_RGB2BGR );
-
-        // JNI native call
-        saveMiddleClass (ROOT_FOLDER_PATH /*static*/, PHOTO_PREFIX, mat.getNativeObjAddr() ) ;
-        mat.release();
-    }
-
     //callback - trace - from captureListener > onClick > cam.takePicture
-    PictureCallback get_picture_callback ( ) {
+    final PictureCallback get_picture_callback ( ) {
 
         PictureCallback picture_callback = new PictureCallback ( ) {
 
             @Override
             public void onPictureTaken ( byte[] data, Camera camera ) {
 
-                self.rl_main_wrap_preview.setVisibility(View.GONE); /*super*/
-                self.rl_wrap_sliders.setVisibility(View.GONE); /*super*/
-                self.rl_text_result.setVisibility(View.VISIBLE); /*super*/
-                self.tweak_bytes ( data );
+                self.lay_main_wrap_preview.setVisibility(View.GONE); /*super*/
+                self.lay_wrap_sliders.setVisibility(View.GONE); /*super*/
+                self.lay_text_result.setVisibility(View.VISIBLE); /*super*/
+                self.process_im_n_ocr(data);
             }
         };
 
@@ -272,9 +244,9 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     }
 
     //called from on pause
-    void release_camera() {
+    final void release_camera ( ) {
         // stop and release camera
-        if (self.mCamera != null) {
+        if ( self.mCamera != null ) {
             self.mCamera.stopPreview();
             self.mCamera.setPreviewCallback(null);
             self.mCamera.release();
@@ -283,9 +255,12 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     }
 
     //boolean has_camera ( Context context ) {
-    boolean has_camera ( ) {
+    final boolean has_camera ( ) {
         //check if the device has camera
         // return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         return true; /*fuck you*/
     }
+
+    //========= virtual methods overridden by children =========//
+    void process_im_n_ocr( byte[] data ) { /* virtual, overridden by child */ }
 }
