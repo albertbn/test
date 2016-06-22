@@ -48,7 +48,7 @@ import android.view.View.OnClickListener;
 //import android.content.pm.PackageManager;
 import android.widget.Button;
 
-// again...
+// again....
 public class MyRealTimeImageProcessing extends Activity {
 
     // Native JNI - load libraries
