@@ -60,7 +60,8 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
 // 2016-06-14, this folk processes the photo taken, crops, ocr etc. the crop is based on the each-frame-colour-detected contours
 extern "C"
 jboolean
-Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
+Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO - confirm this works*/
+// Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
                 JNIEnv* env, jobject
                 ,jstring jroot_folder_path
                 ,jstring jimg_unique_no_ext

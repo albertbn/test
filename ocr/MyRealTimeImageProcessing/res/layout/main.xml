@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/frameLayout1">
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,14 +12,14 @@
         >
 
         <RelativeLayout
-        android:id="@+id/rl_main_wrap_preview"
+        android:id="@+id/lay_main_wrap_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp" android:visibility="visible"
         >
 
         <RelativeLayout
-            android:id="@+id/rl_video_preview_wrap1"
+            android:id="@+id/lay_video_preview_wrap"
             android:layout_width="wrap_content"
             android:layout_height="640px" />
 
@@ -44,16 +44,16 @@
             android:id="@+id/btn_capture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/rl_video_preview_wrap1"
+            android:layout_below="@id/lay_video_preview_wrap"
             android:text="roll it and save the middle class"
             />
     </RelativeLayout>
 
         <RelativeLayout
-        android:id="@+id/rl_wrap_sliders"
+        android:id="@+id/lay_wrap_sliders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rl_main_wrap_preview"
+        android:layout_below="@id/lay_main_wrap_preview"
             android:visibility="visible"
         >
     <!--=============-->
@@ -61,7 +61,7 @@
     <!--=============-->
         <!--hue low-->
         <SeekBar
-            android:id="@+id/seek_bar_h_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:id="@+id/bar_h_low" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
             android:layout_gravity="center" android:max="180"/>
         <TextView
@@ -70,51 +70,51 @@
             android:text="hue low" />
         <!--hue high-->
         <SeekBar
-            android:id="@+id/seek_bar_h_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:id="@+id/bar_h_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
-            android:layout_below="@id/seek_bar_h_low" android:max="180"/>
+            android:layout_below="@id/bar_h_low" android:max="180"/>
         <TextView
             android:id="@+id/h_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
-            android:layout_below="@id/seek_bar_h_low" android:text="hue high" />
+            android:layout_below="@id/bar_h_low" android:text="hue high" />
 
         <!--sat low-->
         <SeekBar
-            android:id="@+id/seek_bar_s_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:id="@+id/bar_s_low" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
-            android:layout_gravity="center" android:layout_below="@id/seek_bar_h_high" android:max="255"/>
+            android:layout_gravity="center" android:layout_below="@id/bar_h_high" android:max="255"/>
         <TextView
             android:id="@+id/s_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
-            android:layout_below="@id/seek_bar_h_high" android:text="sat low" />
+            android:layout_below="@id/bar_h_high" android:text="sat low" />
         <!--sat high-->
         <SeekBar
-            android:id="@+id/seek_bar_s_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:id="@+id/bar_s_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
-            android:layout_below="@id/seek_bar_s_low" android:max="255"/>
+            android:layout_below="@id/bar_s_low" android:max="255"/>
         <TextView
             android:id="@+id/s_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
-            android:layout_below="@id/seek_bar_s_low" android:text="sat high" />
+            android:layout_below="@id/bar_s_low" android:text="sat high" />
 
         <!--val low-->
         <SeekBar
-            android:id="@+id/seek_bar_v_low" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:id="@+id/bar_v_low" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginLeft="24dp" android:layout_marginRight="24dp" android:layout_marginTop="10dp"
-            android:layout_gravity="center" android:layout_below="@id/seek_bar_s_high" android:max="255"/>
+            android:layout_gravity="center" android:layout_below="@id/bar_s_high" android:max="255"/>
         <TextView
             android:id="@+id/v_low_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_alignParentLeft="true" android:layout_marginLeft="60dp" android:layout_marginTop="15dp"
-            android:layout_below="@id/seek_bar_s_high" android:text="val low" />
+            android:layout_below="@id/bar_s_high" android:text="val low" />
         <!--val high-->
         <SeekBar
-            android:id="@+id/seek_bar_v_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
+            android:id="@+id/bar_v_high" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp" android:layout_gravity="center" android:layout_marginTop="10dp"
-            android:layout_below="@id/seek_bar_v_low" android:max="255" />
+            android:layout_below="@id/bar_v_low" android:max="255" />
         <TextView
             android:id="@+id/v_high_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_alignParentRight="true" android:layout_marginRight="60dp" android:layout_marginTop="15dp"
-            android:layout_below="@id/seek_bar_v_low" android:text="val high" />
+            android:layout_below="@id/bar_v_low" android:text="val high" />
 
     <!--=============-->
     <!--end sliders-->
@@ -123,7 +123,7 @@
     </RelativeLayout>
 
         <RelativeLayout
-        android:id="@+id/rl_text_result"
+        android:id="@+id/lay_text_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
