@@ -6,7 +6,10 @@ package my.project.MyRealTimeImageProcessing;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+
 import android.view.View;
+import android.view.Window;
+
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -35,6 +38,9 @@ public class LayoutsNControls extends Activity {
     public void onCreate ( Bundle savedInstanceState ) {
 
         super.onCreate(savedInstanceState);
+
+        self.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        self.setContentView(R.layout.main);
 
         self.init_controls();
         self.bind_controls();

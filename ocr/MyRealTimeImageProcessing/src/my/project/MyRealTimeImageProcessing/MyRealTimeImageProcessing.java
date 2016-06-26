@@ -99,10 +99,6 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         // from andrew cam example - other project
         self.context = this;
 
-        //Set this APK no title
-        self.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        self.setContentView(R.layout.main);
-
         // Create my camera preview
         self.iv_cam_preview = new ImageView(this);
 
