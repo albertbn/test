@@ -33,6 +33,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
 
     final int PREVIEW_SIZE_WIDTH = 480, PREVIEW_SIZE_HEIGHT = 640, PHOTO_WIDTH = 2048, PHOTO_HEIGHT = 1536;
+    final static int PHOTO_QUALITY_PERCENT = 100;
 
     Camera mCamera;
     CameraPreview cam_preview;
@@ -42,11 +43,12 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
 
     MyRealTimeImageProcessing self = this;
 
-    BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
+    BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
+        public void onManagerConnected ( int status ) {
+            switch ( status ) {
                 case LoaderCallbackInterface.SUCCESS: {
+                    self.set_camera();
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -88,10 +90,42 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         camera.setDisplayOrientation(result);
     }
 
-    @Override
-    public void onCreate ( Bundle savedInstanceState ) {
+    // set from onResume event
+    void set_camera ( ) {
 
-        super.onCreate(savedInstanceState);
+        if ( !self.has_camera() ) {
+            Toast toast =
+                Toast.makeText(self.context, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
+            toast.show();
+            self.finish();
+        }
+
+        if ( self.cam_preview==null ) {
+            self.on_create_bindings();
+        }
+
+        if ( self.mCamera == null ) {
+
+            self.mCamera = Camera.open(0);
+
+            set_camera_display_orientation( self, CameraInfo.CAMERA_FACING_BACK, self.mCamera );
+
+            Camera.Parameters params = mCamera.getParameters();
+            Camera.Size size = self.get_best_preview_size( self.PHOTO_WIDTH, self.PHOTO_HEIGHT, params );
+
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+
+            params.setPictureSize(size.width, size.height);
+            params.setJpegQuality(PHOTO_QUALITY_PERCENT);
+            self.mCamera.setParameters(params);
+
+            self.m_picture_callback = self.get_picture_callback();
+            self.cam_preview.refreshCamera(self.mCamera);
+        }
+    }
+
+    void on_create_bindings ( ) {
 
         //Set this APK Full screen
         self.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -105,7 +139,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         SurfaceView surface_cam_view = new SurfaceView(this);
         SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
         self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_HEIGHT, self.PREVIEW_SIZE_WIDTH, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
-                                             self.bar_h_low, self.bar_h_high, self.bar_s_low, self.bar_s_high, self.bar_v_low, self.bar_v_high);
+                                               self.bar_h_low, self.bar_h_high, self.bar_s_low, self.bar_s_high, self.bar_v_low, self.bar_v_high);
 
         surface_cam_view_holder.addCallback(self.cam_preview);
         surface_cam_view_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -114,6 +148,20 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
 
         super.btn_flash.setOnClickListener(self.flash_listener); /* uses camera, that's why not in base */
         super.btn_capture.setOnClickListener(self.capture_listener); /* uses camera, that's why not in base */
+    }
+
+    @Override
+    public void onCreate ( Bundle savedInstanceState ) {
+
+        super.onCreate ( savedInstanceState );
+
+        if ( !OpenCVLoader.initDebug() ) {
+            // Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+        } else {
+            // Log.d(TAG, "OpenCV library found inside package. Using it!");
+            self.mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     @Override
@@ -138,37 +186,9 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
             // Log.d(TAG, "OpenCV library found inside package. Using it!");
             self.mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
-
-        if ( !self.has_camera() ) {
-            Toast toast =
-                Toast.makeText(self.context, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
-            toast.show();
-            self.finish();
-        }
-        if ( self.mCamera == null ) {
-
-            self.mCamera = Camera.open(0);
-
-            set_camera_display_orientation( this, CameraInfo.CAMERA_FACING_BACK, self.mCamera );
-
-            //start focus
-            Camera.Parameters params = mCamera.getParameters();
-            Camera.Size size = self.get_best_preview_size( self.PHOTO_WIDTH, self.PHOTO_HEIGHT, params );
-
-            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-
-            params.setPictureSize(size.width, size.height);
-            params.setJpegQuality(100);
-            self.mCamera.setParameters(params);
-            //end focus
-
-            self.m_picture_callback = self.get_picture_callback();
-            self.cam_preview.refreshCamera(self.mCamera);
-        }
     }
 
-    //set/used from onCreate
+    //set/used from onCreate - torch light toggle
     final OnClickListener flash_listener = new OnClickListener() {
             @Override
             public void onClick ( View v ) {
@@ -185,16 +205,16 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
             }
     };
 
-    //set/used from onCreate
+    //set/used from onCreate - picture/photo for OCR
     final OnClickListener capture_listener = new OnClickListener() {
         @Override
         public void onClick ( View v ) {
-            mCamera.takePicture ( null, null, m_picture_callback ) ;
+            mCamera.takePicture ( null, null, self.m_picture_callback ) ;
         }
     };
 
     // credits: https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Preview/src/com/commonsware/android/camera/PreviewDemo.java
-    Camera.Size get_best_preview_size(
+    Camera.Size get_best_preview_size (
                                    int width,
                                    int height,
                                    Camera.Parameters parameters
