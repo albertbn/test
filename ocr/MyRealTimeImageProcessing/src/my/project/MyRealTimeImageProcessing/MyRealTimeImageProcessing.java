@@ -29,9 +29,6 @@ import android.view.View.OnClickListener;
 
 public class MyRealTimeImageProcessing extends LayoutsNControls {
 
-    final static String PHOTO_PREFIX = "smc"; /*prefix of the high resolution photo/picture taken*/
-    final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
-
     final int PREVIEW_SIZE_WIDTH = 480, PREVIEW_SIZE_HEIGHT = 640, PHOTO_WIDTH = 2048, PHOTO_HEIGHT = 1536;
     final static int PHOTO_QUALITY_PERCENT = 100;
 
@@ -278,5 +275,5 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     }
 
     //========= virtual methods overridden by children =========//
-    void process_im_n_ocr( byte[] data ) { /* virtual, overridden by child */ }
+    void process_im_n_ocr( final byte[] data ) { /* virtual, overridden by child */ }
 }
