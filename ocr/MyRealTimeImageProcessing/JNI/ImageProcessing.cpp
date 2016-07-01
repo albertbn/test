@@ -81,8 +81,8 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO
   remove ( path_ocr.c_str() ) ;
 
   //open streams
-  outfile.open ( path_dump.c_str(), ios_base::app );
-  outfile_ocr.open ( path_ocr.c_str(), ios_base::app );
+  outfile.open ( path_dump.c_str(), ios_base::app | ios_base::in  );
+  outfile_ocr.open ( path_ocr.c_str(), ios_base::app | ios_base::in );
 
   Mat mat = *( (Mat*)matAddr );
   save_middle_class ( mat );
