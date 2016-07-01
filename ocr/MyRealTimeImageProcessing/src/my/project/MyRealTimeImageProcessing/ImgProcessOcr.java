@@ -45,9 +45,6 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
 
     ImgProcessOcr self = this;
 
-    FileObserver fileObserver;
-    boolean is_observing=false;
-
     @Override
     void process_im_n_ocr ( final byte[] data ) {
 
@@ -57,66 +54,12 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
         self.tv.setText ( "" );
         // new ImgProcessOCR_streamText().execute ( "do it" );
 
-        if( !self.is_observing ) {
-            self.is_observing = true;
-            self.fileObserver = new FileObserver ( OCR_PATH ) {
-                    @Override
-                    public void onEvent ( int eevent, String s ) {
-
-                        self.append_txt ( s );
-                        switch (eevent){
-                        case FileObserver.ACCESS:
-                            self.append_txt ( "ACCESS" );
-                            break;
-                        case FileObserver.ALL_EVENTS:
-                            self.append_txt ( "ALL_EVENTS" );
-                            break;
-                        case FileObserver.ATTRIB:
-                            self.append_txt ( "ATTRIB" );
-                            break;
-                        case FileObserver.CLOSE_NOWRITE:
-                            self.append_txt ( "CLOSE_NOWRITE" );
-                            break;
-                        case FileObserver.CLOSE_WRITE:
-                            self.append_txt ( "CLOSE_WRITE" );
-                            break;
-                        case FileObserver.CREATE:
-                            self.append_txt ( "CREATE" );
-                            break;
-                        case FileObserver.DELETE:
-                            self.append_txt ( "DELETE" );
-                            break;
-                        case FileObserver.DELETE_SELF:
-                            self.append_txt ( "DELETE_SELF" );
-                            break;
-                        case FileObserver.MODIFY:
-                            self.append_txt ( "MODIFY" );
-                            break;
-                        case FileObserver.MOVE_SELF:
-                            self.append_txt ( "MOVE_SELF" );
-                            break;
-                        case FileObserver.MOVED_FROM:
-                            self.append_txt ( "MOVED_FROM" );
-                            break;
-                        case FileObserver.MOVED_TO:
-                            self.append_txt ( "MOVED_TO" );
-                            break;
-                        case FileObserver.OPEN:
-                            self.append_txt ( "OPEN" );
-                            break;
-                        default:
-                            self.append_txt ( Integer.toString(eevent) );
-                            break;
-                        }
-                    }
-                };
-            self.fileObserver.startWatching(); //START OBSERVING
-        }
     }
 
     // Runnable used by the ImgProcessOCR_streamText
     void append_txt ( final String txt ) {
 
+        // self.tv.append ( txt + "\n" );
         self.mHandler.post ( new Runnable() {
             @Override
             public void run ( ) {
@@ -125,6 +68,10 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
                 // self.tv.setText ( txt );
             }
         } );
+    }
+
+    public void messageMe(String text) {
+        self.append_txt ( text );
     }
 
     //==================

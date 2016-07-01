@@ -62,13 +62,21 @@ extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO - confirm this works*/
 // Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
-                JNIEnv* env, jobject
+                JNIEnv* env, jobject jobj
                 ,jstring jroot_folder_path
                 ,jstring jimg_unique_no_ext
                 ,jlong matAddr
  ) {
 
-  string img_unique_no_ext = env->GetStringUTFChars(jimg_unique_no_ext, 0);
+  jstring jstr = env->NewStringUTF("This string comes from JNI with a fuck");
+  // First get the class that contains the method you need to call
+  jclass clazz = env->FindClass("my/project/MyRealTimeImageProcessing/ImgProcessOcr");
+  // Get the method that you want to call
+  jmethodID messageMe = env->GetMethodID(clazz, "messageMe", "(Ljava/lang/String;)V");
+  // Call the method on the object
+  env->CallVoidMethod ( jobj, messageMe, jstr );
+  // =====
+  string img_unique_no_ext = env->GetStringUTFChars ( jimg_unique_no_ext, 0 );
 
   path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
   IMG_PATH = path_sd_card + "/tessdata/img/" + img_unique_no_ext + ".jpg";
