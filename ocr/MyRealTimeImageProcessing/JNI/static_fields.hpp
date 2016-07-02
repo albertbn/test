@@ -9,6 +9,7 @@
 #ifndef SKIP_INCLUDES
 // includes here
 #include <opencv2/core/core.hpp>
+#include "OfstreamChild.hpp"
 #endif // SKIP_INCLUDES
 
 using namespace cv;

@@ -58,6 +58,7 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
 }
 
 // 2016-06-14, this folk processes the photo taken, crops, ocr etc. the crop is based on the each-frame-colour-detected contours
+// credits for c2java: http://stackoverflow.com/questions/5198105/calling-a-java-method-from-c-in-android
 extern "C"
 jboolean
 Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO - confirm this works*/
