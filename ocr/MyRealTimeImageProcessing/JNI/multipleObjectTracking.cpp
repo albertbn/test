@@ -184,7 +184,7 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
   // this here is probably closest to the size of the original invoice... well, let's try... tension :)
   RotatedRect rect_minAreaRect = minAreaRect ( points4 );
 
-  RNG rng(12345);
+  // RNG rng(12345);
   Point2f rect_points[4]; rect_minAreaRect.points( rect_points );
 
   for ( int i=0; i<(int)points4.size(/*4*/); ++i ) {
@@ -205,7 +205,7 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
   quad_pts.push_back(Point2f(0, quad.rows));
 
   if ( points4f.size()==4 ) {
-    // outfile << "ok, doing pers transform and warp..." << points4f << endl;
+    outfile << "ok, doing pers transform and warp..." << points4f << endl;
     Mat transmtx = getPerspectiveTransform ( points4f, quad_pts );
     warpPerspective ( mat, quad, transmtx, quad.size() );
 
@@ -213,14 +213,14 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
     ocr_doit ( quad );
   }
   else {
-    // outfile << "checking points4f... not 4 of number " << points4f << endl;
+    outfile << "checking points4f... not 4 of number " << points4f << endl;
     imwrite ( IMG_PATH, mat ) ;
   }
 }
 
 void test_ocr_pic_hardcoded ( ) {
 
-  // outfile << "trying to read: " << IMG_PATH << endl;
+  outfile << "trying to read: " << IMG_PATH << endl;
 
   Mat mat_pic_hardcoded_smc = imread ( IMG_PATH, 0 ) ;
   ocr_doit ( mat_pic_hardcoded_smc );
