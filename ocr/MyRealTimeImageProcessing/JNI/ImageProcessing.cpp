@@ -11,14 +11,18 @@
 
 #include "ocr/tess.hpp" /*used for rotate - rot90*/
 #include "static_fields.hpp"
+#include "ofstream_child.hpp"
 #include "multipleObjectTracking.hpp"
 #include "converters.hpp"
 
 using namespace std;
 using namespace cv;
 
-ofstream outfile;
-ofstream outfile_ocr;
+// OfstreamChild ofstreamchild;
+// ofstream outfile;
+ofstream_child outfile;
+// ofstream outfile_ocr;
+ofstream_child outfile_ocr;
 string path_sd_card;
 string IMG_PATH;
 
@@ -69,14 +73,22 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO
                 ,jlong matAddr
  ) {
 
-  jstring jstr = env->NewStringUTF("This string comes from JNI with a fuck");
-  // First get the class that contains the method you need to call
-  jclass clazz = env->FindClass("my/project/MyRealTimeImageProcessing/ImgProcessOcr");
-  // Get the method that you want to call
-  jmethodID messageMe = env->GetMethodID(clazz, "messageMe", "(Ljava/lang/String;)V");
-  // Call the method on the object
-  env->CallVoidMethod ( jobj, messageMe, jstr );
+  if ( !outfile.is_jni_inited() || !outfile_ocr.is_jni_inited() ) {
+
+    // jstring jstr = env->NewStringUTF("This string comes from JNI with a fuck");
+    // First get the class that contains the method you need to call
+    jclass clazz = env->FindClass("my/project/MyRealTimeImageProcessing/ImgProcessOcr");
+    // Get the method that you want to call
+    jmethodID void_method = env->GetMethodID(clazz, "messageMe", "(Ljava/lang/String;)V");
+    // Call the method on the object
+    // env->CallVoidMethod ( jobj, messageMe, jstr );
+
+    outfile.init_jni ( env, void_method, jobj );
+    outfile_ocr.init_jni ( env, void_method, jobj );
+  }
+
   // =====
+
   string img_unique_no_ext = env->GetStringUTFChars ( jimg_unique_no_ext, 0 );
 
   path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
@@ -92,6 +104,8 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO
   //open streams
   outfile.open ( path_dump.c_str(), ios_base::app | ios_base::in  );
   outfile_ocr.open ( path_ocr.c_str(), ios_base::app | ios_base::in );
+
+  outfile << "fuck u";
 
   Mat mat = *( (Mat*)matAddr );
   save_middle_class ( mat );
@@ -115,8 +129,9 @@ Java_my_project_MyRealTimeImageProcessing_CameraPreview_colourDetect (
                 JNIEnv* env, jobject,
                 jint width, jint height,
                 jbyteArray yuv, jintArray bgra,
-                jlong jout_vec_vec_point,
-                jstring jroot_folder_path
+                jlong jout_vec_vec_point
+                // ,jstring jroot_folder_path
+                ,jstring
                 ,jintArray hsv6
                                                                       ) {
 
