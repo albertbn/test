@@ -204,13 +204,6 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
   quad_pts.push_back(Point2f(quad.cols, quad.rows));
   quad_pts.push_back(Point2f(0, quad.rows));
 
-  outfile << "jusr some fockng test..." << " is there new text?  " <<  1244 << endl;
-  outfile << "sex and the city" << 3688.73 << endl;
-  outfile << "beer and stuff" << 9747.0 << endl;
-  outfile << "write on screen as well as file" << 6367 << endl;
-  outfile << "dictators and bozos" << 8446 << endl;
-  outfile << "ok, sleepy" << 894 << endl << endl << endl;
-
   if ( points4f.size()==4 ) {
     outfile << "ok, doing pers transform and warp..." << points4f << endl;
     Mat transmtx = getPerspectiveTransform ( points4f, quad_pts );

@@ -105,8 +105,6 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO
   outfile.open ( path_dump.c_str(), ios_base::app | ios_base::in  );
   outfile_ocr.open ( path_ocr.c_str(), ios_base::app | ios_base::in );
 
-  outfile << "fuck u" << endl;
-
   Mat mat = *( (Mat*)matAddr );
   save_middle_class ( mat );
 

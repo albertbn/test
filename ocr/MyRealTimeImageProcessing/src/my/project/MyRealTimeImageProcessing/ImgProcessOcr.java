@@ -64,8 +64,19 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
             @Override
             public void run ( ) {
 
-                self.tv.append ( txt + "\n" );
+                // self.tv.append ( txt + "\n" );
+                self.tv.append ( txt );
                 // self.tv.setText ( txt );
+
+                // // find the amount we need to scroll.  This works by
+                // // asking the TextView's internal layout for the position
+                // // of the final line and then subtracting the TextView's height
+                // final int scrollAmount = self.tv.getLayout().getLineTop(self.tv.getLineCount()) - self.tv.getHeight();
+                // // if there is no need to scroll, scrollAmount will be <=0
+                // if (scrollAmount > 0)
+                //     self.tv.scrollTo(0, scrollAmount);
+                // else
+                //     self.tv.scrollTo(0, 0);
             }
         } );
     }

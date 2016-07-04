@@ -61,14 +61,15 @@ void init_ocr ( ) {
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 
-void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
+void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
 
   icount = 0; /*dummy leftover*/
 
   // init_ocr();
   // unsigned int _clock_start = clock();
 
-  Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
+  // Mat cropped = mat(rect).clone(); /*!clone, clone clone*/
+  Mat cropped ( mat(rect) ); /*!clone, clone clone*/
 
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
@@ -76,9 +77,8 @@ void crop_b_tess ( Mat mat/*orig*/, Rect rect, int icount ) {
   // Get the text
   char* out = tess.GetUTF8Text();
   outfile_ocr << out;
-  // outfile << out;
   delete []out;
-  // std::cout << out;
+  cropped.release();
   // tess.Clear();
   // tess.End();
 }
