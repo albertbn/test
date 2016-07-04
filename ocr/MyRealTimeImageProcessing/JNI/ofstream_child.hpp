@@ -16,7 +16,8 @@
 
 class ofstream_child {
 
-  template<typename T> friend std::ofstream& operator<<(ofstream_child& ofsc, T op){
+  // friend std::ofstream
+  template<typename T> friend ofstream_child& operator<<(ofstream_child& ofsc, T op){
 
   // ofsc.Get_ofs() << (std::string)op;
   if ( ofsc.is_jni_inited() ) {
@@ -29,7 +30,8 @@ class ofstream_child {
   }
 
   ofsc.get_ofs() << op;
-  return ofsc.get_ofs();
+  // return ofsc.get_ofs();
+  return ofsc;
 }
 
 public:
