@@ -11,6 +11,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,6 +35,7 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     }
 
     // credits: http://stackoverflow.com/questions/9978011/android-ics-jni-error-attempt-to-use-stale-local-reference-0x1#12824591 - NOT Boolean
+    public native boolean initOcr ( String root_folder_path );
     public native boolean saveMiddleClass ( String root_folder_path, String img_unique_no_ext, long inputImage );  /*!not Boolean!!!*/
 
     final static String PHOTO_PREFIX = "smc"; /*prefix of the high resolution photo/picture taken*/
@@ -46,42 +48,37 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     ImgProcessOcr self = this;
 
     @Override
+    public void onCreate ( Bundle savedInstanceState ) {
+        super.onCreate ( savedInstanceState );
+        new ImgProcessOCR_initOcr().execute ( "initOcr" );
+    }
+
+    @Override
     void process_im_n_ocr ( final byte[] data ) {
 
         // pic
         new ImgProcessOCR_processPic().execute ( data );
-
         self.tv.setText ( "" );
-        // new ImgProcessOCR_streamText().execute ( "do it" );
-
     }
 
-    // Runnable used by the ImgProcessOCR_streamText
     void append_txt ( final String txt ) {
 
-        // self.tv.append ( txt + "\n" );
         self.mHandler.post ( new Runnable() {
             @Override
             public void run ( ) {
 
-                // self.tv.append ( txt + "\n" );
-                self.tv.append ( txt );
-                // self.tv.setText ( txt );
-
-                // // find the amount we need to scroll.  This works by
-                // // asking the TextView's internal layout for the position
-                // // of the final line and then subtracting the TextView's height
-                // final int scrollAmount = self.tv.getLayout().getLineTop(self.tv.getLineCount()) - self.tv.getHeight();
-                // // if there is no need to scroll, scrollAmount will be <=0
-                // if (scrollAmount > 0)
-                //     self.tv.scrollTo(0, scrollAmount);
-                // else
-                //     self.tv.scrollTo(0, 0);
+                if ( txt.contains("CCLLEEAARR") )
+                    self.tv.setText ( "" );
+                else
+                    // self.tv.append ( txt + "\n" );
+                    self.tv.append ( txt );
             }
+
         } );
     }
 
-    public void messageMe(String text) {
+    // called by the c++ JNI
+    public void messageMe ( String text ) {
         self.append_txt ( text );
     }
 
@@ -110,50 +107,14 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     }
 
     //==================
-
-    // OCR result text
-    class ImgProcessOCR_streamText extends AsyncTask <String, Integer, String> {
+    // this chap internally saves a pic from the native/c++
+    class ImgProcessOCR_initOcr extends AsyncTask <String, Integer, String> {
 
         @Override
         protected String doInBackground ( String... params ) {
 
-            self.append_txt ( "do in background" );
-            FileObserver fileObserver = new FileObserver ( OCR_PATH ) {
-                    @Override
-                    public void onEvent ( int eevent, String s ) {
-
-                        switch (eevent){
-                        case FileObserver.CLOSE_NOWRITE:
-                        case FileObserver.CLOSE_WRITE:
-                            // this.stopWatching();
-                            self.append_txt ( "close write or not" );
-                            break;
-                        }
-
-                        RandomAccessFile raf=null;
-                        try {
-                            raf = new RandomAccessFile( OCR_PATH, "r" );
-                            String txt = raf.readUTF();
-                            self.append_txt ( txt );
-
-                        } catch (FileNotFoundException e) {
-                            self.append_txt ( "file not found ex" );
-                            // e.printStackTrace();
-                        } catch (IOException e) {
-                            self.append_txt ( "io ex" );
-                            // e.printStackTrace();
-                        }
-                        finally {
-                            if(raf!=null) try {
-                                    raf.close();
-                                } catch (IOException e) {
-                                    // e.printStackTrace();
-                                }
-                        }
-                    }
-                };
-            fileObserver.startWatching(); //START OBSERVING
-
+            // JNI native call
+            initOcr( ROOT_FOLDER_PATH );
             return null;
         }
     }

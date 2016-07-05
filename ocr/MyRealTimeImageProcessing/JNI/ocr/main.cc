@@ -188,7 +188,7 @@ cv::Scalar HSVtoRGBcvScalar ( int H, int S, int V ) {
 void ocr_doit ( Mat& im_orig ) {
 
   // init tess
-  init_ocr ( );
+  // init_ocr ( ); /*called from main once (ImageProcessing.cpp) */
 
   // tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
   // orientation_check(im_orig);
@@ -259,7 +259,11 @@ void ocr_doit ( Mat& im_orig ) {
   // HERE - sort and tess each line
   std::sort ( rect_lines.begin(), rect_lines.end(), less_custom_sort_points() );
 
-  outfile << "split into lines count: " << rect_lines.size()  << endl;
+  outfile << "CCLLEEAARR";
+  outfile << "split into " << rect_lines.size() << " paragraph/s " << endl;
+  outfile << "processing OCR text..." << endl;
+  outfile << "..." << endl;
+  outfile << "..." << endl;
 
   for ( int i=0; i<(int)rect_lines.size(); ++i ) {
     // std::cout << "rect:\t" << rect_lines[i] << std::endl;

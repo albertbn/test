@@ -9,7 +9,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 
-#include "ocr/tess.hpp" /*used for rotate - rot90*/
+#include "ocr/tess.hpp" /*used for rotate - rot90, init_ocr*/
 #include "static_fields.hpp"
 #include "ofstream_child.hpp"
 #include "multipleObjectTracking.hpp"
@@ -23,7 +23,7 @@ using namespace cv;
 ofstream_child outfile;
 // ofstream outfile_ocr;
 ofstream_child outfile_ocr;
-string path_sd_card;
+string path_sd_card; /*tess need it*/
 string IMG_PATH;
 
 int width_preview;
@@ -61,11 +61,26 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
   for_each ( contours_rotate.begin(), contours_rotate.end(), fn_transform_vec_point );
 }
 
+extern "C"
+jboolean
+Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_initOcr (
+             JNIEnv* env, jobject
+             ,jstring jroot_folder_path
+
+                                                                 ) {
+  path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
+
+  init_ocr(); /*in ocr/tess.[hc]pp*/
+
+  env->ReleaseStringUTFChars(jroot_folder_path, path_sd_card.c_str());
+  return false;
+}
+
 // 2016-06-14, this folk processes the photo taken, crops, ocr etc. the crop is based on the each-frame-colour-detected contours
 // credits for c2java: http://stackoverflow.com/questions/5198105/calling-a-java-method-from-c-in-android
 extern "C"
 jboolean
-Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*TODO - confirm this works*/
+Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*DONE - confirm this works*/
 // Java_my_project_MyRealTimeImageProcessing_MyRealTimeImageProcessing_saveMiddleClass (
                 JNIEnv* env, jobject jobj
                 ,jstring jroot_folder_path

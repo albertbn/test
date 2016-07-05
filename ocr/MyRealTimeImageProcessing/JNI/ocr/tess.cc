@@ -63,7 +63,6 @@ void init_ocr ( ) {
 
 void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
 
-  icount = 0; /*dummy leftover*/
 
   // init_ocr();
   // unsigned int _clock_start = clock();
@@ -76,6 +75,7 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
 
   // Get the text
   char* out = tess.GetUTF8Text();
+  if ( icount<1 ) outfile << "CCLLEEAARR";
   outfile_ocr << out;
   delete []out;
   cropped.release();
