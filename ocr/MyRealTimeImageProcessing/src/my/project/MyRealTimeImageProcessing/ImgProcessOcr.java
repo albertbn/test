@@ -12,14 +12,9 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.AsyncTask;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 
 /**
  * Created by Albert on 6/22/16.

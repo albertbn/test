@@ -7,25 +7,16 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.YuvImage;
-import android.graphics.Rect;
-import android.graphics.Matrix;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
 
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -37,15 +28,16 @@ import org.opencv.android.Utils;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.Scalar;
 
+//this class is instantiated my the main activity class (currently MyRealTimeImageProcessing - TODO to be renamed)
 public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
     // native libs loaded in main class caller
     public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
 
-    static String root_folder_path =  Environment.getExternalStorageDirectory().getAbsolutePath();
-    static String path_log = root_folder_path+"/tessdata/img/log.txt";
-    static Scalar colour_obj_contours_scalar = new Scalar(164,240,64,255); /*green*/
-    static final int line_width_px_obj_contours = 5;
+    static final String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
+    static final String PATH_LOG = ROOT_FOLDER_PATH +"/tessdata/img/log.txt";
+    static final Scalar COLOUR_OBJ_CONTOURS_SCALAR = new Scalar(164,240,64,255); /*green*/
+    static final int LINE_WIDTH_PX_OBJ_CONTOURS = 5;
 
     SurfaceHolder mHolder;
     ImageView cam_preview_img_view = null;
@@ -72,7 +64,6 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     }
     // set by the main activity caller
     SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
-
 
     CameraPreview self = this;
 
@@ -101,11 +92,12 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     public void onPreviewFrame ( byte[] arg0, Camera arg1 ) {
         // At preview mode, the frame data will push to here.
         // if (imageFormat == ImageFormat.NV21) {
-            //We only accept the NV21(YUV420) format.
-            if ( !this.is_processing ) {
-                this.frame_data_bytes = arg0;
-                this.mHandler.post(this.do_image_processing);
-            }
+        //We only accept the NV21(YUV420) format.
+        if ( !self.is_processing ) {
+            self.frame_data_bytes = arg0;
+//                this.mHandler.post(this.do_image_processing);
+            new CameraPreview_objectDetect().execute("object detect and draw frame/lines on top of video preview" );
+        }
         // }
     }
 
@@ -177,64 +169,83 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         }
     }
 
-    Runnable do_image_processing = new Runnable() {
+    void set_bitmap ( ) {
+        this.mHandler.post(this.run_set_bitmap);
+    }
 
-            public void run() {
-                Log.i("evdroid", "do_image_processing():");
-                self.is_processing = true;
+    Runnable run_set_bitmap = new Runnable() {
 
-                if ( self.bitmap==null || self.pixels==null ) {
+        public void run() {
+            self.cam_preview_img_view.setImageBitmap ( self.bitmap ) ;
+//                self.bitmap.recycle();
+        }
+    };
 
-                    self.parameters = self.mCamera.getParameters();
-                    self.width = self.parameters.getPreviewSize().width;
-                    self.height = self.parameters.getPreviewSize().height;
-                    self.pixels = new int [ self.width * self.height ];
-                }
+    //=======================
+    class CameraPreview_objectDetect extends AsyncTask<String, Integer, String> {
 
-                Mat mat_out_vec_vec_point = new Mat();
+        @Override
+        protected String doInBackground ( String... params ) {
 
-                int[] hsv6 = new int[6];
-                hsv6[0] = self.seek_bar_h_low.getProgress(); hsv6[1] = self.seek_bar_s_low.getProgress(); hsv6[2] = self.seek_bar_v_low.getProgress();
-                hsv6[3] = self.seek_bar_h_high.getProgress(); hsv6[4] = self.seek_bar_s_high.getProgress(); hsv6[5] = self.seek_bar_v_high.getProgress();
+            Log.i("evdroid", "do_image_processing():");
+            self.is_processing = true;
 
-                // call native JNI c++
-                colourDetect ( width, height, self.frame_data_bytes, pixels,
-                               mat_out_vec_vec_point.nativeObj, /*!*/
-                               root_folder_path /*!*/, hsv6 );
+            if ( self.bitmap==null || self.pixels==null ) {
 
-                List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( ); /*will have the points for the object outlines, they will be drawn by drawContours*/
-                Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );
-
-                mat_out_vec_vec_point.release();
-
-                self.bitmap = Bitmap.createBitmap ( self.height, self.width, Bitmap.Config.ARGB_8888 ) ; /*mind the height and width reversed - PORTRAIT mode*/
-
-                // signature:
-                // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
-                // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
-
-                Mat mat = new Mat();
-                Utils.bitmapToMat ( self.bitmap, mat );
-                // log ("size of c_poly2 is" + contours_poly2.size());
-                for  ( int i = 0; i < contours_poly2.size(); ++i ) {
-                    Imgproc.drawContours(mat, contours_poly2, i, colour_obj_contours_scalar, line_width_px_obj_contours);
-                }
-                Utils.matToBitmap ( mat, self.bitmap );
-                mat.release();
-
-                cam_preview_img_view.setImageBitmap ( self.bitmap ) ;
-                // canvas.drawCircle( height/2, width/2, height/2, paint);
-
-                is_processing = false;
+                self.parameters = self.mCamera.getParameters();
+                self.width = self.parameters.getPreviewSize().width;
+                self.height = self.parameters.getPreviewSize().height;
+                self.pixels = new int [ self.width * self.height ];
             }
-        };
+
+            Mat mat_out_vec_vec_point = new Mat();
+
+            int[] hsv6 = new int[6];
+            hsv6[0] = self.seek_bar_h_low.getProgress(); hsv6[1] = self.seek_bar_s_low.getProgress(); hsv6[2] = self.seek_bar_v_low.getProgress();
+            hsv6[3] = self.seek_bar_h_high.getProgress(); hsv6[4] = self.seek_bar_s_high.getProgress(); hsv6[5] = self.seek_bar_v_high.getProgress();
+
+            // call native JNI c++
+            colourDetect ( self.width, self.height, self.frame_data_bytes, pixels,
+                    mat_out_vec_vec_point.nativeObj, /*!*/
+                    ROOT_FOLDER_PATH /*!*/, hsv6 );
+
+            List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( ); /*will have the points for the object outlines, they will be drawn by drawContours*/
+            Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );
+
+            mat_out_vec_vec_point.release();
+
+            self.bitmap = Bitmap.createBitmap ( self.height, self.width, Bitmap.Config.ARGB_8888 ) ; /*mind the height and width reversed - PORTRAIT mode*/
+
+            // signature:
+            // setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height)
+            // bitmap.setPixels ( pixels, 0, width, 0, 0, width, height ); /*ORIG*/
+
+            Mat mat = new Mat();
+            Utils.bitmapToMat ( self.bitmap, mat );
+            // log ("size of c_poly2 is" + contours_poly2.size());
+            for  ( int i = 0; i < contours_poly2.size(); ++i ) {
+                Imgproc.drawContours(mat, contours_poly2, i, COLOUR_OBJ_CONTOURS_SCALAR, LINE_WIDTH_PX_OBJ_CONTOURS);
+            }
+            Utils.matToBitmap ( mat, self.bitmap );
+            mat.release();
+
+//            self.cam_preview_img_view.setImageBitmap ( self.bitmap ) ;
+            // canvas.drawCircle( height/2, width/2, height/2, paint);
+            self.set_bitmap();
+
+            self.is_processing = false;
+
+            //=========
+            return null;
+        }
+    }
 
     static void log ( String s ) {
 
         BufferedWriter bw = null;
 
         try {
-            bw = new BufferedWriter ( new FileWriter(path_log, "append mode? no time to check"!=null ) );
+            bw = new BufferedWriter ( new FileWriter(PATH_LOG, "append mode? no time to check"!=null ) );
             bw.write(s);
             bw.newLine();
             bw.flush();
