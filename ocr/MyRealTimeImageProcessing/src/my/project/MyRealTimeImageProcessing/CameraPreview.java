@@ -31,7 +31,7 @@ import org.opencv.core.Scalar;
 //this class is instantiated my the main activity class (currently MyRealTimeImageProcessing - TODO to be renamed)
 public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    // native libs loaded in main class caller
+    // native libs loaded in main class caller - does object detection - white rectangle/paper invoice
     public native boolean colourDetect ( int width, int height, byte[] NV21frame_data_bytes, int[] pixels, long mat_out_vec_vec_point, String root_folder_path, int[] hsv6 );
 
     static final String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -44,15 +44,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     Bitmap bitmap = null;
     int[] pixels = null;
     byte[] frame_data_bytes = null;
-    int imageFormat;
-
-    int preview_size_width;
-    int preview_size_height;
-
+    int imageFormat, preview_size_width, preview_size_height, width, height;
     Parameters parameters;
-    int width;
-    int height;
-
     Boolean is_processing = false;
 
     Handler mHandler = new Handler(Looper.getMainLooper());
@@ -66,7 +59,6 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     SeekBar seek_bar_h_low, seek_bar_h_high, seek_bar_s_low, seek_bar_s_high, seek_bar_v_low, seek_bar_v_high;
 
     CameraPreview self = this;
-
     public CameraPreview (
                          int preview_layout_width,
                          int preview_layout_height,
@@ -95,7 +87,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         //We only accept the NV21(YUV420) format.
         if ( !self.is_processing ) {
             self.frame_data_bytes = arg0;
-//                this.mHandler.post(this.do_image_processing);
+            // this.mHandler.post(this.do_image_processing);
             new CameraPreview_objectDetect().execute("object detect and draw frame/lines on top of video preview" );
         }
         // }
@@ -169,15 +161,16 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         }
     }
 
+    // called by the async thread CameraPreview_objectDetect
     void set_bitmap ( ) {
-        this.mHandler.post(this.run_set_bitmap);
+        self.mHandler.post(self.run_set_bitmap);
     }
 
-    Runnable run_set_bitmap = new Runnable() {
+    Runnable run_set_bitmap = new Runnable ( ) {
 
         public void run() {
             self.cam_preview_img_view.setImageBitmap ( self.bitmap ) ;
-//                self.bitmap.recycle();
+            // self.bitmap.recycle();
         }
     };
 
@@ -188,6 +181,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         protected String doInBackground ( String... params ) {
 
             Log.i("evdroid", "do_image_processing():");
+
             self.is_processing = true;
 
             if ( self.bitmap==null || self.pixels==null ) {
@@ -212,7 +206,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
             List<MatOfPoint> contours_poly2 = new ArrayList<MatOfPoint> ( ); /*will have the points for the object outlines, they will be drawn by drawContours*/
             Converters.Mat_to_vector_vector_Point ( mat_out_vec_vec_point, contours_poly2 );
 
-            mat_out_vec_vec_point.release();
+            mat_out_vec_vec_point.release ( );
 
             self.bitmap = Bitmap.createBitmap ( self.height, self.width, Bitmap.Config.ARGB_8888 ) ; /*mind the height and width reversed - PORTRAIT mode*/
 
@@ -240,6 +234,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         }
     }
 
+    // not used for now
     static void log ( String s ) {
 
         BufferedWriter bw = null;

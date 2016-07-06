@@ -36,7 +36,7 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     final static String PHOTO_PREFIX = "smc"; /*prefix of the high resolution photo/picture taken*/
     final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath(); /* doesn't end with / */;
     // final static String OCR_PATH =  ROOT_FOLDER_PATH + "/tessdata/ocr.txt";
-    final static String OCR_PATH =  ROOT_FOLDER_PATH + "/tessdata/dump.txt";
+    // final static String OCR_PATH =  ROOT_FOLDER_PATH + "/tessdata/dump.txt"; /*not in use*/
 
     Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -45,12 +45,11 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     @Override
     public void onCreate ( Bundle savedInstanceState ) {
         super.onCreate ( savedInstanceState );
-        new ImgProcessOCR_initOcr().execute ( "initOcr" );
+        new ImgProcessOCR_initOcr().execute ( "initOcr" ); /*init the tess once in native JNI via async thread to boost performance*/
     }
 
     @Override
     void process_im_n_ocr ( final byte[] data ) {
-
         // pic
         new ImgProcessOCR_processPic().execute ( data );
         self.tv.setText ( "" );
@@ -102,7 +101,7 @@ public class ImgProcessOcr extends MyRealTimeImageProcessing {
     }
 
     //==================
-    // this chap internally saves a pic from the native/c++
+    // init the tess once in native JNI via async thread to boost performance
     class ImgProcessOCR_initOcr extends AsyncTask <String, Integer, String> {
 
         @Override
