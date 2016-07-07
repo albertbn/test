@@ -4,13 +4,16 @@
 package my.project.MyRealTimeImageProcessing;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 
 import android.view.View;
 import android.view.Window;
 
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -20,6 +23,12 @@ import android.widget.TextView;
  */
 public class LayoutsNControls extends Activity {
 
+    final static String PHOTO_PREFIX = "smc"; /*prefix of the high resolution photo/picture taken*/
+    final static String ROOT_FOLDER_PATH =  Environment.getExternalStorageDirectory().getAbsolutePath(); /* doesn't end with / */;
+    final static String IMG_CAPTURE_PATH =  ROOT_FOLDER_PATH + "/tessdata/img/"+PHOTO_PREFIX+".jpg";
+    // final static String OCR_PATH =  ROOT_FOLDER_PATH + "/tessdata/dump.txt"; /*not in use*/
+
+
     LayoutsNControls self = this;
 
     //HSV for white is (0,0,255)
@@ -28,6 +37,7 @@ public class LayoutsNControls extends Activity {
 
     SeekBar bar_h_low, bar_h_high, bar_s_low, bar_s_high, bar_v_low, bar_v_high;
     TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
+    ImageView img_capture_preview;
 
     RelativeLayout lay_main_wrap_preview, lay_video_preview_wrap, lay_wrap_sliders, lay_text_result;
     Button btn_capture, btn_flash, btn_calibrate, btn_text_good, btn_text_again;
@@ -69,6 +79,8 @@ public class LayoutsNControls extends Activity {
         self.bar_h_low = (SeekBar) self.findViewById( R.id.bar_h_low); self.bar_h_high = (SeekBar) self.findViewById( R.id.bar_h_high);
         self.bar_s_low = (SeekBar) self.findViewById( R.id.bar_s_low); self.bar_s_high = (SeekBar) self.findViewById( R.id.bar_s_high);
         self.bar_v_low = (SeekBar) self.findViewById( R.id.bar_v_low); self.bar_v_high = (SeekBar) self.findViewById( R.id.bar_v_high);
+
+        self.img_capture_preview = (ImageView) self.findViewById(R.id.img_capture_preview);
     }
 
     void bind_controls ( ) {
@@ -103,6 +115,8 @@ public class LayoutsNControls extends Activity {
         self.tv.setMovementMethod(new ScrollingMovementMethod()); /*scrolling for text view OCR results*/
 
         self.bind_sliders();
+
+        self.img_capture_preview.setImageURI(Uri.parse(IMG_CAPTURE_PATH));
     }
 
     void bind_sliders() {

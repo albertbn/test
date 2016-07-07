@@ -192,9 +192,11 @@ void ocr_doit ( Mat& im_orig ) {
 
   // tess.SetImage ( (uchar*)im_orig.data, im_orig.cols, im_orig.rows, 1, im_orig.cols );
   // orientation_check(im_orig);
-  if ( im_orig.cols>im_orig.rows )
+  if ( im_orig.cols>im_orig.rows ){
     rot90 ( im_orig, 1 );
-
+    imwrite ( IMG_PATH, im_orig ) ;
+  }
+  outfile << "DISPLAY_IMG" << endl;
 
   Mat im = im_orig.clone();
   Mat grouped = Mat::zeros(im.size(),CV_8UC3);
