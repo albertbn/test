@@ -32,14 +32,15 @@ public class LayoutsNControls extends Activity {
     LayoutsNControls self = this;
 
     //HSV for white is (0,0,255)
-    final int H_MIN=1, S_MIN=1, V_MIN=0;
+    // final int H_MIN=1, S_MIN=1, V_MIN=0;
+    final int H_MIN=1, S_MIN=1, V_MIN=100;
     final int H_MAX=179, S_MAX=100, V_MAX=255;
 
     SeekBar bar_h_low, bar_h_high, bar_s_low, bar_s_high, bar_v_low, bar_v_high;
     TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
     ImageView img_capture_preview;
 
-    RelativeLayout lay_main_wrap_preview, lay_video_preview_wrap, lay_wrap_sliders, lay_text_result;
+    RelativeLayout lay_main_wrap_preview, lay_video_preview_wrap, lay_wrap_sliders, lay_text_result, lay_wrap_text_n_buttons;
     Button btn_capture, btn_flash, btn_calibrate, btn_text_good, btn_text_again;
     boolean is_torch_on=false, is_calibrate=true; /*!DON'T use Boolean, forget the fucking class!*/
     TextView tv;
@@ -62,6 +63,7 @@ public class LayoutsNControls extends Activity {
         self.lay_video_preview_wrap = (RelativeLayout) self.findViewById(R.id.lay_video_preview_wrap);
         self.lay_wrap_sliders = (RelativeLayout) self.findViewById(R.id.lay_wrap_sliders);
         self.lay_text_result = (RelativeLayout) self.findViewById(R.id.lay_text_result);
+        self.lay_wrap_text_n_buttons = (RelativeLayout) self.findViewById(R.id.lay_wrap_text_n_buttons);
 
         self.btn_capture = (Button) self.findViewById(R.id.btn_capture); /*events set in child*/
         self.btn_flash = (Button) self.findViewById(R.id.btn_flash); /*events set in child*/
@@ -87,17 +89,17 @@ public class LayoutsNControls extends Activity {
 
         self.btn_calibrate.setOnClickListener (
 
-            new View.OnClickListener() {
-                @Override
-                public void onClick ( View v ) {
-                    if(self.is_calibrate){
-                        self.is_calibrate=false; self.lay_wrap_sliders.setVisibility(View.GONE);
-                    }
-                    else {
-                        self.is_calibrate=true; self.lay_wrap_sliders.setVisibility(View.VISIBLE);
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick ( View v ) {
+                        if(self.is_calibrate){
+                            self.is_calibrate=false; self.lay_wrap_sliders.setVisibility(View.GONE);
+                        }
+                        else {
+                            self.is_calibrate=true; self.lay_wrap_sliders.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-            }
         );
 
 //      TODO - make different cases for text good and text again...
@@ -172,4 +174,12 @@ public class LayoutsNControls extends Activity {
             // Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
         }
     };
+
+    // toggles the OCR an status text view/preview + buttons visibility - to allow the capture pic taking the whole screen
+    public void onclick_img_capture_preview_toggle (View v) {
+        if(self.lay_wrap_text_n_buttons.getVisibility()==View.GONE)
+            self.lay_wrap_text_n_buttons.setVisibility(View.VISIBLE);
+        else
+            self.lay_wrap_text_n_buttons.setVisibility(View.GONE);
+    }
 }

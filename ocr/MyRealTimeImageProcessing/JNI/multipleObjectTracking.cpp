@@ -13,6 +13,7 @@
 
 #include "static_fields.hpp"
 #include "Object.hpp"
+#include "ocr/tess.hpp" /*used for rotate - rot90, init_ocr*/
 #include "ocr/main.hpp"
 
 const float width_small = 640.0 ;
@@ -215,6 +216,9 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
   else {
     outfile << "checking points4f... not 4 of number " << points4f << endl;
     // TODO rotate
+    if ( mat.cols>mat.rows ){
+      rot90 ( mat, 1 );
+    }
     imwrite ( IMG_PATH, mat ) ;
     outfile << "DISPLAY_IMG" << endl;
   }

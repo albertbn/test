@@ -13,12 +13,10 @@ import org.opencv.android.OpenCVLoader;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Surface;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -55,8 +53,8 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     };
 
     static void set_camera_display_orientation ( Activity activity,
-                                               int cameraId,
-                                               android.hardware.Camera camera
+                                                 int cameraId,
+                                                 android.hardware.Camera camera
     ) {
         CameraInfo info = new CameraInfo();
         Camera.getCameraInfo(cameraId, info);
@@ -92,7 +90,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
 
         if ( !self.has_camera() ) {
             Toast toast =
-                Toast.makeText(self.context, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
+                    Toast.makeText(self.context, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
             toast.show();
             self.finish();
         }
@@ -136,7 +134,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         SurfaceView surface_cam_view = new SurfaceView(this);
         SurfaceHolder surface_cam_view_holder = surface_cam_view.getHolder();
         self.cam_preview = new CameraPreview ( self.PREVIEW_SIZE_HEIGHT, self.PREVIEW_SIZE_WIDTH, self.iv_cam_preview, self.mCamera, surface_cam_view_holder,
-                                               self.bar_h_low, self.bar_h_high, self.bar_s_low, self.bar_s_high, self.bar_v_low, self.bar_v_high);
+                self.bar_h_low, self.bar_h_high, self.bar_s_low, self.bar_s_high, self.bar_v_low, self.bar_v_high);
 
         surface_cam_view_holder.addCallback(self.cam_preview);
         surface_cam_view_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -187,19 +185,19 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
 
     //set/used from onCreate - torch light toggle
     final OnClickListener flash_listener = new OnClickListener() {
-            @Override
-            public void onClick ( View v ) {
-                Camera.Parameters params = self.mCamera.getParameters();
-                if ( self.is_torch_on ) {
-                    self.is_torch_on=false;
-                    params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                }
-                else {
-                    self.is_torch_on=true;
-                    params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                }
-                self.mCamera.setParameters(params);
+        @Override
+        public void onClick ( View v ) {
+            Camera.Parameters params = self.mCamera.getParameters();
+            if ( self.is_torch_on ) {
+                self.is_torch_on=false;
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             }
+            else {
+                self.is_torch_on=true;
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            }
+            self.mCamera.setParameters(params);
+        }
     };
 
     //set/used from onCreate - picture/photo for OCR
@@ -212,31 +210,31 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
 
     // credits: https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Preview/src/com/commonsware/android/camera/PreviewDemo.java
     Camera.Size get_best_preview_size (
-                                   int width,
-                                   int height,
-                                   Camera.Parameters parameters
-                                   ) {
-    Camera.Size result=null;
+            int width,
+            int height,
+            Camera.Parameters parameters
+    ) {
+        Camera.Size result=null;
 
-    for ( Camera.Size size : parameters.getSupportedPictureSizes() ) {
+        for ( Camera.Size size : parameters.getSupportedPictureSizes() ) {
 
-        if ( size.width<=width && size.height<=height ) {
-        if (result==null) {
-          result=size;
+            if ( size.width<=width && size.height<=height ) {
+                if (result==null) {
+                    result=size;
+                }
+                else {
+                    int resultArea=result.width*result.height;
+                    int newArea=size.width*size.height;
+
+                    if ( newArea>resultArea ) {
+                        result=size;
+                    }
+                }
+            }
         }
-        else {
-          int resultArea=result.width*result.height;
-          int newArea=size.width*size.height;
 
-          if ( newArea>resultArea ) {
-            result=size;
-          }
-        }
-      }
+        return result;
     }
-
-    return result;
-  }
 
     //callback - trace - from captureListener > onClick > cam.takePicture
     final PictureCallback get_picture_callback ( ) {
@@ -274,6 +272,6 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
         return true; /*fuck you*/
     }
 
-    //========= virtual methods overridden by children =========//
+    //========= virtual methods overridden by children - here for clarity =========//
     void process_im_n_ocr( final byte[] data ) { /* virtual, overridden by child */ }
 }
