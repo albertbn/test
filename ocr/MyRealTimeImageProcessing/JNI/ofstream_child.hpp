@@ -49,6 +49,7 @@ class ofstream_child {
 public:
   ofstream_child ( ) : is_jni_inited_bit(false) { }
 
+  // credits: http://stackoverflow.com/questions/8415890/c-chaining-of-the-operator-for-stdcout-like-usage
   template <typename T>
   ofstream_child& operator<<(const T& a) {
 
