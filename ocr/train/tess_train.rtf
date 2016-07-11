@@ -339,6 +339,13 @@ tesseract -l heb img/smc.jpg test config;
 \f1\fs22 open -a TextEdit test.txt\
 
 \f0\fs28 \
+//in heb/miriam1\
+tesseract -l heb+eng 
+\f2\fs24 \cf4 \cb0 ../../img-iphone-hq/siti_market.jpg 
+\f0\fs28 \cf0 \cb1 test; 
+\f1\fs22 open -e test.txt
+\f0\fs28 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
 
 \f1\fs22 \cf0 open -a TextEdit test.txt\

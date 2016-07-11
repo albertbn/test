@@ -25,6 +25,7 @@ if do_train:
         'heb.miriam.exp0.tiff', 'heb.courierNew.exp0.tiff', 'heb.arial.exp0.tiff', 'heb.david.exp0.tiff'
         ,'heb.kadosh.exp0.jpg', 'heb.kadosh.exp1.jpg', 'heb.kadosh.exp2.jpg'
         ,'heb.half_free.exp0.jpg', 'heb.supersal.exp0.jpg', 'heb.lahmanina.exp0.jpg'
+        ,'heb.ohad.exp0.tiff'
     ]
 
     r_ext = re.compile('.(jpe?g|tiff?|png)', re.I)
@@ -64,12 +65,12 @@ if do_train:
 
     print
 
-# finally do tess for each file in the img dir and open results...
-imgs = [f for f in listdir(imgs_path) if isfile(join(imgs_path, f))]
-# print imgs
+# # finally do tess for each file in the img dir and open results...
+# imgs = [f for f in listdir(imgs_path) if isfile(join(imgs_path, f))]
+# # print imgs
 
-for img in imgs:
-    # print 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt')
-    os.system ( 'tesseract -l heb+eng '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
+# for img in imgs:
+#     # print 'tesseract -l heb '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt')
+#     os.system ( 'tesseract -l heb+eng '+join(imgs_path, img)+' '+join(imgs_path, 'out/'+img) +'; open -e ' + join(imgs_path, 'out/'+img+'.txt') )
 
-print
+# print
