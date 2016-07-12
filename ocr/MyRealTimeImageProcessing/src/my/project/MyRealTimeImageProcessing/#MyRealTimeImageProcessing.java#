@@ -30,7 +30,7 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
     final int PREVIEW_SIZE_WIDTH = 480, PREVIEW_SIZE_HEIGHT = 640, PHOTO_WIDTH = 2048, PHOTO_HEIGHT = 1536;
     final static int PHOTO_QUALITY_PERCENT = 100;
 
-    Camera mCamera;
+    // Camera mCamera;
     // CameraPreview cam_preview; - moved to layouts
     PictureCallback m_picture_callback;
     Context context;

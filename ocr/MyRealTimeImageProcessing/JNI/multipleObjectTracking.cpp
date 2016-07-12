@@ -226,7 +226,7 @@ void final_magic_crop_rotate ( Mat& mat, vector<Point>& points4 ) {
 
 void test_ocr_pic_hardcoded ( ) {
 
-  outfile << "trying to read: " << IMG_PATH << endl;
+  // outfile << "trying to read: " << IMG_PATH << endl;
 
   Mat mat_pic_hardcoded_smc = imread ( IMG_PATH, 0 ) ;
   ocr_doit ( mat_pic_hardcoded_smc );

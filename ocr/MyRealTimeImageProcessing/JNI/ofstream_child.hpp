@@ -16,36 +16,6 @@
 
 class ofstream_child {
 
-  // template<typename T> friend std::ofstream& operator<<(ofstream_child& ofsc, const T& op){
-
-  //   if ( ofsc.is_jni_inited() ) {
-
-  //     // jstring jstr = ofsc.get_env()->NewStringUTF ( ((std::string)op).c_str() );
-  //     jstring jstr = ofsc.get_env()->NewStringUTF ( SSTR(op).c_str() );
-
-  //     // send text message to java
-  //     ofsc.get_env()->CallVoidMethod ( *(ofsc.get_jobj()), *(ofsc.get_void_method()), jstr );
-  //   }
-
-  //   ofsc.get_ofs() << op;
-  //   return ofsc.get_ofs();
-  // }
-
-  // std::ofstream& operator<<( std::ofstream& (*pf) (std::ofstream&) ){
-
-  //   if ( this->is_jni_inited() ) {
-
-  //     // jstring jstr = ofsc.get_env()->NewStringUTF ( ((std::string)op).c_str() );
-  //     jstring jstr = this->get_env()->NewStringUTF ( SSTR(pf).c_str() );
-
-  //     // send text message to java
-  //     this->get_env()->CallVoidMethod ( *(this->get_jobj()), *(this->get_void_method()), jstr );
-  //   }
-
-  //   this->get_ofs() << pf;
-  //   return this->get_ofs();
-  // }
-
 public:
   ofstream_child ( ) : is_jni_inited_bit(false) { }
 
@@ -89,8 +59,9 @@ public:
   std::ofstream& get_ofs(){ return this->ofs; }
 
   bool is_jni_inited() { return this->is_jni_inited_bit; }
-  JNIEnv* get_env () { return this->env; };
-  jobject* get_jobj () { return &(this->jobj); };
+  JNIEnv* get_env () { return this->env; }
+  void set_env ( JNIEnv* _env ) { this->env= _env;  }
+  jobject* get_jobj () { return &(this->jobj); }
   jmethodID* get_void_method () { return &(this->void_method); }
 
   // destruct or surrender

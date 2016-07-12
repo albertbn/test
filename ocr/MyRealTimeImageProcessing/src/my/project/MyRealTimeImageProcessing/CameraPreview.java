@@ -95,6 +95,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
     public void onPause ( ) {
         this.mCamera.stopPreview ( );
+        // this.mHolder.removeCallback(this);
     }
 
     @Override

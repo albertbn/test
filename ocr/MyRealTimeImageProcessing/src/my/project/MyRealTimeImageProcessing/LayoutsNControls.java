@@ -3,6 +3,8 @@
 //
 package my.project.MyRealTimeImageProcessing;
 
+import android.hardware.Camera;
+
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +38,8 @@ public class LayoutsNControls extends Activity {
     final int H_MIN=1, S_MIN=1, V_MIN=100;
     final int H_MAX=179, S_MAX=100, V_MAX=255;
 
+    Camera mCamera;
+    CameraPreview cam_preview;
     SeekBar bar_h_low, bar_h_high, bar_s_low, bar_s_high, bar_v_low, bar_v_high;
     TextView h_low_text, h_high_text, s_low_text, s_high_text, v_low_text, v_high_text;
     ImageView img_capture_preview;
@@ -109,6 +113,7 @@ public class LayoutsNControls extends Activity {
                 self.lay_main_wrap_preview.setVisibility(View.VISIBLE);
                 if(self.is_calibrate) self.lay_wrap_sliders.setVisibility(View.VISIBLE);
                 self.lay_text_result.setVisibility(View.GONE);
+                self.cam_preview.refreshCamera(self.mCamera);
             }
         };
         self.btn_text_good.setOnClickListener(listen_text);

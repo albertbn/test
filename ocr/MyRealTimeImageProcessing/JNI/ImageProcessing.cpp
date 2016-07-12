@@ -88,7 +88,11 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*DONE
                 ,jlong matAddr
  ) {
 
-  if ( !outfile.is_jni_inited() || !outfile_ocr.is_jni_inited() ) {
+  // if ( !outfile.is_jni_inited() || !outfile_ocr.is_jni_inited() ) {
+  if ( 1==1 ) {
+
+    if(outfile.is_jni_inited()) outfile.close();
+    if(outfile_ocr.is_jni_inited()) outfile_ocr.close();
 
     // jstring jstr = env->NewStringUTF("This string comes from JNI with a fuck");
     // First get the class that contains the method you need to call
@@ -101,6 +105,9 @@ Java_my_project_MyRealTimeImageProcessing_ImgProcessOcr_saveMiddleClass ( /*DONE
     outfile.init_jni ( env, void_method, jobj );
     outfile_ocr.init_jni ( env, void_method, jobj );
   }
+  // else {
+  //   outfile.set_env(env); outfile_ocr.set_env(env);
+  // }
 
   // =====
 
