@@ -46,7 +46,7 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
     byte[] frame_data_bytes = null;
     int imageFormat, preview_size_width, preview_size_height, width, height;
     Parameters parameters;
-    Boolean is_processing = false;
+    boolean is_processing = false;
 
     Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -93,13 +93,28 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         // }
     }
 
+    void destroy_bitmap(){
+
+        if ( self.bitmap!=null ) {
+            self.bitmap.recycle();
+            self.bitmap=null;
+            self.set_bitmap();
+        }
+    }
+
     public void onPause ( ) {
+
         this.mCamera.stopPreview ( );
-        // this.mHolder.removeCallback(this);
+        this.mHolder.removeCallback(this);
+        self.is_processing=false;
+        self.destroy_bitmap();
     }
 
     @Override
     public void surfaceChanged ( SurfaceHolder arg0, int arg1, int arg2, int arg3 ) {
+
+        self.is_processing=false;
+        self.destroy_bitmap();
 
         this.parameters = this.mCamera.getParameters ( ) ;
         this.parameters.setPreviewSize ( this.preview_size_width, this.preview_size_height );
@@ -107,6 +122,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         this.imageFormat = this.parameters.getPreviewFormat();
         this.mCamera.setParameters(this.parameters);
         this.mCamera.startPreview();
+
+        // self.refreshCamera(self.mCamera);
     }
 
     @Override
@@ -114,8 +131,13 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
         try {
             // If did not set the SurfaceHolder, the preview area will be black.
+            self.is_processing=false;
+            self.destroy_bitmap();
+
             this.mCamera.setPreviewDisplay(arg0);
             this.mCamera.setPreviewCallback(this);
+
+            // self.refreshCamera(self.mCamera);
         }
         catch ( IOException e ) {
             this.mCamera.stopPreview();
@@ -133,6 +155,9 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
             this.mCamera.setPreviewCallback(null);
             this.mCamera.release();
             this.mCamera = null;
+
+            self.is_processing=false;
+            self.destroy_bitmap();
         }
         catch ( Exception ex ) { }
     }
@@ -141,6 +166,8 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
 
         if ( this.mHolder.getSurface()==null ) {
             // preview surface does not exist
+            self.is_processing=false;
+            self.destroy_bitmap();
             return;
         }
         // stop preview before making changes
@@ -155,8 +182,15 @@ public class CameraPreview implements SurfaceHolder.Callback, Camera.PreviewCall
         this.set_mCamera ( camera );
 
         try {
+
+            self.is_processing=false;
+            self.destroy_bitmap();
+
             this.mCamera.setPreviewDisplay ( this.mHolder );
             this.mCamera.startPreview();
+
+            self.mHolder.addCallback(self);
+
         } catch ( Exception e ) {
             Log.d("evdroid", "Error starting camera preview: " + e.getMessage());
         }

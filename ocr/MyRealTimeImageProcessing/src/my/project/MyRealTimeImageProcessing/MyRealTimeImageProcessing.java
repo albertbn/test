@@ -118,6 +118,9 @@ public class MyRealTimeImageProcessing extends LayoutsNControls {
             self.m_picture_callback = self.get_picture_callback();
             self.cam_preview.refreshCamera(self.mCamera);
         }
+        else{
+            self.cam_preview.refreshCamera(self.mCamera);
+        }
     }
 
     void on_create_bindings ( ) {
