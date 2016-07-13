@@ -71,16 +71,23 @@ OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=on
 include $(OPENCV_PACKAGE_DIR)/native/jni/OpenCV.mk
 
-LOCAL_SRC_FILES  := jni_java_native_bridge.cpp
-LOCAL_SRC_FILES  += converters.cpp
-LOCAL_SRC_FILES  += ofstream_child.cpp
-LOCAL_SRC_FILES  += multipleObjectTracking.cpp
-LOCAL_SRC_FILES  += ocr/db_scan.cc
-LOCAL_SRC_FILES  += ocr/main.cc
-LOCAL_SRC_FILES  += ocr/tess.cc
+LOCAL_SRC_FILES  := diordve_bonebou_preNocr.cc
+LOCAL_SRC_FILES  += util/colour/Object.cpp
+LOCAL_SRC_FILES  += util/colour/multipleObjectTracking.cpp
+LOCAL_SRC_FILES  += util/angle.cc
+LOCAL_SRC_FILES  += util/close_center.cc
+LOCAL_SRC_FILES  += util/cluster.cc
+LOCAL_SRC_FILES  += util/common.cc
+LOCAL_SRC_FILES  += util/main_geometry.cc
+LOCAL_SRC_FILES  += util/point.cc
+LOCAL_SRC_FILES  += util/rect_poly.cc
+
+LOCAL_SRC_FILES  += util/ocr/tess.cc
+LOCAL_SRC_FILES  += util/ocr/db_scan.cc
+LOCAL_SRC_FILES  += util/ocr/main.cc
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
-LOCAL_MODULE     := jni_java_native_bridge
+LOCAL_MODULE     := preNocr
 
 # -lz from libpngt, -ljnigraphics from libtess
 LOCAL_LDLIBS    += -llog -ldl -lz -ljnigraphics

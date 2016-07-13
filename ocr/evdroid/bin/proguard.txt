@@ -1,3 +1,6 @@
-# view AndroidManifest.xml #generated:22
--keep class diordve.bonebou.MainActivity { <init>(...); }
+# view AndroidManifest.xml #generated:15
+-keep class bonebou.diordve.ImgProcessOcr { <init>(...); }
+
+# onClick res/layout/main.xml #generated:166
+-keepclassmembers class * { *** onclick_img_capture_preview_toggle(...); }
 

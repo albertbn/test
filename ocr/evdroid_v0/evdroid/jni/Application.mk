@@ -1,4 +1,4 @@
 APP_STL := gnustl_static
 APP_CPPFLAGS := -frtti -fexceptions
 APP_ABI := armeabi-v7a
-APP_MODULES := jni_java_native_bridge
+APP_PLATFORM := android-8
