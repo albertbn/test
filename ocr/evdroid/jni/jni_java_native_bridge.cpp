@@ -61,27 +61,31 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
   for_each ( contours_rotate.begin(), contours_rotate.end(), fn_transform_vec_point );
 }
 
+bool is_ocr_inited = false;
 extern "C"
 jboolean
-Java_bonebou_diordve_ImgProcessOcr_initOcr (
+Java_bonebou_diordve_EvdroidActivity_initOcr (
              JNIEnv* env, jobject
              ,jstring jroot_folder_path
 
                                             ) {
   path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
 
-  init_ocr(); /*in ocr/tess.[hc]pp*/
+  if ( !is_ocr_inited ) {
+    is_ocr_inited = true;
+    init_ocr(); /*in ocr/tess.[hc]pp*/
+  }
 
   env->ReleaseStringUTFChars(jroot_folder_path, path_sd_card.c_str());
   return false;
 }
 
+// bonebou.diordve.imgProcessOCR.ImgProcessOCRFragment.saveMiddleClass
 // 2016-06-14, this folk processes the photo taken, crops, ocr etc. the crop is based on the each-frame-colour-detected contours
 // credits for c2java: http://stackoverflow.com/questions/5198105/calling-a-java-method-from-c-in-android
 extern "C"
 jboolean
-Java_bonebou_diordve_ImgProcessOcr_saveMiddleClass ( /*DONE - confirm this works*/
-// Java_bonebou_diordve_MyRealTimeImageProcessing_saveMiddleClass (
+Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_saveMiddleClass (
                 JNIEnv* env, jobject jobj
                 ,jstring jroot_folder_path
                 ,jstring jimg_unique_no_ext
@@ -96,7 +100,7 @@ Java_bonebou_diordve_ImgProcessOcr_saveMiddleClass ( /*DONE - confirm this works
 
     // jstring jstr = env->NewStringUTF("This string comes from JNI with a fuck");
     // First get the class that contains the method you need to call
-    jclass clazz = env->FindClass("my/project/MyRealTimeImageProcessing/ImgProcessOcr");
+    jclass clazz = env->FindClass("bonebou/diordve/imgProcessOCR/ImgProcessOCRFragment");
     // Get the method that you want to call
     jmethodID void_method = env->GetMethodID(clazz, "messageMe", "(Ljava/lang/String;)V");
     // Call the method on the object
@@ -145,7 +149,7 @@ Java_bonebou_diordve_ImgProcessOcr_saveMiddleClass ( /*DONE - confirm this works
 // http://stackoverflow.com/questions/22319168/opencv-java-code-pass-point-object-to-native-codec
 extern "C"
 jboolean
-Java_bonebou_diordve_cameraPreview_CameraPreview_colourDetect (
+Java_bonebou_diordve_preview_CamPreviewFrameCallback_colourDetect (
                 JNIEnv* env, jobject,
                 jint width, jint height,
                 jbyteArray yuv, jintArray bgra,
