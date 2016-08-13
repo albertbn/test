@@ -1,9 +1,11 @@
 #ifdef ANDROID
 #include <baseapi.h>
 #include <genericvector.h>
+#include <ocrclass.h> // ETEXT_DESC
 #else
 #include <tesseract/baseapi.h>
 #include <tesseract/genericvector.h>
+#include <tesseract/ocrclass.h>
 #endif // ANDROID
 
 #include "tess.hpp"
@@ -73,11 +75,22 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
 
+  ETEXT_DESC monitor;
+  monitor.cancel = NULL;
+  monitor.cancel_this = NULL;
+  monitor.set_deadline_msecs ( 1000 /*ms*/ );
+
+  tess.Recognize( &monitor );
+
   // Get the text
   char* out = tess.GetUTF8Text();
   if ( icount<1 ) outfile << "CCLLEEAARR";
   outfile_ocr << out;
   delete []out;
+
+  // TEMP
+  // outfile_ocr << "fuck u tess";
+
   cropped.release();
   // tess.Clear();
   // tess.End();
