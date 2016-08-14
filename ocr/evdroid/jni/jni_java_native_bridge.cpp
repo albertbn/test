@@ -100,7 +100,6 @@ Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_saveMiddleClass (
 
     envJNI = env;
     jobjJNI = jobj;
-
     if(outfile.is_jni_inited()) outfile.close();
     if(outfile_ocr.is_jni_inited()) outfile_ocr.close();
 
