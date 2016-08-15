@@ -1,4 +1,3 @@
-
 // /**
 //  * Possible modes for page layout analysis. These *must* be kept in order
 //  * of decreasing amount of layout analysis to be done, except for OSD_ONLY,
@@ -26,6 +25,8 @@
 //   PSM_COUNT           ///< Number of enum entries.
 // };
 
+#include <stdio.h>
+#include <unistd.h>
 #include <opencv2/opencv.hpp>
 #include "tess.hpp"
 #include "db_scan.hpp"
@@ -266,11 +267,45 @@ void ocr_doit ( Mat& im_orig ) {
   outfile << "processing OCR text..." << endl;
   outfile << "..." << endl;
   outfile << "..." << endl;
+  outfile << "forking to new process to loop parts..." << endl;
+  outfile << "wait n exit" << endl;
 
-  for ( int i=0; i<(int)rect_lines.size(); ++i ) {
-    // std::cout << "rect:\t" << rect_lines[i] << std::endl;
-    if(7==7) crop_b_tess ( im_orig, rect_lines[i], i );
-    // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
+  // if ( outfile.is_jni_inited() ) outfile.close ( ); //???
+
+  int writepipe[2];
+  pipe ( writepipe );
+  char buf[1024];
+  const char* cp;
+
+  pid_t pid = fork ( );
+
+  if ( pid == 0 ) {
+    // child process
+    close ( writepipe[0] );
+    cp = string("YES, FUCK U\n").c_str();
+    write(writepipe[1],cp,strlen(cp)+1);
+    delete[] cp;
+    close(writepipe[1]);
+
+    for ( int i=0; i<(int)rect_lines.size(); ++i ) {
+      // std::cout << "rect:\t" << rect_lines[i] << std::endl;
+      if ( 7==7 ) crop_b_tess ( im_orig, rect_lines[i], i, writepipe );
+      // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
+    }
+    exit(0);
+  }
+  else if ( pid > 0 ) {
+    // parent process
+    close ( writepipe[1] );
+    read ( writepipe[0],buf,sizeof(buf) );
+    outfile << "\nACK RECEIVED " << buf;
+    close(writepipe[0]);
+
+    outfile << "\nmain process exited" << buf;
+  }
+  else {
+    // fork failed
+    outfile << "fork() failed!\n";
   }
 
   // for ( int i=0; i<(int)boxes.size(); ++i ) {

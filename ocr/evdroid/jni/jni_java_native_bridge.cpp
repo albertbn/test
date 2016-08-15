@@ -18,6 +18,9 @@
 using namespace std;
 using namespace cv;
 
+JNIEnv* envJNI;
+jobject jobjJNI;
+
 // OfstreamChild ofstreamchild;
 // ofstream outfile;
 ofstream_child outfile;
@@ -94,6 +97,9 @@ Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_saveMiddleClass (
 
   // if ( !outfile.is_jni_inited() || !outfile_ocr.is_jni_inited() ) {
   if ( 1==1 ) {
+
+    envJNI = env;
+    jobjJNI = jobj;
 
     if(outfile.is_jni_inited()) outfile.close();
     if(outfile_ocr.is_jni_inited()) outfile_ocr.close();

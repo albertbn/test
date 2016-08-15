@@ -8,6 +8,7 @@
 #include <tesseract/ocrclass.h>
 #endif // ANDROID
 
+#include <unistd.h>
 #include "tess.hpp"
 #include "../static_fields.hpp"
 // #include "../common.hpp"
@@ -31,20 +32,20 @@ inline string to_string ( const T& t ) {
 void init_ocr ( ) {
 
   GenericVector<STRING> vars_vec;
-////vars_vec.push_back("load_system_dawg");
+  ////vars_vec.push_back("load_system_dawg");
   // vars_vec.push_back("load_freq_dawg");
-////vars_vec.push_back("load_punc_dawg");
-////vars_vec.push_back("load_number_dawg");
+  ////vars_vec.push_back("load_punc_dawg");
+  ////vars_vec.push_back("load_number_dawg");
   // vars_vec.push_back("load_unambig_dawg");
   // vars_vec.push_back("load_bigram_dawg");
   // vars_vec.push_back("load_fixed_length_dawgs");
   // vars_vec.push_back("user_patterns_suffix");
 
   GenericVector<STRING> vars_values;
-////vars_values.push_back("F");
+  ////vars_values.push_back("F");
   // vars_values.push_back("F");
-//// vars_values.push_back("F");
-//// vars_values.push_back("F");
+  //// vars_values.push_back("F");
+  //// vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
   // vars_values.push_back("F");
@@ -63,7 +64,7 @@ void init_ocr ( ) {
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 
-void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
+void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int writepipe[] ) {
 
 
   // init_ocr();
@@ -75,21 +76,24 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount ) {
   // Pass it to Tesseract API
   tess.SetImage ( (uchar*)cropped.data, cropped.cols, cropped.rows, 1, cropped.cols );
 
-  ETEXT_DESC monitor;
-  monitor.cancel = NULL;
-  monitor.cancel_this = NULL;
-  monitor.set_deadline_msecs ( 1000 /*ms*/ );
-
-  tess.Recognize( &monitor );
-
   // Get the text
   char* out = tess.GetUTF8Text();
-  if ( icount<1 ) outfile << "CCLLEEAARR";
-  outfile_ocr << out;
-  delete []out;
 
-  // TEMP
-  // outfile_ocr << "fuck u tess";
+  // if ( icount<1 ) outfile << "CCLLEEAARR";
+  // outfile_ocr << out;
+
+  if ( icount<1 ){
+
+      close ( writepipe[0] );
+      write ( writepipe[1], "CCLLEEAARR", strlen("CCLLEEAARR")+1 );
+      close ( writepipe[1] );
+  }
+
+  close ( writepipe[0] );
+  write ( writepipe[1], out, strlen(out)+1 );
+  close ( writepipe[1] );
+
+  delete []out;
 
   cropped.release();
   // tess.Clear();
@@ -115,16 +119,16 @@ void rot90 ( cv::Mat &matImage, int rotflag ) {
 void orientation_check ( Mat& mat ) {
 
   tesseract::PageIterator* it =  tess.AnalyseLayout();
-    it->Orientation(&orientation, &direction, &order, &deskew_angle);
-    printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
+  it->Orientation(&orientation, &direction, &order, &deskew_angle);
+  printf("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
          "Deskew angle: %.4f\n",
          orientation, direction, order, deskew_angle);
 
-    if( orientation==3 ){
-      rot90(mat, 1);
-    } else if(orientation==2){
-      rot90(mat,3);
-    } else if(orientation==1){
-      rot90(mat,2);
-    }
+  if( orientation==3 ){
+    rot90(mat, 1);
+  } else if(orientation==2){
+    rot90(mat,3);
+  } else if(orientation==1){
+    rot90(mat,2);
+  }
 }

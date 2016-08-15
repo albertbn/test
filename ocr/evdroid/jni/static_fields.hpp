@@ -8,12 +8,16 @@
 
 #ifndef SKIP_INCLUDES
 // includes here
+#include <jni.h>
 #include <opencv2/core/core.hpp>
 #include "ofstream_child.hpp"
 #endif // SKIP_INCLUDES
 
 using namespace cv;
 using namespace std;
+
+extern JNIEnv* envJNI;
+extern jobject jobjJNI;
 
 // extern ofstream outfile;
 extern ofstream_child outfile;
