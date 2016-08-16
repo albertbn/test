@@ -64,7 +64,7 @@ void init_ocr ( ) {
   // tess.SetPageSegMode ( tesseract::PSM_AUTO_OSD ); /*further down change back the page mode to text detection*/
 }
 
-void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int writepipe[] ) {
+void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int fd[] ) {
 
 
   // init_ocr();
@@ -84,18 +84,15 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int writepipe[] ) {
 
   if ( icount<1 ){
 
-      close ( writepipe[0] );
-      write ( writepipe[1], "CCLLEEAARR", strlen("CCLLEEAARR")+1 );
-      close ( writepipe[1] );
+      write ( fd[1], "CCLLEEAARR", sizeof("CCLLEEAARR") );
   }
 
-  close ( writepipe[0] );
-  write ( writepipe[1], out, strlen(out)+1 );
-  close ( writepipe[1] );
+  write ( fd[1], out, strlen(out)+1 );
 
-  delete []out;
+  delete[] out;
 
   cropped.release();
+
   // tess.Clear();
   // tess.End();
 }

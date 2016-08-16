@@ -1,33 +1,8 @@
-// /**
-//  * Possible modes for page layout analysis. These *must* be kept in order
-//  * of decreasing amount of layout analysis to be done, except for OSD_ONLY,
-//  * so that the inequality test macros below work.
-// */
-// enum PageSegMode {
-//   PSM_OSD_ONLY,       ///< Orientation and script detection only.
-//   PSM_AUTO_OSD,       ///< Automatic page segmentation with orientation and
-//                       ///< script detection. (OSD)
-//   PSM_AUTO_ONLY,      ///< Automatic page segmentation, but no OSD, or OCR.
-//   PSM_AUTO,           ///< Fully automatic page segmentation, but no OSD.
-//   PSM_SINGLE_COLUMN,  ///< Assume a single column of text of variable sizes.
-//   PSM_SINGLE_BLOCK_VERT_TEXT,  ///< Assume a single uniform block of vertically
-//                                ///< aligned text.
-//   PSM_SINGLE_BLOCK,   ///< Assume a single uniform block of text. (Default.)
-//   PSM_SINGLE_LINE,    ///< Treat the image as a single text line.
-//   PSM_SINGLE_WORD,    ///< Treat the image as a single word.
-//   PSM_CIRCLE_WORD,    ///< Treat the image as a single word in a circle.
-//   PSM_SINGLE_CHAR,    ///< Treat the image as a single character.
-//   PSM_SPARSE_TEXT,    ///< Find as much text as possible in no particular order.
-//   PSM_SPARSE_TEXT_OSD,  ///< Sparse text with orientation and script det.
-//   PSM_RAW_LINE,       ///< Treat the image as a single text line, bypassing
-//                       ///< hacks that are Tesseract-specific.
-
-//   PSM_COUNT           ///< Number of enum entries.
-// };
 
 #include <stdio.h>
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
+#include <sys/ioctl.h>
 #include "tess.hpp"
 #include "db_scan.hpp"
 #include "main.hpp"
@@ -268,40 +243,65 @@ void ocr_doit ( Mat& im_orig ) {
   outfile << "..." << endl;
   outfile << "..." << endl;
   outfile << "forking to new process to loop parts..." << endl;
-  outfile << "wait n exit" << endl;
+  outfile << "fock them all..................." << endl;
 
-  // if ( outfile.is_jni_inited() ) outfile.close ( ); //???
-
-  int writepipe[2];
-  pipe ( writepipe );
-  char buf[1024];
-  const char* cp;
+  // create pipe pair
+  int fd[2];
+  pipe(fd);
 
   pid_t pid = fork ( );
 
   if ( pid == 0 ) {
+
     // child process
-    close ( writepipe[0] );
-    cp = string("YES, FUCK U\n").c_str();
-    write(writepipe[1],cp,strlen(cp)+1);
-    delete[] cp;
-    close(writepipe[1]);
+    close ( fd[0] );
 
     for ( int i=0; i<(int)rect_lines.size(); ++i ) {
       // std::cout << "rect:\t" << rect_lines[i] << std::endl;
-      if ( 7==7 ) crop_b_tess ( im_orig, rect_lines[i], i, writepipe );
+      if ( 7==7 ) crop_b_tess ( im_orig, rect_lines[i], i, fd );
       // if(7==7 && rect_lines[i].height<1120) crop_b_tess ( im_orig, rect_lines[i] );
     }
+
+    close(fd[1]);
     exit(0);
   }
   else if ( pid > 0 ) {
-    // parent process
-    close ( writepipe[1] );
-    read ( writepipe[0],buf,sizeof(buf) );
-    outfile << "\nACK RECEIVED " << buf;
-    close(writepipe[0]);
 
-    outfile << "\nmain process exited" << buf;
+    // parent process
+    char* buff = NULL;
+    char byte = 0;
+    int count = 0;
+    close ( fd[1] );
+
+    // start
+    // read at least one byte from the pipe.
+    while ( read(fd[0], &byte, 1) == 1 )
+    {
+        if ( ioctl(fd[0], FIONREAD, &count) != -1 )
+        {
+            // allocate space for the byte we just read + the rest
+            //  of whatever is on the pipe.
+            buff = (char*) malloc(count+1);
+            buff[0] = byte;
+            if ( read(fd[0], buff+1, count) == count )
+            if ( std::string(buff)=="CCLLEEAARR" ) {
+                outfile << buff;
+            } else {
+                outfile_ocr << buff; /*! write to ocr */
+            }
+
+            free(buff);
+        }
+        else
+        {   // could not read in-size
+            outfile << "Failed to read input size." << endl;
+        }
+    }
+    // end
+
+    close(fd[0]);
+
+    outfile << "main process exited";
   }
   else {
     // fork failed
