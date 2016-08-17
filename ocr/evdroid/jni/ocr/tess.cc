@@ -84,7 +84,7 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int fd[] ) {
 
   if ( icount<1 ){
 
-      write ( fd[1], "CCLLEEAARR", sizeof("CCLLEEAARR") );
+    //   write ( fd[1], "CCLLEEAARR", sizeof("CCLLEEAARR") );
   }
 
   write ( fd[1], out, strlen(out)+1 );

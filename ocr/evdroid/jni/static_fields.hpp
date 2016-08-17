@@ -19,6 +19,8 @@ using namespace std;
 extern JNIEnv* envJNI;
 extern jobject jobjJNI;
 
+extern bool isOCRprocessing;
+
 // extern ofstream outfile;
 extern ofstream_child outfile;
 // extern ofstream outfile_ocr;
@@ -31,4 +33,3 @@ extern vector < vector<Point> > contours_poly2;
 
 #endif // __cplusplus
 #endif /*STATIC_FIELDS*/
-

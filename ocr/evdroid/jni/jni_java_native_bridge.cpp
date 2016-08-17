@@ -21,6 +21,8 @@ using namespace cv;
 JNIEnv* envJNI;
 jobject jobjJNI;
 
+bool isOCRprocessing = false;
+
 // OfstreamChild ofstreamchild;
 // ofstream outfile;
 ofstream_child outfile;
@@ -64,6 +66,14 @@ void rotate_contours_90 ( vector < vector<Point> >& contours_rotate ) {
   for_each ( contours_rotate.begin(), contours_rotate.end(), fn_transform_vec_point );
 }
 
+extern "C"
+jboolean
+Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_terminateOcrRecognition ( JNIEnv*, jobject ) {
+
+    isOCRprocessing = false; /* mark termination of OCR processing - used inside the ocr code */
+    return false;
+}
+
 bool is_ocr_inited = false;
 extern "C"
 jboolean
@@ -93,7 +103,9 @@ Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_saveMiddleClass (
                 ,jstring jroot_folder_path
                 ,jstring jimg_unique_no_ext
                 ,jlong matAddr
-                                                     ) {
+ ) {
+
+  isOCRprocessing = true; /* mark start of OCR processing - used inside the ocr code */
 
   // if ( !outfile.is_jni_inited() || !outfile_ocr.is_jni_inited() ) {
   if ( 1==1 ) {

@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
 #include <opencv2/opencv.hpp>
 #include <sys/ioctl.h>
 #include "tess.hpp"
@@ -240,10 +241,7 @@ void ocr_doit ( Mat& im_orig ) {
   outfile << "CCLLEEAARR";
   outfile << "split into " << rect_lines.size() << " paragraph/s " << endl;
   outfile << "processing OCR text..." << endl;
-  outfile << "..." << endl;
-  outfile << "..." << endl;
-  outfile << "forking to new process to loop parts..." << endl;
-  outfile << "fock them all..................." << endl;
+  outfile << "... desparate ..." << endl;
 
   // create pipe pair
   int fd[2];
@@ -275,35 +273,50 @@ void ocr_doit ( Mat& im_orig ) {
 
     // start
     // read at least one byte from the pipe.
-    while ( read(fd[0], &byte, 1) == 1 )
-    {
-        if ( ioctl(fd[0], FIONREAD, &count) != -1 )
-        {
+    while ( (read(fd[0], &byte, 1)==1) && isOCRprocessing ) {
+
+        if ( (ioctl(fd[0], FIONREAD, &count)!=-1) && isOCRprocessing ) {
+
             // allocate space for the byte we just read + the rest
             //  of whatever is on the pipe.
             buff = (char*) malloc(count+1);
             buff[0] = byte;
-            if ( read(fd[0], buff+1, count) == count )
-            if ( std::string(buff)=="CCLLEEAARR" ) {
-                outfile << buff;
-            } else {
-                outfile_ocr << buff; /*! write to ocr */
+
+            if ( (read(fd[0], buff+1, count)==count) && isOCRprocessing ) {
+
+                if ( std::string(buff)=="CCLLEEAARR" ) {
+                    outfile << buff;
+                    outfile << "clear sent..." << endl;
+                } else {
+                    outfile_ocr << buff; /*! write to ocr */
+                }
+            }
+            else if ( !isOCRprocessing ) {
+                free(buff);
+                break;
             }
 
             free(buff);
         }
         else
         {   // could not read in-size
-            outfile << "Failed to read input size." << endl;
+            // outfile << "Failed to read input size." << endl;
+            break;
         }
     }
     // end
 
+    if ( !isOCRprocessing ) { /*means killed from outside*/
+        kill ( pid, SIGKILL ); /*KILL the damn thing*/
+    }
+
+    isOCRprocessing = false; /*mark that we are done anyhow*/
     close(fd[0]);
 
-    outfile << "main process exited";
+    // outfile << "main process exited";
   }
   else {
+
     // fork failed
     outfile << "fork() failed!\n";
   }
