@@ -66,7 +66,6 @@ void init_ocr ( ) {
 
 void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int fd[] ) {
 
-
   // init_ocr();
   // unsigned int _clock_start = clock();
 
@@ -83,7 +82,6 @@ void crop_b_tess ( Mat& mat/*orig*/, Rect& rect, int icount, int fd[] ) {
   // outfile_ocr << out;
 
   if ( icount<1 ){
-
     //   write ( fd[1], "CCLLEEAARR", sizeof("CCLLEEAARR") );
   }
 

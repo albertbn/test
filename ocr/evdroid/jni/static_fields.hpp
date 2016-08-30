@@ -20,6 +20,7 @@ extern JNIEnv* envJNI;
 extern jobject jobjJNI;
 
 extern bool isOCRprocessing;
+extern int fd[2];
 
 // extern ofstream outfile;
 extern ofstream_child outfile;
