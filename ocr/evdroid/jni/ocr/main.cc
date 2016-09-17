@@ -174,6 +174,8 @@ void fork_loop_ocr ( Mat& im_orig, std::vector<Rect>& rect_lines ) {
 
 	pipe(fd);
 
+        // http://stackoverflow.com/questions/15196784/how-to-wait-till-data-is-written-on-the-other-end-of-pipe
+        http://timmurphy.org/2014/04/26/using-fork-in-cc-a-minimum-working-example/
 	pid_t pid = fork ( );
 
 	if ( pid == 0 ) {
