@@ -86,7 +86,7 @@ Java_bonebou_diordve_EvdroidActivity_initOcr (
 	,jstring jroot_folder_path
 
 	) {
-	path_sd_card = env->GetStringUTFChars(jroot_folder_path, 0); /* doesn't end with / */;
+	path_sd_card = env->GetStringUTFChars ( jroot_folder_path, 0 ); /* doesn't end with / */;
 
 	if ( !is_ocr_inited ) {
 		is_ocr_inited = true;
@@ -123,7 +123,7 @@ Java_bonebou_diordve_imgProcessOCR_ImgProcessOCRFragment_saveMiddleClass (
 		// First get the class that contains the method you need to call
 		jclass clazz = env->FindClass("bonebou/diordve/imgProcessOCR/ImgProcessOCRFragment");
 		// Get the method that you want to call
-		jmethodID void_method = env->GetMethodID(clazz, "messageMe", "(Ljava/lang/String;)V");
+		jmethodID void_method = env->GetMethodID ( clazz, "messageMe", "(Ljava/lang/String;)V" );
 		// Call the method on the object
 		// env->CallVoidMethod ( jobj, messageMe, jstr );
 
